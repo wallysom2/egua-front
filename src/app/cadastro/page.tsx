@@ -5,6 +5,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
+// API URL que pode ser substituída em produção
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 export default function Cadastro() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -46,7 +49,7 @@ export default function Cadastro() {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/cadastro", formData);
+      const response = await axios.post(`${API_URL}/api/auth/cadastro`, formData);
 
       // Armazena o token no localStorage
       localStorage.setItem("token", response.data.data.token);

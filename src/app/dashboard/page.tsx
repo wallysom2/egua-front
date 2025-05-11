@@ -4,9 +4,19 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+
+// Define a proper interface for the user object
+interface User {
+  nome: string;
+  tipo: "aluno" | "professor" | "desenvolvedor";
+  email?: string;
+  cpf?: string;
+  id?: string | number;
+}
+
 export default function Dashboard() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('módulos');
 

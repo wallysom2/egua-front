@@ -5,6 +5,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
+// API URL que pode ser substituída em produção
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 export default function Login() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -28,7 +31,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", formData);
+      const response = await axios.post(`${API_URL}/api/auth/login`, formData);
       
       // Armazena o token no localStorage
       localStorage.setItem("token", response.data.data.token);
