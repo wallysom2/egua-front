@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function Cadastro() {
   const router = useRouter();
@@ -45,28 +46,20 @@ export default function Cadastro() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/cadastro", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Ocorreu um erro ao criar a conta");
-      }
+      const response = await axios.post("http://localhost:5000/api/auth/cadastro", formData);
 
       // Armazena o token no localStorage
-      localStorage.setItem("token", data.data.token);
-      localStorage.setItem("user", JSON.stringify(data.data.usuario));
+      localStorage.setItem("token", response.data.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.data.usuario));
 
       // Redireciona após cadastro bem-sucedido
       router.push("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao criar conta");
+      setError(
+        axios.isAxiosError(err) && err.response?.data?.message
+          ? err.response.data.message
+          : "Erro ao criar conta"
+      );
     } finally {
       setLoading(false);
     }
