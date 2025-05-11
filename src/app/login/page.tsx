@@ -116,7 +116,7 @@ export default function Login() {
             <p className="text-slate-400">
               Não tem uma conta?{" "}
               <Link href="/cadastro" className="text-blue-400 hover:underline">
-                Cadastre-se
+                Cadastre-sddfa
               </Link>
             </p>
           </div>
