@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 interface Conteudo {
   id: number;
   titulo: string;
@@ -38,7 +40,7 @@ export default function ConteudoPage() {
           return;
         }
 
-        const response = await fetch("http://localhost:5000/conteudos", {
+        const response = await fetch(`${API_URL}/conteudos`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -71,7 +73,7 @@ export default function ConteudoPage() {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:5000/conteudos/${id}`, {
+      const response = await fetch(`${API_URL}/conteudos/${id}`, {
         method: "DELETE",
         headers: {
           'Authorization': `Bearer ${token}`,

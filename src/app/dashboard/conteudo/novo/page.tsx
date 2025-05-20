@@ -3,25 +3,69 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 interface Linguagem {
   id: number;
   nome: string;
 }
+
+interface FormData {
+  titulo: string;
+  corpo: string;
+  nivel_leitura: "basico" | "intermediario";
+  linguagem_id: string;
+}
+
+const fetchLinguagens = async (token: string) => {
+  const response = await fetch(`${API_URL}/linguagens`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Erro ao carregar linguagens");
+  }
+
+  return response.json();
+};
+
+const criarConteudo = async (formData: FormData, token: string) => {
+  const response = await fetch(`${API_URL}/conteudos`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      ...formData,
+      linguagem_id: Number(formData.linguagem_id),
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Erro ao criar conteúdo");
+  }
+
+  return response.json();
+};
 
 export default function NovoConteudoPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [linguagens, setLinguagens] = useState<Linguagem[]>([]);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     titulo: "",
     corpo: "",
-    nivel_leitura: "basico" as "basico" | "intermediario",
+    nivel_leitura: "basico",
     linguagem_id: "",
   });
 
   useEffect(() => {
-    const fetchLinguagens = async () => {
+    const carregarLinguagens = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -29,17 +73,7 @@ export default function NovoConteudoPage() {
           return;
         }
 
-        const response = await fetch("http://localhost:5000/linguagens", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Erro ao carregar linguagens");
-        }
-
-        const data = await response.json();
+        const data = await fetchLinguagens(token);
         setLinguagens(data);
       } catch (err) {
         setError("Erro ao carregar linguagens. Tente novamente mais tarde.");
@@ -47,7 +81,7 @@ export default function NovoConteudoPage() {
       }
     };
 
-    fetchLinguagens();
+    carregarLinguagens();
   }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -62,23 +96,7 @@ export default function NovoConteudoPage() {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/conteudos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          ...formData,
-          linguagem_id: Number(formData.linguagem_id),
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Erro ao criar conteúdo");
-      }
-
+      await criarConteudo(formData, token);
       router.push("/dashboard/conteudo");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao criar conteúdo");
