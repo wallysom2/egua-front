@@ -12,11 +12,10 @@ export default function Cadastro() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     nome: "",
-    cpf: "",
     email: "",
     senha: "",
     confirmarSenha: "",
-    tipo: "aluno",
+    tipo: "aluno" as "professor" | "aluno" | "desenvolvedor",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,8 +40,13 @@ export default function Cadastro() {
       return;
     }
 
-    if (formData.cpf.length !== 11 || !/^\d+$/.test(formData.cpf)) {
-      setError("CPF deve conter 11 dígitos numéricos");
+    if (formData.nome.length < 3) {
+      setError("Nome deve ter pelo menos 3 caracteres");
+      return;
+    }
+
+    if (formData.senha.length < 6) {
+      setError("Senha deve ter pelo menos 6 caracteres");
       return;
     }
 
@@ -51,12 +55,16 @@ export default function Cadastro() {
     try {
       const response = await axios.post(`${API_URL}/api/auth/cadastro`, formData);
 
-      // Armazena o token no localStorage
-      localStorage.setItem("token", response.data.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.data.usuario));
+      if (response.data.success) {
+        // Armazena o token e dados do usuário no localStorage
+        localStorage.setItem("token", response.data.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.data.usuario));
 
-      // Redireciona após cadastro bem-sucedido
-      router.push("/dashboard");
+        // Redireciona após cadastro bem-sucedido
+        router.push("/dashboard");
+      } else {
+        setError(response.data.message || "Erro ao criar conta");
+      }
     } catch (err) {
       setError(
         axios.isAxiosError(err) && err.response?.data?.message
@@ -103,22 +111,7 @@ export default function Cadastro() {
                 onChange={handleChange}
                 className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2" htmlFor="cpf">
-                CPF (apenas números)
-              </label>
-              <input
-                type="text"
-                id="cpf"
-                name="cpf"
-                value={formData.cpf}
-                onChange={handleChange}
-                maxLength={11}
-                className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
+                minLength={3}
               />
             </div>
             
@@ -149,6 +142,7 @@ export default function Cadastro() {
                 onChange={handleChange}
                 className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
+                minLength={6}
               />
             </div>
 

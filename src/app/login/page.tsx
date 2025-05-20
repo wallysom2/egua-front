@@ -33,12 +33,16 @@ export default function Login() {
     try {
       const response = await axios.post(`${API_URL}/api/auth/login`, formData);
       
-      // Armazena o token no localStorage
-      localStorage.setItem("token", response.data.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.data.usuario));
+      if (response.data.success) {
+        // Armazena o token e dados do usuário no localStorage
+        localStorage.setItem("token", response.data.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.data.usuario));
 
-      // Redireciona após login bem-sucedido
-      router.push("/dashboard");
+        // Redireciona após login bem-sucedido
+        router.push("/dashboard");
+      } else {
+        setError(response.data.message || "Erro ao fazer login");
+      }
     } catch (err) {
       setError(
         axios.isAxiosError(err) && err.response?.data?.message
@@ -116,7 +120,7 @@ export default function Login() {
             <p className="text-slate-400">
               Não tem uma conta?{" "}
               <Link href="/cadastro" className="text-blue-400 hover:underline">
-                Cadastre-sddfa
+                Cadastre-se
               </Link>
             </p>
           </div>
