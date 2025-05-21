@@ -151,8 +151,11 @@ export default function ConteudoPage() {
                   key={conteudo.id}
                   className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
                 >
-                  <h2 className="text-xl font-bold mb-2">{conteudo.titulo}</h2>
-                  <p className="text-slate-600 mb-4 line-clamp-3">{conteudo.corpo}</p>
+                  <h2 className="text-xl font-bold mb-2" dangerouslySetInnerHTML={{ __html: conteudo.titulo }} />
+                  <div
+                    className="text-slate-600 mb-4 line-clamp-3"
+                    dangerouslySetInnerHTML={{ __html: conteudo.corpo }}
+                  />
                   <div className="flex items-center justify-between">
                     <span className={`px-3 py-1 rounded-full text-sm ${
                       conteudo.nivel_leitura === "basico" 

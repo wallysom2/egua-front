@@ -169,7 +169,10 @@ function ConteudoView({ conteudo, isProfessor, onDelete }: {
       </div>
 
       <div className="prose prose-slate max-w-none">
-        <div className="whitespace-pre-wrap">{conteudo.corpo}</div>
+        <div 
+          className="text-slate-700 leading-relaxed space-y-4"
+          dangerouslySetInnerHTML={{ __html: conteudo.corpo }} 
+        />
       </div>
     </div>
   );
