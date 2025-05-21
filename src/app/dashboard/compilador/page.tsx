@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { executarCodigo as executarCodigoDelegua } from "@/lib/delegua";
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
+import { oneDark } from '@codemirror/theme-one-dark';
 
 interface User {
   nome: string;
@@ -55,7 +58,7 @@ export default function Compilador() {
       const resultado = await executarCodigoDelegua(codigo);
       setSaida(resultado);
     } catch (error: any) {
-      setSaida([`Erro ao executar código: ${error.message}`]);
+      setSaida([`Erro ao executar código: ${error.message || 'Erro desconhecido'}`]);
     } finally {
       setExecutando(false);
     }
@@ -117,12 +120,38 @@ export default function Compilador() {
                   {executando ? 'Executando...' : 'Executar'}
                 </button>
               </div>
-              <textarea
-                value={codigo}
-                onChange={(e) => setCodigo(e.target.value)}
-                className="w-full h-[400px] p-4 bg-slate-50 border border-slate-200 rounded-lg font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                spellCheck="false"
-              />
+              <div className="w-full h-[400px] border border-slate-200 rounded-lg overflow-hidden">
+                <CodeMirror
+                  value={codigo}
+                  height="400px"
+                  theme={oneDark}
+                  extensions={[javascript()]}
+                  onChange={(value) => setCodigo(value)}
+                  basicSetup={{
+                    lineNumbers: true,
+                    highlightActiveLineGutter: true,
+                    highlightSpecialChars: true,
+                    foldGutter: true,
+                    drawSelection: true,
+                    dropCursor: true,
+                    allowMultipleSelections: true,
+                    indentOnInput: true,
+                    syntaxHighlighting: true,
+                    bracketMatching: true,
+                    closeBrackets: true,
+                    autocompletion: true,
+                    rectangularSelection: true,
+                    crosshairCursor: true,
+                    highlightActiveLine: true,
+                    highlightSelectionMatches: true,
+                    closeBracketsKeymap: true,
+                    searchKeymap: true,
+                    foldKeymap: true,
+                    completionKeymap: true,
+                    lintKeymap: true,
+                  }}
+                />
+              </div>
             </div>
 
             {/* Área de Saída */}
@@ -130,7 +159,16 @@ export default function Compilador() {
               <h2 className="text-xl font-bold mb-4">Saída</h2>
               <div className="w-full h-[400px] p-4 bg-slate-50 border border-slate-200 rounded-lg font-mono text-sm overflow-auto">
                 {saida.map((linha, index) => (
-                  <div key={index} className="mb-1">
+                  <div 
+                    key={index} 
+                    className={`mb-1 ${
+                      linha.startsWith('Erro') 
+                        ? 'text-red-600' 
+                        : linha === 'Executando código...' 
+                          ? 'text-blue-600' 
+                          : 'text-slate-800'
+                    }`}
+                  >
                     {linha}
                   </div>
                 ))}
