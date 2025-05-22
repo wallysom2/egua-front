@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
+import { v4 as uuidv4 } from 'uuid';
 
 interface Linguagem {
   id: number;
@@ -15,22 +16,78 @@ interface Conteudo {
 }
 
 interface Alternativa {
+  id: string;
   texto: string;
   correta: boolean;
 }
 
-const questaoSchema = z.object({
-  conteudo_id: z.number({ required_error: 'Conteúdo de referência é obrigatório' }),
+// Schema para o estado interno do formulário, inclui 'correta' nas opções
+const questaoFormSchema = z.object({
+  conteudo_id: z.number(),
   enunciado: z.string().min(10, { message: 'Enunciado da questão deve ser mais detalhado' }),
   nivel: z.enum(['facil', 'medio', 'dificil'], { message: 'Nível da questão inválido' }),
-  alternativas: z.array(z.object({
+  tipo: z.enum(['quiz', 'programacao'], { message: 'Tipo de questão inválido' }),
+  opcoes: z.array(z.object({
+    id: z.string(),
     texto: z.string().min(1, { message: 'Texto da alternativa é obrigatório' }),
     correta: z.boolean()
   })).optional(),
-  codigo_teste: z.string().optional()
+  resposta_correta: z.string().optional(), // Usado internamente para rastrear o ID da correta
+  exemplo_resposta: z.string().optional()
+}).refine((data) => {
+  if (data.tipo === 'quiz') {
+    if (!data.opcoes || data.opcoes.length < 2 || data.opcoes.length > 5) return false;
+    if (!data.opcoes.some(op => op.correta)) return false;
+    if (!data.opcoes.every(op => op.texto.trim() !== '')) return false;
+    return true;
+  }
+  if (data.tipo === 'programacao') {
+    return data.exemplo_resposta !== undefined && data.exemplo_resposta.trim() !== '';
+  }
+  return true;
+}, { message: 'Dados inválidos para o tipo de questão especificado (validação de formulário)' });
+
+type QuestaoFormData = z.infer<typeof questaoFormSchema>;
+
+// Schemas para validar os dados a serem enviados para a API
+const baseApiQuestaoProps = {
+    conteudo_id: z.number({ required_error: 'Conteúdo de referência é obrigatório' }).min(1, "Conteúdo de referência é obrigatório"),
+    enunciado: z.string().min(10, { message: 'Enunciado da questão deve ser mais detalhado' }),
+    nivel: z.enum(['facil', 'medio', 'dificil'], { message: 'Nível da questão inválido' }),
+};
+
+const quizApiQuestaoUnrefinedSchema = z.object({
+    ...baseApiQuestaoProps,
+    tipo: z.literal('quiz'),
+    opcoes: z.array(z.object({
+        id: z.string(),
+        texto: z.string().trim().min(1, { message: 'Texto da alternativa é obrigatório' }),
+    })).min(2, "A questão deve ter pelo menos 2 alternativas").max(5, "A questão deve ter no máximo 5 alternativas"),
+    resposta_correta: z.string({required_error: "Uma resposta correta é obrigatória para quiz"}).min(1, "Uma resposta correta é obrigatória para quiz"),
+    exemplo_resposta: z.undefined().optional(),
 });
 
-type QuestaoFormData = z.infer<typeof questaoSchema>;
+// Schema refinado para quiz, usado após a validação da união discriminada
+const quizApiQuestaoRefinedSchema = quizApiQuestaoUnrefinedSchema.refine(
+    data => data.opcoes.some(op => op.id === data.resposta_correta),
+    {
+        message: "A resposta correta deve ser uma das opções fornecidas.",
+        path: ["resposta_correta"],
+    }
+);
+
+const programacaoApiQuestaoSchema = z.object({
+    ...baseApiQuestaoProps,
+    tipo: z.literal('programacao'),
+    exemplo_resposta: z.string().trim().min(1, { message: "Exemplo de resposta é obrigatório" }),
+    opcoes: z.undefined().optional(),
+    resposta_correta: z.undefined().optional(),
+});
+
+const apiQuestaoValidator = z.discriminatedUnion("tipo", [
+    quizApiQuestaoUnrefinedSchema, // Usamos o schema não refinado aqui
+    programacaoApiQuestaoSchema
+]);
 
 interface CriarQuestaoProps {
   conteudos: Conteudo[];
@@ -44,30 +101,123 @@ export function CriarQuestao({ conteudos, selectedLinguagem, onQuestaoCriada, ti
     conteudo_id: 0,
     enunciado: "",
     nivel: "facil",
-    alternativas: tipo === "quiz" ? [
-      { texto: "", correta: false },
-      { texto: "", correta: false },
-      { texto: "", correta: false },
-      { texto: "", correta: false }
+    tipo: tipo === "quiz" ? "quiz" : "programacao",
+    opcoes: tipo === "quiz" ? [
+      { id: uuidv4(), texto: "", correta: false },
+      { id: uuidv4(), texto: "", correta: false },
+      { id: uuidv4(), texto: "", correta: false },
+      { id: uuidv4(), texto: "", correta: false }
     ] : undefined,
-    codigo_teste: tipo === "pratico" ? "" : undefined
+    exemplo_resposta: tipo === "pratico" ? "" : undefined
   });
+
+  // Atualiza o tipo da questão quando o tipo do exercício muda
+  useEffect(() => {
+    setQuestaoForm(prev => ({
+      ...prev,
+      tipo: tipo === "quiz" ? "quiz" : "programacao",
+      opcoes: tipo === "quiz" ? [
+        { id: uuidv4(), texto: "", correta: false },
+        { id: uuidv4(), texto: "", correta: false },
+        { id: uuidv4(), texto: "", correta: false },
+        { id: uuidv4(), texto: "", correta: false }
+      ] : undefined,
+      exemplo_resposta: tipo === "pratico" ? "" : undefined
+    }));
+  }, [tipo]);
+
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const handleAlternativaChange = (index: number, field: keyof Alternativa, value: string | boolean) => {
-    setQuestaoForm(prev => ({
-      ...prev,
-      alternativas: prev.alternativas?.map((alt, i) => 
-        i === index ? { ...alt, [field]: value } : alt
-      )
-    }));
+    setQuestaoForm(prev => {
+      const newOpcoes = prev.opcoes?.map((alt, i) => {
+        if (i === index) {
+          return { ...alt, [field]: value };
+        }
+        // Se estiver marcando uma alternativa como correta, desmarca as outras
+        if (field === "correta" && value === true) {
+          return { ...alt, correta: false };
+        }
+        return alt;
+      });
+
+      // Se for marcando como correta, atualiza a resposta_correta
+      let resposta_correta = prev.resposta_correta;
+      if (field === "correta" && value === true) {
+        resposta_correta = newOpcoes?.[index].id || "";
+      }
+
+      return {
+        ...prev,
+        opcoes: newOpcoes,
+        resposta_correta
+      };
+    });
+  };
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+
+    if (questaoForm.tipo === "quiz") {
+      if (!questaoForm.opcoes || questaoForm.opcoes.length < 2) {
+        errors.opcoes = "A questão deve ter pelo menos 2 alternativas";
+      } else if (questaoForm.opcoes.length > 5) {
+        errors.opcoes = "A questão deve ter no máximo 5 alternativas";
+      } else if (!questaoForm.opcoes.some(opt => opt.correta)) {
+        errors.opcoes = "Selecione uma alternativa correta";
+      } else if (questaoForm.opcoes.some(opt => !opt.texto.trim())) {
+        errors.opcoes = "Preencha todas as alternativas";
+      }
+    } else if (questaoForm.tipo === "programacao") {
+      if (!questaoForm.exemplo_resposta || !questaoForm.exemplo_resposta.trim()) {
+        errors.exemplo_resposta = "O exemplo de resposta é obrigatório";
+      }
+    }
+
+    return errors;
   };
 
   const handleQuestaoSubmit = async () => {
     try {
-      const validatedData = questaoSchema.parse(questaoForm);
+      setError(null);
       setValidationErrors({});
+
+      // Validação manual para feedback de UI imediato
+      const formErrors = validateForm();
+      if (Object.keys(formErrors).length > 0) {
+        setValidationErrors(formErrors);
+        throw new Error("Dados inválidos no formulário");
+      }
+
+      // Prepara os dados para envio no formato da API
+      let dadosParaEnvio: any = {
+        conteudo_id: questaoForm.conteudo_id,
+        enunciado: questaoForm.enunciado.trim(),
+        nivel: questaoForm.nivel,
+        tipo: questaoForm.tipo,
+      };
+
+      if (questaoForm.tipo === "quiz") {
+        dadosParaEnvio.opcoes = questaoForm.opcoes?.map(op => ({
+          id: op.id,
+          texto: op.texto.trim()
+        }));
+        dadosParaEnvio.resposta_correta = questaoForm.opcoes?.find(op => op.correta)?.id;
+        if (!dadosParaEnvio.resposta_correta) {
+           throw new Error("Resposta correta não selecionada para o quiz."); 
+        }
+      } else {
+        dadosParaEnvio.exemplo_resposta = questaoForm.exemplo_resposta?.trim();
+      }
+
+      // Validação com Zod usando o schema da API (união discriminada)
+      let validatedData = apiQuestaoValidator.parse(dadosParaEnvio);
+
+      // Validação adicional específica para quiz usando o schema refinado
+      if (validatedData.tipo === 'quiz') {
+        validatedData = quizApiQuestaoRefinedSchema.parse(validatedData);
+      }
 
       const token = localStorage.getItem("token");
       const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -92,27 +242,33 @@ export function CriarQuestao({ conteudos, selectedLinguagem, onQuestaoCriada, ti
         conteudo_id: 0,
         enunciado: "",
         nivel: "facil",
-        alternativas: tipo === "quiz" ? [
-          { texto: "", correta: false },
-          { texto: "", correta: false },
-          { texto: "", correta: false },
-          { texto: "", correta: false }
+        tipo: tipo === "quiz" ? "quiz" : "programacao",
+        opcoes: tipo === "quiz" ? [
+          { id: uuidv4(), texto: "", correta: false },
+          { id: uuidv4(), texto: "", correta: false },
+          { id: uuidv4(), texto: "", correta: false },
+          { id: uuidv4(), texto: "", correta: false }
         ] : undefined,
-        codigo_teste: tipo === "pratico" ? "" : undefined
+        exemplo_resposta: tipo === "pratico" ? "" : undefined
       });
-      setError(null);
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errors: Record<string, string> = {};
         error.errors.forEach((err) => {
           if (err.path) {
-            errors[err.path[0]] = err.message;
+            const path = err.path.join('.');
+            errors[path] = err.message;
+            // Para erros de união discriminada, o path pode ser vazio ou referir-se ao campo discriminador
+            if (err.path.length === 0 && err.message.includes("Invalid discriminator value")) {
+              errors["tipo"] = "Tipo de questão inválido ou dados inconsistentes para o tipo.";
+            }
           }
         });
         setValidationErrors(errors);
+        console.error("Erro de validação Zod (API):", error.errors);
       } else {
         console.error("Erro ao criar questão:", error);
-        setError(error instanceof Error ? error.message : "Erro ao criar questão. Tente novamente.");
+        setError(error instanceof Error && error.message !== "Dados inválidos no formulário" ? error.message : "Erro ao criar questão. Tente novamente.");
       }
     }
   };
@@ -135,7 +291,7 @@ export function CriarQuestao({ conteudos, selectedLinguagem, onQuestaoCriada, ti
           className={`w-full px-4 py-2 bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
             validationErrors.conteudo_id ? 'border-red-500' : 'border-slate-700'
           }`}
-          required
+          
         >
           <option value="">Selecione um conteúdo</option>
           {conteudos
@@ -162,7 +318,6 @@ export function CriarQuestao({ conteudos, selectedLinguagem, onQuestaoCriada, ti
             validationErrors.enunciado ? 'border-red-500' : 'border-slate-700'
           }`}
           rows={4}
-          required
         />
         {validationErrors.enunciado && (
           <p className="mt-1 text-sm text-red-400">{validationErrors.enunciado}</p>
@@ -189,13 +344,16 @@ export function CriarQuestao({ conteudos, selectedLinguagem, onQuestaoCriada, ti
         )}
       </div>
 
-      {tipo === "quiz" && questaoForm.alternativas && (
+      {questaoForm.tipo === "quiz" && questaoForm.opcoes && (
         <div className="space-y-4">
           <label className="block text-sm font-medium text-slate-300">
             Alternativas
           </label>
-          {questaoForm.alternativas.map((alternativa, index) => (
-            <div key={index} className="flex items-center space-x-4">
+          {validationErrors.opcoes && (
+            <p className="text-sm text-red-400">{validationErrors.opcoes}</p>
+          )}
+          {questaoForm.opcoes.map((alternativa, index) => (
+            <div key={alternativa.id} className="flex items-center space-x-4">
               <input
                 type="radio"
                 name="alternativa_correta"
@@ -215,17 +373,22 @@ export function CriarQuestao({ conteudos, selectedLinguagem, onQuestaoCriada, ti
         </div>
       )}
 
-      {tipo === "pratico" && (
+      {questaoForm.tipo === "programacao" && (
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-2">
-            Código de Teste (opcional)
+            Exemplo de Resposta
           </label>
           <textarea
-            value={questaoForm.codigo_teste}
-            onChange={(e) => setQuestaoForm(prev => ({ ...prev, codigo_teste: e.target.value }))}
-            className="w-full h-32 px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
-            placeholder="// Digite aqui o código de teste em Égua"
+            value={questaoForm.exemplo_resposta}
+            onChange={(e) => setQuestaoForm(prev => ({ ...prev, exemplo_resposta: e.target.value }))}
+            className={`w-full h-32 px-4 py-2 bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono ${
+              validationErrors.exemplo_resposta ? 'border-red-500' : 'border-slate-700'
+            }`}
+            placeholder="// Digite aqui um exemplo de resposta em Égua"
           />
+          {validationErrors.exemplo_resposta && (
+            <p className="mt-1 text-sm text-red-400">{validationErrors.exemplo_resposta}</p>
+          )}
         </div>
       )}
 

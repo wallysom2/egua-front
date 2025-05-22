@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { z } from "zod";
 import { CriarQuestao } from "@/app/dashboard/licoes/criar/questao/page";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -17,17 +16,6 @@ interface Conteudo {
   titulo: string;
   linguagem_id: number;
 }
-
-const exercicioSchema = z.object({
-  titulo: z.string().min(3, { message: "Título do exercício deve ter pelo menos 3 caracteres" }),
-  tipo: z.enum(["pratico", "quiz"], { message: "Tipo de exercício inválido" }),
-  linguagem_id: z.number({ required_error: "Linguagem do exercício é obrigatória" }),
-  codigo_exemplo: z.string().optional(),
-  questoes: z.array(z.object({
-    questao_id: z.number(),
-    ordem: z.number().optional().default(0)
-  })).min(1, { message: "Exercício deve ter pelo menos uma questão" })
-});
 
 export default function CriarExercicio() {
   const router = useRouter();
@@ -108,15 +96,21 @@ export default function CriarExercicio() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          tipo: formData.tipo === "pratico" ? "pratico" : "quiz"
+        }),
       });
 
       if (response.ok) {
         router.push("/dashboard/licoes");
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erro ao criar exercício");
       }
     } catch (error) {
       console.error("Erro ao criar exercício:", error);
-      setError("Erro ao criar exercício. Tente novamente.");
+      setError(error instanceof Error ? error.message : "Erro ao criar exercício. Tente novamente.");
     }
   };
 

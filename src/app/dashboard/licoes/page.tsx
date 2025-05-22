@@ -29,6 +29,35 @@ export default function Licoes() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const handleDeleteExercicio = async (exercicioId: number) => {
+    if (!confirm('Tem certeza que deseja excluir este exercício?')) {
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`${API_URL}/exercicios/${exercicioId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        setExercicios(exercicios.filter(ex => ex.id !== exercicioId));
+      } else {
+        throw new Error('Erro ao excluir exercício');
+      }
+    } catch (error) {
+      console.error('Erro ao excluir exercício:', error);
+      alert('Erro ao excluir exercício. Tente novamente.');
+    }
+  };
+
+  const handleEditExercicio = (exercicioId: number) => {
+    router.push(`/dashboard/licoes/editar/${exercicioId}`);
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -162,17 +191,37 @@ export default function Licoes() {
                   >
                     {exercicio.tipo === "pratico" ? "Prático" : "Quiz"}
                   </span>
-                  {status && (
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        status === "concluido"
-                          ? "bg-green-900 text-green-300"
-                          : "bg-yellow-900 text-yellow-300"
-                      }`}
+                  <div className="flex gap-2">
+                    {status && (
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          status === "concluido"
+                            ? "bg-green-900 text-green-300"
+                            : "bg-yellow-900 text-yellow-300"
+                        }`}
+                      >
+                        {status === "concluido" ? "Concluído" : "Em andamento"}
+                      </span>
+                    )}
+                    <button
+                      onClick={() => handleEditExercicio(exercicio.id)}
+                      className="p-1 text-blue-400 hover:text-blue-300 transition-colors"
+                      title="Editar exercício"
                     >
-                      {status === "concluido" ? "Concluído" : "Em andamento"}
-                    </span>
-                  )}
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleDeleteExercicio(exercicio.id)}
+                      className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                      title="Excluir exercício"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
 
                 <h2 className="text-xl font-bold mb-2 text-white">{exercicio.titulo}</h2>
@@ -180,16 +229,27 @@ export default function Licoes() {
                   Linguagem: {linguagensMap.get(exercicio.linguagem_id) || "..."}
                 </p>
 
-                <Link
-                  href={`/dashboard/licoes/${exercicio.id}`}
-                  className="block w-full text-center py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg transition-all font-medium"
-                >
-                  {status === "concluido"
-                    ? "Revisar Exercício"
-                    : status === "em_andamento"
-                    ? "Continuar Exercício"
-                    : "Iniciar Exercício"}
-                </Link>
+                <div className="flex gap-4">
+                  <Link
+                    href={`/dashboard/licoes/${exercicio.id}`}
+                    className="flex-1 text-center py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg transition-all font-medium"
+                  >
+                    {status === "concluido"
+                      ? "Revisar Exercício"
+                      : status === "em_andamento"
+                      ? "Continuar Exercício"
+                      : "Iniciar Exercício"}
+                  </Link>
+                  <Link
+                    href={`/dashboard/licoes/${exercicio.id}/questoes`}
+                    className="px-4 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors flex items-center"
+                    title="Gerenciar questões"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                    </svg>
+                  </Link>
+                </div>
               </div>
             );
           })}

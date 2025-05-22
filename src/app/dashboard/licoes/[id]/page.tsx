@@ -11,6 +11,9 @@ interface Questao {
   id: number;
   enunciado: string;
   nivel: "facil" | "medio" | "dificil";
+  opcoes?: { id: string; texto: string }[];
+  resposta_correta?: string;
+  tipo?: "quiz" | "pratico";
 }
 
 interface Exercicio {
@@ -30,10 +33,12 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
   const resolvedParams = use(params);
   const [exercicio, setExercicio] = useState<Exercicio | null>(null);
   const [respostas, setRespostas] = useState<{ [key: number]: string }>({});
+  const [feedbacks, setFeedbacks] = useState<{ [key: number]: { selecionadaId: string; ehCorreta: boolean } }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [questaoAtual, setQuestaoAtual] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [exercicioFinalizado, setExercicioFinalizado] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -95,14 +100,39 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
     fetchExercicio();
   }, [resolvedParams.id, router]);
 
-  const handleRespostaChange = (questaoId: number, resposta: string) => {
+  const handleRespostaChange = (questaoId: number, opcaoId: string) => {
+    if (exercicioFinalizado) return;
+
     setRespostas((prev) => ({
       ...prev,
-      [questaoId]: resposta,
+      [questaoId]: opcaoId,
     }));
   };
 
+  const verificarRespostas = () => {
+    const novosFeedbacks: { [key: number]: { selecionadaId: string; ehCorreta: boolean } } = {};
+    
+    exercicio?.exercicio_questao.forEach((eq) => {
+      const questao = eq.questao;
+      if (questao.tipo === "quiz" && questao.opcoes && questao.resposta_correta) {
+        const respostaSelecionada = respostas[questao.id];
+        novosFeedbacks[questao.id] = {
+          selecionadaId: respostaSelecionada || "",
+          ehCorreta: respostaSelecionada === questao.resposta_correta
+        };
+      }
+    });
+
+    setFeedbacks(novosFeedbacks);
+    setExercicioFinalizado(true);
+  };
+
   const handleSubmit = async () => {
+    if (!exercicioFinalizado) {
+      verificarRespostas();
+      return;
+    }
+
     setSubmitting(true);
     const token = localStorage.getItem("token");
 
@@ -233,12 +263,57 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
             </div>
 
             <div className="mb-6">
-              <textarea
-                value={respostas[questao.id] || ""}
-                onChange={(e) => handleRespostaChange(questao.id, e.target.value)}
-                className="w-full h-32 p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                placeholder="Digite sua resposta aqui..."
-              />
+              {exercicio.tipo === "quiz" && questao.opcoes && questao.opcoes.length > 0 ? (
+                <div className="space-y-3">
+                  {questao.opcoes.map((opcao) => {
+                    const currentFeedback = feedbacks[questao.id];
+                    const isOptionDisabled = exercicioFinalizado;
+
+                    let labelClassName = "flex items-center p-3 border rounded-lg transition-colors";
+                    labelClassName += isOptionDisabled ? " cursor-default" : " hover:bg-slate-100 cursor-pointer";
+
+                    if (exercicioFinalizado && currentFeedback) {
+                      const isThisOptionSelected = opcao.id === currentFeedback.selecionadaId;
+                      const isThisOptionCorrect = opcao.id === questao.resposta_correta;
+
+                      if (isThisOptionSelected) {
+                        labelClassName += currentFeedback.ehCorreta 
+                          ? " bg-green-100 border-green-500 text-green-800" 
+                          : " bg-red-100 border-red-500 text-red-800";
+                      } else if (isThisOptionCorrect && !currentFeedback.ehCorreta) {
+                        labelClassName += " bg-green-50 border-green-400 text-green-700 opacity-80";
+                      } else {
+                        labelClassName += " border-slate-300 opacity-60";
+                      }
+                    } else {
+                      labelClassName += " border-slate-300";
+                    }
+
+                    return (
+                      <label key={opcao.id} className={labelClassName}>
+                        <input
+                          type="radio"
+                          name={`questao-${questao.id}`}
+                          value={opcao.id}
+                          checked={respostas[questao.id] === opcao.id}
+                          onChange={(e) => handleRespostaChange(questao.id, e.target.value)}
+                          disabled={isOptionDisabled}
+                          className="mr-3 h-5 w-5 text-blue-600 focus:ring-blue-500 border-slate-300 disabled:opacity-50"
+                        />
+                        <span className="text-slate-700">{opcao.texto}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              ) : (
+                <textarea
+                  value={respostas[questao.id] || ""}
+                  onChange={(e) => handleRespostaChange(questao.id, e.target.value)}
+                  className="w-full h-32 p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  placeholder="Digite sua resposta aqui..."
+                  disabled={exercicioFinalizado}
+                />
+              )}
             </div>
 
             <div className="flex justify-between">
@@ -256,7 +331,7 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
                   disabled={submitting}
                   className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {submitting ? "Enviando..." : "Finalizar Exercício"}
+                  {submitting ? "Enviando..." : exercicioFinalizado ? "Enviar Exercício" : "Finalizar Exercício"}
                 </button>
               ) : (
                 <button
