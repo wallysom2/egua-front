@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-import { CriarQuestao } from "@/app/components/CriarQuestao";
+import { CriarQuestao } from "@/app/dashboard/licoes/criar/questao/page";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -22,6 +22,7 @@ const exercicioSchema = z.object({
   titulo: z.string().min(3, { message: "Título do exercício deve ter pelo menos 3 caracteres" }),
   tipo: z.enum(["pratico", "quiz"], { message: "Tipo de exercício inválido" }),
   linguagem_id: z.number({ required_error: "Linguagem do exercício é obrigatória" }),
+  codigo_exemplo: z.string().optional(),
   questoes: z.array(z.object({
     questao_id: z.number(),
     ordem: z.number().optional().default(0)
@@ -39,6 +40,7 @@ export default function CriarExercicio() {
     titulo: "",
     tipo: "pratico" as "pratico" | "quiz",
     linguagem_id: 0,
+    codigo_exemplo: "",
     questoes: [] as { questao_id: number; ordem: number }[]
   });
 
@@ -130,7 +132,7 @@ export default function CriarExercicio() {
   return (
     <div className="min-h-screen bg-slate-950 text-white p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-blue-400 mb-8">Criar Novo Exercício</h1>
+        <h1 className="text-3xl font-bold text-blue-400 mb-8">Criar Novo Exercício Égua</h1>
 
         {error && (
           <div className="bg-red-900/50 text-red-200 p-4 rounded-lg mb-6">
@@ -162,8 +164,8 @@ export default function CriarExercicio() {
                 onChange={(e) => setFormData(prev => ({ ...prev, tipo: e.target.value as "pratico" | "quiz" }))}
                 className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="pratico">Prático</option>
-                <option value="quiz">Quiz</option>
+                <option value="pratico">Prático (Programação)</option>
+                <option value="quiz">Quiz (Múltipla Escolha)</option>
               </select>
             </div>
 
@@ -185,15 +187,32 @@ export default function CriarExercicio() {
                 ))}
               </select>
             </div>
+
+            {formData.tipo === "pratico" && (
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Código de Exemplo (opcional)
+                </label>
+                <textarea
+                  value={formData.codigo_exemplo}
+                  onChange={(e) => setFormData(prev => ({ ...prev, codigo_exemplo: e.target.value }))}
+                  className="w-full h-32 px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                  placeholder="// Digite aqui um exemplo de código em Égua"
+                />
+              </div>
+            )}
           </div>
 
           <div className="border-t border-slate-700 pt-6">
-            <h2 className="text-xl font-semibold text-blue-400 mb-4">Adicionar Questões</h2>
+            <h2 className="text-xl font-semibold text-blue-400 mb-4">
+              {formData.tipo === "pratico" ? "Adicionar Questões de Programação" : "Adicionar Questões de Quiz"}
+            </h2>
             
             <CriarQuestao
               conteudos={conteudos}
               selectedLinguagem={selectedLinguagem}
               onQuestaoCriada={handleQuestaoCriada}
+              tipo={formData.tipo}
             />
 
             <div className="space-y-4">

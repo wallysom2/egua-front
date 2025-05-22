@@ -14,10 +14,20 @@ interface Conteudo {
   linguagem_id: number;
 }
 
+interface Alternativa {
+  texto: string;
+  correta: boolean;
+}
+
 const questaoSchema = z.object({
   conteudo_id: z.number({ required_error: 'Conteúdo de referência é obrigatório' }),
   enunciado: z.string().min(10, { message: 'Enunciado da questão deve ser mais detalhado' }),
-  nivel: z.enum(['facil', 'medio', 'dificil'], { message: 'Nível da questão inválido' })
+  nivel: z.enum(['facil', 'medio', 'dificil'], { message: 'Nível da questão inválido' }),
+  alternativas: z.array(z.object({
+    texto: z.string().min(1, { message: 'Texto da alternativa é obrigatório' }),
+    correta: z.boolean()
+  })).optional(),
+  codigo_teste: z.string().optional()
 });
 
 type QuestaoFormData = z.infer<typeof questaoSchema>;
@@ -26,20 +36,36 @@ interface CriarQuestaoProps {
   conteudos: Conteudo[];
   selectedLinguagem: number | null;
   onQuestaoCriada: (questaoId: number) => void;
+  tipo: "pratico" | "quiz";
 }
 
-export function CriarQuestao({ conteudos, selectedLinguagem, onQuestaoCriada }: CriarQuestaoProps) {
+export function CriarQuestao({ conteudos, selectedLinguagem, onQuestaoCriada, tipo }: CriarQuestaoProps) {
   const [questaoForm, setQuestaoForm] = useState<QuestaoFormData>({
     conteudo_id: 0,
     enunciado: "",
-    nivel: "facil"
+    nivel: "facil",
+    alternativas: tipo === "quiz" ? [
+      { texto: "", correta: false },
+      { texto: "", correta: false },
+      { texto: "", correta: false },
+      { texto: "", correta: false }
+    ] : undefined,
+    codigo_teste: tipo === "pratico" ? "" : undefined
   });
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
+  const handleAlternativaChange = (index: number, field: keyof Alternativa, value: string | boolean) => {
+    setQuestaoForm(prev => ({
+      ...prev,
+      alternativas: prev.alternativas?.map((alt, i) => 
+        i === index ? { ...alt, [field]: value } : alt
+      )
+    }));
+  };
+
   const handleQuestaoSubmit = async () => {
     try {
-      // Validar os dados antes de enviar
       const validatedData = questaoSchema.parse(questaoForm);
       setValidationErrors({});
 
@@ -65,7 +91,14 @@ export function CriarQuestao({ conteudos, selectedLinguagem, onQuestaoCriada }: 
       setQuestaoForm({
         conteudo_id: 0,
         enunciado: "",
-        nivel: "facil"
+        nivel: "facil",
+        alternativas: tipo === "quiz" ? [
+          { texto: "", correta: false },
+          { texto: "", correta: false },
+          { texto: "", correta: false },
+          { texto: "", correta: false }
+        ] : undefined,
+        codigo_teste: tipo === "pratico" ? "" : undefined
       });
       setError(null);
     } catch (error) {
@@ -155,6 +188,46 @@ export function CriarQuestao({ conteudos, selectedLinguagem, onQuestaoCriada }: 
           <p className="mt-1 text-sm text-red-400">{validationErrors.nivel}</p>
         )}
       </div>
+
+      {tipo === "quiz" && questaoForm.alternativas && (
+        <div className="space-y-4">
+          <label className="block text-sm font-medium text-slate-300">
+            Alternativas
+          </label>
+          {questaoForm.alternativas.map((alternativa, index) => (
+            <div key={index} className="flex items-center space-x-4">
+              <input
+                type="radio"
+                name="alternativa_correta"
+                checked={alternativa.correta}
+                onChange={() => handleAlternativaChange(index, "correta", true)}
+                className="w-4 h-4 text-blue-600 bg-slate-800 border-slate-700 focus:ring-blue-500"
+              />
+              <input
+                type="text"
+                value={alternativa.texto}
+                onChange={(e) => handleAlternativaChange(index, "texto", e.target.value)}
+                placeholder={`Alternativa ${index + 1}`}
+                className="flex-1 px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tipo === "pratico" && (
+        <div>
+          <label className="block text-sm font-medium text-slate-300 mb-2">
+            Código de Teste (opcional)
+          </label>
+          <textarea
+            value={questaoForm.codigo_teste}
+            onChange={(e) => setQuestaoForm(prev => ({ ...prev, codigo_teste: e.target.value }))}
+            className="w-full h-32 px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+            placeholder="// Digite aqui o código de teste em Égua"
+          />
+        </div>
+      )}
 
       <button
         type="button"

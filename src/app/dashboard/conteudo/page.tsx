@@ -110,7 +110,7 @@ export default function ConteudoPage() {
           </div>
           {isProfessor || isDesenvolvedor ? (
             <Link
-              href="/dashboard/conteudo/novo"
+              href="/dashboard/conteudo/criar"
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
             >
               Novo Conteúdo
@@ -203,7 +203,7 @@ export default function ConteudoPage() {
               <p className="text-slate-600 mb-6">Comece criando seu primeiro conteúdo educacional</p>
               {isProfessor || isDesenvolvedor ? (
                 <Link
-                  href="/dashboard/conteudo/novo"
+                  href="/dashboard/conteudo/criar"
                   className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Criar Primeiro Conteúdo

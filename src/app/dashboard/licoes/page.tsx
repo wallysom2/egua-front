@@ -20,55 +20,14 @@ interface UserExercicio {
   finalizado_em: string | null;
 }
 
-// Dados mockados
-const exerciciosMockados: Exercicio[] = [
-  {
-    id: 1,
-    titulo: "Introdução à Programação",
-    tipo: "pratico",
-    linguagem_id: 1
-  },
-  {
-    id: 2,
-    titulo: "Variáveis e Tipos de Dados",
-    tipo: "quiz",
-    linguagem_id: 1
-  },
-  {
-    id: 3,
-    titulo: "Estruturas de Controle",
-    tipo: "pratico",
-    linguagem_id: 2
-  }
-];
-
-const userExerciciosMockados: UserExercicio[] = [
-  {
-    id: "1",
-    exercicio_id: 1,
-    status: "concluido",
-    finalizado_em: "2024-03-20T10:00:00Z"
-  },
-  {
-    id: "2",
-    exercicio_id: 2,
-    status: "em_andamento",
-    finalizado_em: null
-  }
-];
-
-const linguagensMockadas = new Map([
-  [1, "Python"],
-  [2, "JavaScript"]
-]);
 
 export default function Licoes() {
   const router = useRouter();
-  const [exercicios, setExercicios] = useState<Exercicio[]>(exerciciosMockados);
-  const [userExercicios, setUserExercicios] = useState<UserExercicio[]>(userExerciciosMockados);
+  const [exercicios, setExercicios] = useState<Exercicio[]>([]);
+  const [linguagensMap, setLinguagensMap] = useState<Map<number, string>>(new Map());
+  const [userExercicios, setUserExercicios] = useState<UserExercicio[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [linguagensMap, setLinguagensMap] = useState<Map<number, string>>(linguagensMockadas);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -127,7 +86,7 @@ export default function Licoes() {
 
   const getStatusExercicio = (exercicioId: number) => {
     const userExercicio = userExercicios.find(
-      (ue) => ue.exercicio_id === exercicioId
+      (ue: UserExercicio) => ue.exercicio_id === exercicioId
     );
     return userExercicio?.status || null;
   };
@@ -166,7 +125,7 @@ export default function Licoes() {
             </p>
           </div>
           <Link
-            href="/dashboard/licoes/criar"
+            href="/dashboard/licoes/criar/exercicio"
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
           >
             <svg
@@ -186,7 +145,7 @@ export default function Licoes() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {exercicios.map((exercicio) => {
+          {exercicios.map((exercicio: Exercicio) => {
             const status = getStatusExercicio(exercicio.id);
             return (
               <div
