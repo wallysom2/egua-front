@@ -17,10 +17,14 @@ interface Conteudo {
 export default function ConteudoPage() {
   const router = useRouter();
   const [conteudos, setConteudos] = useState<Conteudo[]>([]);
+  const [filteredConteudos, setFilteredConteudos] = useState<Conteudo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isProfessor, setIsProfessor] = useState(false);
   const [isDesenvolvedor, setIsDesenvolvedor] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLevel, setSelectedLevel] = useState<"todos" | "basico" | "intermediario">("todos");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   useEffect(() => {
     const checkUserType = () => {
@@ -55,6 +59,7 @@ export default function ConteudoPage() {
 
         const data = await response.json();
         setConteudos(data);
+        setFilteredConteudos(data);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "Erro ao carregar conteúdos. Tente novamente mais tarde.";
         setError(errorMessage);
@@ -67,6 +72,26 @@ export default function ConteudoPage() {
     checkUserType();
     fetchConteudos();
   }, [router]);
+
+  // Filter and search logic
+  useEffect(() => {
+    let filtered = conteudos;
+
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(conteudo => 
+        conteudo.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        conteudo.corpo.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filter by level
+    if (selectedLevel !== "todos") {
+      filtered = filtered.filter(conteudo => conteudo.nivel_leitura === selectedLevel);
+    }
+
+    setFilteredConteudos(filtered);
+  }, [conteudos, searchTerm, selectedLevel]);
 
   const handleDelete = async (id: number) => {
     if (!confirm("Tem certeza que deseja excluir este conteúdo?")) return;
@@ -92,126 +117,339 @@ export default function ConteudoPage() {
     }
   };
 
+  const clearFilters = () => {
+    setSearchTerm("");
+    setSelectedLevel("todos");
+  };
+
+  const conteudosBasicos = conteudos.filter(c => c.nivel_leitura === "basico").length;
+  const conteudosIntermediarios = conteudos.filter(c => c.nivel_leitura === "intermediario").length;
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-xl font-semibold text-white">Carregando conteúdos...</p>
+          <p className="text-slate-400 mt-2">Aguarde enquanto buscamos o melhor conteúdo para você</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+    <div className="min-h-screen bg-slate-950 text-white">
+      <div className="container mx-auto px-6 py-8">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-2 text-sm text-slate-400 mb-6">
+          <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
+          <span>›</span>
+          <span className="text-white">Conteúdo</span>
+        </nav>
+
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800">Dashboard de Conteúdos</h1>
-            <p className="text-slate-600 mt-1">Gerencie seus conteúdos educacionais</p>
+            <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-3">
+              📚 Biblioteca de Conteúdo
+            </h1>
+            <p className="text-slate-400 text-lg">
+              Explore {conteudos.length} conteúdos educacionais disponíveis
+            </p>
           </div>
-          {isProfessor || isDesenvolvedor ? (
-            <Link
-              href="/dashboard/conteudo/criar"
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-            >
-              Novo Conteúdo
-            </Link>
-          ) : null}
+          <div className="flex flex-wrap gap-3">
+            <button className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2">
+              ☀️ Claro
+            </button>
+            {(isProfessor || isDesenvolvedor) && (
+              <Link
+                href="/dashboard/conteudo/criar"
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium"
+              >
+                ➕ Novo Conteúdo
+              </Link>
+            )}
+          </div>
         </div>
 
+        {/* Filters and Search */}
+        <div className="bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-800/50 mb-8">
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Search */}
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                🔍 Buscar conteúdo
+              </label>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Digite o título ou palavras-chave..."
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              />
+            </div>
+
+            {/* Level Filter */}
+            <div className="lg:w-64">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                📊 Filtrar por nível
+              </label>
+              <select
+                value={selectedLevel}
+                onChange={(e) => setSelectedLevel(e.target.value as any)}
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              >
+                <option value="todos">Todos os níveis</option>
+                <option value="basico">🌱 Básico</option>
+                <option value="intermediario">🚀 Intermediário</option>
+              </select>
+            </div>
+
+            {/* View Mode */}
+            <div className="lg:w-32">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                👁️ Visualização
+              </label>
+              <div className="flex rounded-lg border border-slate-700 overflow-hidden">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`flex-1 px-3 py-3 text-sm font-medium transition-colors ${
+                    viewMode === "grid" 
+                      ? "bg-blue-600 text-white" 
+                      : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                  }`}
+                >
+                  ⊞
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`flex-1 px-3 py-3 text-sm font-medium transition-colors ${
+                    viewMode === "list" 
+                      ? "bg-blue-600 text-white" 
+                      : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                  }`}
+                >
+                  ☰
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Active Filters */}
+          {(searchTerm || selectedLevel !== "todos") && (
+            <div className="mt-4 pt-4 border-t border-slate-700">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="text-sm text-slate-400">Filtros ativos:</span>
+                {searchTerm && (
+                  <span className="px-3 py-1 bg-blue-900/50 text-blue-300 rounded-full text-sm border border-blue-700">
+                    Busca: "{searchTerm}"
+                  </span>
+                )}
+                {selectedLevel !== "todos" && (
+                  <span className="px-3 py-1 bg-purple-900/50 text-purple-300 rounded-full text-sm border border-purple-700">
+                    Nível: {selectedLevel === "basico" ? "🌱 Básico" : "🚀 Intermediário"}
+                  </span>
+                )}
+                <button
+                  onClick={clearFilters}
+                  className="px-3 py-1 bg-slate-700 text-slate-300 rounded-full text-sm hover:bg-slate-600 transition-colors"
+                >
+                  ✕ Limpar filtros
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Error Message */}
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
+          <div className="bg-red-900/50 border border-red-700 text-red-200 px-6 py-4 rounded-lg mb-8 backdrop-blur">
+            <div className="flex items-center gap-3">
+              <span className="text-xl">⚠️</span>
+              <div>
+                <p className="font-medium">Erro ao carregar conteúdo</p>
+                <p className="text-sm text-red-300">{error}</p>
+              </div>
+            </div>
           </div>
         )}
 
-        {conteudos.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <h3 className="text-lg font-semibold text-slate-700 mb-2">Total de Conteúdos</h3>
-                <p className="text-3xl font-bold text-blue-600">{conteudos.length}</p>
-              </div>
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <h3 className="text-lg font-semibold text-slate-700 mb-2">Nível Básico</h3>
-                <p className="text-3xl font-bold text-green-600">
-                  {conteudos.filter(c => c.nivel_leitura === "basico").length}
-                </p>
-              </div>
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <h3 className="text-lg font-semibold text-slate-700 mb-2">Nível Intermediário</h3>
-                <p className="text-3xl font-bold text-purple-600">
-                  {conteudos.filter(c => c.nivel_leitura === "intermediario").length}
-                </p>
-              </div>
-            </div>
+        {/* Results Info */}
+        <div className="flex items-center justify-between mb-6">
+          <p className="text-slate-400">
+            {filteredConteudos.length === conteudos.length 
+              ? `Mostrando todos os ${filteredConteudos.length} conteúdos`
+              : `Mostrando ${filteredConteudos.length} de ${conteudos.length} conteúdos`
+            }
+          </p>
+        </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {conteudos.map((conteudo) => (
-                <div
-                  key={conteudo.id}
-                  className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow"
-                >
-                  <h2 className="text-xl font-bold mb-2" dangerouslySetInnerHTML={{ __html: conteudo.titulo }} />
-                  <div
-                    className="text-slate-600 mb-4 line-clamp-3"
-                    dangerouslySetInnerHTML={{ __html: conteudo.corpo }}
-                  />
-                  <div className="flex items-center justify-between">
-                    <span className={`px-3 py-1 rounded-full text-sm ${
-                      conteudo.nivel_leitura === "basico" 
-                        ? "bg-green-100 text-green-600" 
-                        : "bg-purple-100 text-purple-600"
-                    }`}>
-                      {conteudo.nivel_leitura}
-                    </span>
-                    <div className="flex gap-2">
+        {/* Content Display */}
+        {filteredConteudos.length > 0 ? (
+          <div className={viewMode === "grid" 
+            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
+            : "space-y-4"
+          }>
+            {filteredConteudos.map((conteudo) => (
+              <div
+                key={conteudo.id}
+                className={`group bg-slate-900/50 backdrop-blur rounded-xl shadow-lg border border-slate-800/50 hover:border-slate-700/50 transition-all hover:shadow-2xl ${
+                  viewMode === "grid" ? "p-6 hover:scale-105" : "p-4 flex items-center gap-6"
+                }`}
+              >
+                {viewMode === "grid" ? (
+                  <>
+                    {/* Grid View */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="text-2xl">
+                          {conteudo.nivel_leitura === "basico" ? "🌱" : "🚀"}
+                        </div>
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            conteudo.nivel_leitura === "basico"
+                              ? "bg-green-900/50 text-green-300 border border-green-700/50"
+                              : "bg-purple-900/50 text-purple-300 border border-purple-700/50"
+                          }`}
+                        >
+                          {conteudo.nivel_leitura === "basico" ? "Básico" : "Intermediário"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <h2 
+                      className="text-xl font-bold mb-3 text-white leading-tight line-clamp-2" 
+                      dangerouslySetInnerHTML={{ __html: conteudo.titulo }} 
+                    />
+
+                    <div
+                      className="text-slate-300 mb-6 line-clamp-3 text-sm leading-relaxed"
+                      //dangerouslySetInnerHTML={{ __html: conteudo.corpo }}
+                    />
+
+                    <div className="flex gap-3">
                       <Link
                         href={`/dashboard/conteudo/${conteudo.id}`}
-                        className="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
+                        className="flex-1 text-center py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg transition-all font-medium transform hover:scale-105"
                       >
-                        Ver
+                        📖 Ler
                       </Link>
-                      {isProfessor || isDesenvolvedor ? (
-                        <>
+                      
+                      {(isProfessor || isDesenvolvedor) && (
+                        <div className="flex gap-2">
                           <Link
                             href={`/dashboard/conteudo/editar/${conteudo.id}`}
-                            className="px-3 py-1 bg-yellow-100 text-yellow-600 rounded hover:bg-yellow-200 transition-colors"
+                            className="p-3 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-slate-600 hover:text-yellow-400 transition-colors"
+                            title="Editar conteúdo"
                           >
-                            Editar
+                            ✏️
                           </Link>
                           <button
                             onClick={() => handleDelete(conteudo.id)}
-                            className="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors"
+                            className="p-3 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-red-600 hover:text-white transition-colors"
+                            title="Excluir conteúdo"
                           >
-                            Excluir
+                            🗑️
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* List View */}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="text-xl">
+                          {conteudo.nivel_leitura === "basico" ? "🌱" : "🚀"}
+                        </div>
+                        <h2 
+                          className="text-lg font-bold text-white flex-1" 
+                          dangerouslySetInnerHTML={{ __html: conteudo.titulo }} 
+                        />
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            conteudo.nivel_leitura === "basico"
+                              ? "bg-green-900/50 text-green-300 border border-green-700/50"
+                              : "bg-purple-900/50 text-purple-300 border border-purple-700/50"
+                          }`}
+                        >
+                          {conteudo.nivel_leitura === "basico" ? "Básico" : "Intermediário"}
+                        </span>
+                      </div>
+                      <div
+                        className="text-slate-400 line-clamp-2 text-sm"
+                        //dangerouslySetInnerHTML={{ __html: conteudo.corpo }}
+                      />
+                    </div>
+                    
+                    <div className="flex gap-2 flex-shrink-0">
+                      <Link
+                        href={`/dashboard/conteudo/${conteudo.id}`}
+                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg transition-all font-medium text-sm"
+                      >
+                        📖 Ler
+                      </Link>
+                      
+                      {(isProfessor || isDesenvolvedor) && (
+                        <>
+                          <Link
+                            href={`/dashboard/conteudo/editar/${conteudo.id}`}
+                            className="p-2 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-slate-600 hover:text-yellow-400 transition-colors"
+                            title="Editar"
+                          >
+                            ✏️
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(conteudo.id)}
+                            className="p-2 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-red-600 hover:text-white transition-colors"
+                            title="Excluir"
+                          >
+                            🗑️
                           </button>
                         </>
-                      ) : null}
+                      )}
                     </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-md p-12 text-center">
-            <div className="max-w-md mx-auto">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-slate-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-              <h2 className="text-2xl font-bold text-slate-800 mb-2">Nenhum conteúdo encontrado</h2>
-              <p className="text-slate-600 mb-6">Comece criando seu primeiro conteúdo educacional</p>
-              {isProfessor || isDesenvolvedor ? (
-                <Link
-                  href="/dashboard/conteudo/criar"
-                  className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Criar Primeiro Conteúdo
-                </Link>
-              ) : (
-                <p className="text-slate-600">Entre em contato com um professor ou desenvolvedor para ter acesso aos conteúdos.</p>
-              )}
+          /* Empty State */
+          <div className="text-center py-16 bg-slate-900/50 backdrop-blur rounded-xl border border-slate-800/50">
+            <div className="text-6xl mb-6">
+              {searchTerm || selectedLevel !== "todos" ? "🔍" : "📚"}
             </div>
+            <h2 className="text-3xl font-bold text-white mb-4">
+              {searchTerm || selectedLevel !== "todos" 
+                ? "Nenhum conteúdo encontrado" 
+                : "Nenhum conteúdo disponível"
+              }
+            </h2>
+            <p className="text-slate-400 text-lg mb-8 max-w-md mx-auto leading-relaxed">
+              {searchTerm || selectedLevel !== "todos" 
+                ? "Tente ajustar os filtros ou fazer uma nova busca"
+                : (isProfessor || isDesenvolvedor) 
+                  ? "Comece criando seu primeiro conteúdo educacional"
+                  : "Entre em contato com um professor ou desenvolvedor para ter acesso aos conteúdos"
+              }
+            </p>
+            {searchTerm || selectedLevel !== "todos" ? (
+              <button
+                onClick={clearFilters}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
+              >
+                🔄 Limpar filtros
+              </button>
+            ) : (isProfessor || isDesenvolvedor) && (
+              <Link
+                href="/dashboard/conteudo/criar"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors transform hover:scale-105"
+              >
+                ➕ Criar Primeiro Conteúdo
+              </Link>
+            )}
           </div>
         )}
       </div>

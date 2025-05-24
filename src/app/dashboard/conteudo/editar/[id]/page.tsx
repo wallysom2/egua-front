@@ -7,6 +7,7 @@ import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
+import Link from "next/link";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -109,6 +110,11 @@ const useConteudo = (id: string) => {
       }));
     },
     editable: true,
+    editorProps: {
+      attributes: {
+        class: 'prose prose-invert max-w-none p-4 min-h-[300px] focus:outline-none text-white',
+      },
+    },
   });
 
   useEffect(() => {
@@ -167,6 +173,59 @@ const useConteudo = (id: string) => {
     setShowEmojiPicker(false);
   };
 
+  const toolbarButtons = [
+    {
+      icon: "H1",
+      label: "Título 1",
+      action: () => editor?.chain().focus().toggleHeading({ level: 1 }).run(),
+      isActive: () => editor?.isActive('heading', { level: 1 }),
+    },
+    {
+      icon: "H2",
+      label: "Título 2", 
+      action: () => editor?.chain().focus().toggleHeading({ level: 2 }).run(),
+      isActive: () => editor?.isActive('heading', { level: 2 }),
+    },
+    {
+      icon: "B",
+      label: "Negrito",
+      action: () => editor?.chain().focus().toggleBold().run(),
+      isActive: () => editor?.isActive('bold'),
+      bold: true,
+    },
+    {
+      icon: "I",
+      label: "Itálico",
+      action: () => editor?.chain().focus().toggleItalic().run(),
+      isActive: () => editor?.isActive('italic'),
+      italic: true,
+    },
+    {
+      icon: "• Lista",
+      label: "Lista com marcadores",
+      action: () => editor?.chain().focus().toggleBulletList().run(),
+      isActive: () => editor?.isActive('bulletList'),
+    },
+    {
+      icon: "1. Lista",
+      label: "Lista numerada",
+      action: () => editor?.chain().focus().toggleOrderedList().run(),
+      isActive: () => editor?.isActive('orderedList'),
+    },
+    {
+      icon: '</>',
+      label: "Bloco de código",
+      action: () => editor?.chain().focus().toggleCodeBlock().run(),
+      isActive: () => editor?.isActive('codeBlock'),
+    },
+    {
+      icon: '"',
+      label: "Citação",
+      action: () => editor?.chain().focus().toggleBlockquote().run(),
+      isActive: () => editor?.isActive('blockquote'),
+    },
+  ];
+
   return {
     loading,
     saving,
@@ -179,13 +238,18 @@ const useConteudo = (id: string) => {
     carregarDados,
     salvarConteudo,
     atualizarCampo,
-    handleEmojiSelect
+    handleEmojiSelect,
+    toolbarButtons
   };
 };
 
 const LoadingSpinner = () => (
-  <div className="min-h-screen flex items-center justify-center bg-slate-50">
-    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+  <div className="min-h-screen flex items-center justify-center bg-slate-950">
+    <div className="text-center">
+      <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <p className="mt-4 text-xl font-semibold text-white">Carregando conteúdo...</p>
+      <p className="text-slate-400 mt-2">Preparando o editor para você</p>
+    </div>
   </div>
 );
 
@@ -200,7 +264,8 @@ const FormularioConteudo = ({
   handleChange,
   handleSubmit,
   onCancel,
-  handleEmojiSelect
+  handleEmojiSelect,
+  toolbarButtons
 }: {
   formData: Conteudo;
   linguagens: Linguagem[];
@@ -213,176 +278,252 @@ const FormularioConteudo = ({
   handleSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
   handleEmojiSelect: (emoji: EmojiData) => void;
+  toolbarButtons: any[];
 }) => (
-  <div className="min-h-screen bg-slate-50 p-8">
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold text-slate-800 mb-8">Editar Conteúdo</h1>
+  <div className="min-h-screen bg-slate-950 text-white">
+    <div className="container mx-auto px-6 py-8">
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-2 text-sm text-slate-400 mb-6">
+        <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
+        <span>›</span>
+        <Link href="/dashboard/conteudo" className="hover:text-white transition-colors">Conteúdo</Link>
+        <span>›</span>
+        <span className="text-white">Editar Conteúdo</span>
+      </nav>
 
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6 mb-8">
+        <div>
+          <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-3">
+            ✏️ Editar Conteúdo
+          </h1>
+          <p className="text-slate-400 text-lg">
+            Modifique seu conteúdo educacional
+          </p>
         </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-md p-6">
-        <div className="mb-4">
-          <label htmlFor="titulo" className="block text-sm font-medium text-slate-700 mb-1">
-            Título
-          </label>
-          <input
-            type="text"
-            id="titulo"
-            name="titulo"
-            value={formData.titulo}
-            onChange={handleChange}
-            required
-            minLength={3}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+        <div className="flex gap-3">
+          <Link
+            href="/dashboard/conteudo"
+            className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2"
+          >
+            ← Voltar
+          </Link>
         </div>
+      </div>
 
-        <div className="mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <label htmlFor="corpo" className="block text-sm font-medium text-slate-700">
-              Conteúdo
-            </label>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-                className={`p-2 rounded ${editor?.isActive('heading', { level: 1 }) ? 'bg-blue-100' : 'hover:bg-slate-100'}`}
-              >
-                H1
-              </button>
-              <button
-                type="button"
-                onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-                className={`p-2 rounded ${editor?.isActive('heading', { level: 2 }) ? 'bg-blue-100' : 'hover:bg-slate-100'}`}
-              >
-                H2
-              </button>
-              <button
-                type="button"
-                onClick={() => editor?.chain().focus().toggleBold().run()}
-                className={`p-2 rounded ${editor?.isActive('bold') ? 'bg-blue-100' : 'hover:bg-slate-100'}`}
-              >
-                <strong>B</strong>
-              </button>
-              <button
-                type="button"
-                onClick={() => editor?.chain().focus().toggleItalic().run()}
-                className={`p-2 rounded ${editor?.isActive('italic') ? 'bg-blue-100' : 'hover:bg-slate-100'}`}
-              >
-                <em>I</em>
-              </button>
-              <button
-                type="button"
-                onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                className={`p-2 rounded ${editor?.isActive('bulletList') ? 'bg-blue-100' : 'hover:bg-slate-100'}`}
-              >
-                • Lista
-              </button>
-              <button
-                type="button"
-                onClick={() => editor?.chain().focus().toggleOrderedList().run()}
-                className={`p-2 rounded ${editor?.isActive('orderedList') ? 'bg-blue-100' : 'hover:bg-slate-100'}`}
-              >
-                1. Lista
-              </button>
-              <button
-                type="button"
-                onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
-                className={`p-2 rounded ${editor?.isActive('codeBlock') ? 'bg-blue-100' : 'hover:bg-slate-100'}`}
-              >
-                {'</>'}
-              </button>
-              <button
-                type="button"
-                onClick={() => editor?.chain().focus().toggleBlockquote().run()}
-                className={`p-2 rounded ${editor?.isActive('blockquote') ? 'bg-blue-100' : 'hover:bg-slate-100'}`}
-              >
-                "
-              </button>
+      <div className="max-w-4xl mx-auto">
+        {error && (
+          <div className="bg-red-900/50 border border-red-700 text-red-200 px-6 py-4 rounded-lg mb-8 backdrop-blur">
+            <div className="flex items-center gap-3">
+              <span className="text-xl">⚠️</span>
+              <div>
+                <p className="font-medium">Erro ao salvar conteúdo</p>
+                <p className="text-sm text-red-300">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Informações Básicas */}
+          <div className="bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-800/50">
+            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+              📋 Informações Básicas
+            </h2>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="titulo" className="block text-sm font-medium text-slate-300 mb-2">
+                  📝 Título do Conteúdo
+                </label>
+                <input
+                  type="text"
+                  id="titulo"
+                  name="titulo"
+                  value={formData.titulo}
+                  onChange={handleChange}
+                  required
+                  minLength={3}
+                  placeholder="Digite um título atrativo..."
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="nivel_leitura" className="block text-sm font-medium text-slate-300 mb-2">
+                  📊 Nível de Dificuldade
+                </label>
+                <select
+                  id="nivel_leitura"
+                  name="nivel_leitura"
+                  value={formData.nivel_leitura}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                >
+                  <option value="basico">🌱 Básico</option>
+                  <option value="intermediario">🚀 Intermediário</option>
+                </select>
+              </div>
+
+              <div className="lg:col-span-2">
+                <label htmlFor="linguagem_id" className="block text-sm font-medium text-slate-300 mb-2">
+                  🔤 Linguagem de Programação
+                </label>
+                <select
+                  id="linguagem_id"
+                  name="linguagem_id"
+                  value={formData.linguagem_id}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                >
+                  {linguagens.map((linguagem) => (
+                    <option key={linguagem.id} value={linguagem.id}>
+                      {linguagem.nome}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Editor de Conteúdo */}
+          <div className="bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-800/50">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                ✍️ Editor de Conteúdo
+              </h2>
+              <p className="text-slate-400 text-sm">
+                Use a barra de ferramentas para formatar seu texto
+              </p>
+            </div>
+
+            {/* Toolbar */}
+            <div className="flex flex-wrap gap-2 mb-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+              {toolbarButtons.map((button, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={button.action}
+                  title={button.label}
+                  className={`px-3 py-2 rounded text-sm font-medium transition-all ${
+                    button.isActive?.() 
+                      ? 'bg-blue-600 text-white shadow-lg' 
+                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white'
+                  }`}
+                >
+                  <span className={button.bold ? 'font-bold' : button.italic ? 'italic' : ''}>
+                    {button.icon}
+                  </span>
+                </button>
+              ))}
+              
               <button
                 type="button"
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                className="p-2 rounded hover:bg-slate-100"
+                title="Adicionar emoji"
+                className="px-3 py-2 rounded text-sm font-medium bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white transition-all"
               >
                 😊
               </button>
             </div>
-          </div>
-          
-          {showEmojiPicker && (
-            <div className="absolute z-10">
-              <Picker
-                data={data}
-                onEmojiSelect={handleEmojiSelect}
-                theme="light"
+
+            {/* Emoji Picker */}
+            {showEmojiPicker && (
+              <div className="absolute z-50 mt-2">
+                <Picker
+                  data={data}
+                  onEmojiSelect={handleEmojiSelect}
+                  theme="dark"
+                />
+              </div>
+            )}
+
+            {/* Editor */}
+            <div className="border border-slate-700 rounded-lg bg-slate-800/30">
+              <EditorContent 
+                editor={editor} 
+                className="min-h-[400px] [&_.ProseMirror]:focus:outline-none [&_.ProseMirror]:p-4 [&_.ProseMirror]:text-slate-200"
               />
             </div>
-          )}
-
-          <div className="border border-slate-300 rounded-lg">
-            <EditorContent editor={editor} className="prose max-w-none p-4 min-h-[300px]" />
+            
+            <p className="text-slate-400 text-sm mt-2">
+              💡 Dica: Use markdown ou a barra de ferramentas para formatar seu conteúdo
+            </p>
           </div>
-        </div>
 
-        <div className="mb-4">
-          <label htmlFor="nivel_leitura" className="block text-sm font-medium text-slate-700 mb-1">
-            Nível de Leitura
-          </label>
-          <select
-            id="nivel_leitura"
-            name="nivel_leitura"
-            value={formData.nivel_leitura}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="basico">Básico</option>
-            <option value="intermediario">Intermediário</option>
-          </select>
-        </div>
-
-        <div className="mb-6">
-          <label htmlFor="linguagem_id" className="block text-sm font-medium text-slate-700 mb-1">
-            Linguagem
-          </label>
-          <select
-            id="linguagem_id"
-            name="linguagem_id"
-            value={formData.linguagem_id}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {linguagens.map((linguagem) => (
-              <option key={linguagem.id} value={linguagem.id}>
-                {linguagem.nome}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex justify-end gap-4">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-4 py-2 text-slate-600 hover:text-slate-800"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            disabled={saving}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-          >
-            {saving ? "Salvando..." : "Salvar"}
-          </button>
-        </div>
-      </form>
+          {/* Ações */}
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-6 p-6 bg-slate-900/30 backdrop-blur rounded-xl border border-slate-800/30">
+            <div className="text-center sm:text-left">
+              <p className="text-slate-300 font-medium">Pronto para salvar?</p>
+              <p className="text-slate-400 text-sm">Suas alterações serão aplicadas imediatamente</p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={onCancel}
+                className="px-6 py-3 bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600 hover:text-white transition-colors flex items-center gap-2"
+              >
+                ← Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={saving || !formData.titulo.trim()}
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium"
+              >
+                {saving ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Salvando...
+                  </>
+                ) : (
+                  <>
+                    💾 Salvar Alterações
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
+
+    <style jsx global>{`
+      .ProseMirror h1 {
+        @apply text-2xl font-bold text-white mb-4 mt-6 first:mt-0;
+      }
+      .ProseMirror h2 {
+        @apply text-xl font-bold text-blue-300 mb-3 mt-5;
+      }
+      .ProseMirror h3 {
+        @apply text-lg font-bold text-green-300 mb-2 mt-4;
+      }
+      .ProseMirror p {
+        @apply text-slate-200 leading-relaxed mb-3;
+      }
+      .ProseMirror ul, .ProseMirror ol {
+        @apply text-slate-200 mb-3 pl-6;
+      }
+      .ProseMirror li {
+        @apply mb-1;
+      }
+      .ProseMirror code {
+        @apply bg-slate-700 text-yellow-300 px-2 py-1 rounded text-sm;
+      }
+      .ProseMirror pre {
+        @apply bg-slate-700 text-green-300 p-4 rounded-lg overflow-x-auto my-4;
+      }
+      .ProseMirror blockquote {
+        @apply border-l-4 border-blue-500 pl-4 italic text-slate-300 my-4;
+      }
+      .ProseMirror strong {
+        @apply font-bold text-white;
+      }
+      .ProseMirror em {
+        @apply italic text-slate-300;
+      }
+    `}</style>
   </div>
 );
 
@@ -400,7 +541,8 @@ export default function EditarConteudoPage({ params }: { params: Promise<{ id: s
     carregarDados,
     salvarConteudo,
     atualizarCampo,
-    handleEmojiSelect
+    handleEmojiSelect,
+    toolbarButtons
   } = useConteudo(resolvedParams.id);
 
   useEffect(() => {
@@ -430,6 +572,7 @@ export default function EditarConteudoPage({ params }: { params: Promise<{ id: s
       handleSubmit={handleSubmit}
       onCancel={() => window.location.href = "/dashboard/conteudo"}
       handleEmojiSelect={handleEmojiSelect}
+      toolbarButtons={toolbarButtons}
     />
   );
 } 
