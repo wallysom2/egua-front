@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -21,8 +21,9 @@ interface Exercicio {
   linguagem_id: number;
 }
 
-export default function Questoes({ params }: { params: { id: string } }) {
+export default function Questoes({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
+  const resolvedParams = use(params);
   const [questoes, setQuestoes] = useState<Questao[]>([]);
   const [exercicio, setExercicio] = useState<Exercicio | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,12 +39,12 @@ export default function Questoes({ params }: { params: { id: string } }) {
     const fetchData = async () => {
       try {
         const [exercicioResponse, questoesResponse] = await Promise.all([
-          fetch(`${API_URL}/exercicios/${params.id}`, {
+          fetch(`${API_URL}/exercicios/${resolvedParams.id}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch(`${API_URL}/exercicios/${params.id}/questoes`, {
+          fetch(`${API_URL}/exercicios/${resolvedParams.id}/questoes`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -70,7 +71,7 @@ export default function Questoes({ params }: { params: { id: string } }) {
     };
 
     fetchData();
-  }, [params.id, router]);
+  }, [resolvedParams.id, router]);
 
   const handleDeleteQuestao = async (questaoId: number) => {
     if (!confirm("Tem certeza que deseja excluir esta questão?")) {
@@ -98,7 +99,7 @@ export default function Questoes({ params }: { params: { id: string } }) {
   };
 
   const handleEditQuestao = (questaoId: number) => {
-    router.push(`/dashboard/licoes/${params.id}/questoes/${questaoId}`);
+    router.push(`/dashboard/licoes/${resolvedParams.id}/questoes/${questaoId}`);
   };
 
   if (loading) {
@@ -135,7 +136,7 @@ export default function Questoes({ params }: { params: { id: string } }) {
             </p>
           </div>
           <Link
-            href={`/dashboard/licoes/${params.id}/questoes/nova`}
+            href={`/dashboard/licoes/${resolvedParams.id}/questoes/nova`}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
           >
             <svg
