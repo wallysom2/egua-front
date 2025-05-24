@@ -191,9 +191,6 @@ export default function ConteudoPage() {
           <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-3">
             📚 Biblioteca de Conteúdo
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400">
-            Explore materiais didáticos estruturados e conceitos fundamentais
-          </p>
         </motion.div>
 
         {/* Filters and Search */}
