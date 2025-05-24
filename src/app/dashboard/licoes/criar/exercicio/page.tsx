@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CriarQuestao } from "@/app/dashboard/licoes/criar/questao/page";
+import { CriarQuestao } from "@/components/CriarQuestao";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 

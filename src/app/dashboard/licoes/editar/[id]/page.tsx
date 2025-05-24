@@ -17,7 +17,11 @@ interface Linguagem {
   nome: string;
 }
 
-export default function EditarExercicio({ params }: { params: { id: string } }) {
+type EditarExercicioProps = {
+  params: { id: string };
+};
+
+export default function EditarExercicio({ params }: EditarExercicioProps) {
   const router = useRouter();
   const [exercicio, setExercicio] = useState<Exercicio | null>(null);
   const [linguagens, setLinguagens] = useState<Linguagem[]>([]);

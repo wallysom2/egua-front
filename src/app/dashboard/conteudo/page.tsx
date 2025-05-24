@@ -124,9 +124,6 @@ export default function ConteudoPage() {
     setSelectedLevel("todos");
   };
 
-  const conteudosBasicos = conteudos.filter(c => c.nivel_leitura === "basico").length;
-  const conteudosIntermediarios = conteudos.filter(c => c.nivel_leitura === "intermediario").length;
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
@@ -222,7 +219,7 @@ export default function ConteudoPage() {
               </label>
               <select
                 value={selectedLevel}
-                onChange={(e) => setSelectedLevel(e.target.value as any)}
+                onChange={(e) => setSelectedLevel(e.target.value as "todos" | "basico" | "intermediario")}
                 className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="todos">Todos os níveis</option>
@@ -274,7 +271,7 @@ export default function ConteudoPage() {
                 <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">Filtros ativos:</span>
                 {searchTerm && (
                   <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full text-sm border border-blue-200 dark:border-blue-700">
-                    Busca: "{searchTerm}"
+                    Busca: &quot;{searchTerm}&quot;
                   </span>
                 )}
                 {selectedLevel !== "todos" && (

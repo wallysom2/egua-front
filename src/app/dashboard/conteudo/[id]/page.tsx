@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -39,16 +39,16 @@ function useConteudo(id: string) {
   const [isDesenvolvedor, setIsDesenvolvedor] = useState(false);
   const router = useRouter();
 
-  const checkUserType = () => {
+  const checkUserType = useCallback(() => {
     const user = localStorage.getItem("user");
     if (user) {
       const userData = JSON.parse(user);
       setIsProfessor(userData.tipo === "professor");
       setIsDesenvolvedor(userData.tipo === "desenvolvedor");
     }
-  };
+  }, []);
 
-  const fetchConteudo = async () => {
+  const fetchConteudo = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -74,7 +74,7 @@ function useConteudo(id: string) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, router]);
 
   const handleDelete = async () => {
     if (!confirm("⚠️ Tem certeza que deseja excluir este conteúdo? Esta ação não pode ser desfeita.")) return;
@@ -101,7 +101,7 @@ function useConteudo(id: string) {
   useEffect(() => {
     checkUserType();
     fetchConteudo();
-  }, [id]);
+  }, [checkUserType, fetchConteudo]);
 
   return {
     loading,

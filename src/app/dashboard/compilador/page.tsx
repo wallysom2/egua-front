@@ -57,8 +57,9 @@ export default function Compilador() {
       setSaida(["Executando código..."]);
       const resultado = await executarCodigoDelegua(codigo);
       setSaida(resultado);
-    } catch (error: any) {
-      setSaida([`Erro ao executar código: ${error.message || 'Erro desconhecido'}`]);
+    } catch (error: Error | unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      setSaida([`Erro ao executar código: ${errorMessage}`]);
     } finally {
       setExecutando(false);
     }

@@ -1,9 +1,14 @@
 import { Lexador, AvaliadorSintatico, InterpretadorComDepuracao } from '@designliquido/delegua';
 
+interface ErroBase {
+  linha?: number;
+  mensagem?: string;
+}
+
 // Função auxiliar para formatar mensagens de erro de forma consistente
 function formatarMensagemErro(
   tipoErro: string, 
-  erro: any, 
+  erro: ErroBase, 
   mensagemPadrao: string,
   incluirLinhaNoFinal: boolean = false
 ): string {
@@ -36,10 +41,10 @@ export async function executarCodigo(codigo: string): Promise<string[]> {
     
     const interpretador = new InterpretadorComDepuracao(
       process.cwd(), 
-      (saidaChamada: any) => { 
+      (saidaChamada: string | number) => { 
         saida.push(String(saidaChamada));
       },
-      (saidaChamada: any) => { 
+      (saidaChamada: string | number) => { 
         if (saida.length > 0 && !saida[saida.length - 1].endsWith('\n')) {
             saida[saida.length - 1] += String(saidaChamada);
         } else {
@@ -68,21 +73,21 @@ export async function executarCodigo(codigo: string): Promise<string[]> {
       return ['Por favor, insira algum código para executar.'];
     }
     
-    const hashArquivo = 0; // Adicionando hashArquivo
+    const hashArquivo = 0;
 
-    const resultadoLexador = lexador.mapear(linhasDoCodigo, hashArquivo); // Passando hashArquivo
+    const resultadoLexador = lexador.mapear(linhasDoCodigo, hashArquivo);
     
     if (resultadoLexador.erros.length > 0) {
       return resultadoLexador.erros.map(erro =>
-        formatarMensagemErro('Erro léxico', erro, 'Detalhe não especificado pelo lexador')
+        formatarMensagemErro('Erro léxico', erro as ErroBase, 'Detalhe não especificado pelo lexador')
       );
     }
 
-    const resultadoAvaliadorSintatico = avaliadorSintatico.analisar(resultadoLexador, hashArquivo); // Passando hashArquivo
+    const resultadoAvaliadorSintatico = avaliadorSintatico.analisar(resultadoLexador, hashArquivo);
     
     if (resultadoAvaliadorSintatico.erros.length > 0) {
       return resultadoAvaliadorSintatico.erros.map(erro => 
-        formatarMensagemErro('Erro sintático', erro, 'Detalhe não especificado pelo avaliador sintático')
+        formatarMensagemErro('Erro sintático', erro as ErroBase, 'Detalhe não especificado pelo avaliador sintático')
       );
     }
 
@@ -93,13 +98,13 @@ export async function executarCodigo(codigo: string): Promise<string[]> {
 
     if (retornoInterpretador.erros && retornoInterpretador.erros.length > 0) {
       return retornoInterpretador.erros.map(erro => 
-        formatarMensagemErro('Erro de execução', erro, 'Detalhe não especificado pelo interpretador', true)
+        formatarMensagemErro('Erro de execução', erro as ErroBase, 'Detalhe não especificado pelo interpretador', true)
       );
     }
 
     return saida.length > 0 ? saida : ['Código executado com sucesso!'];
     
-  } catch (erro: any) {
+  } catch (erro: unknown) {
     // Log detalhado do erro no console do servidor para depuração
     console.error("Erro crítico durante a execução do código:", erro);
 
@@ -111,7 +116,7 @@ export async function executarCodigo(codigo: string): Promise<string[]> {
         }
     } else if (typeof erro === 'string' && erro.trim() !== '') {
         mensagemDetalhada = erro.trim();
-    } else if (erro && erro.mensagem && String(erro.mensagem).trim() !== '') {
+    } else if (erro && typeof erro === 'object' && 'mensagem' in erro && String(erro.mensagem).trim() !== '') {
         mensagemDetalhada = String(erro.mensagem).trim();
     }
 

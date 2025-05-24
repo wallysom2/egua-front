@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useEditor, EditorContent } from '@tiptap/react';
 import { Editor } from '@tiptap/core';
@@ -26,11 +26,25 @@ interface Conteudo {
   linguagem_id: number;
 }
 
-interface EmojiData {
-  native: string;
+interface EmojiObject {
   id: string;
   name: string;
+  native: string;
   unified: string;
+  keywords: string[];
+  skins: Array<{
+    unified: string;
+    native: string;
+  }>;
+}
+
+interface ToolbarButton {
+  icon: string;
+  label: string;
+  action: () => void;
+  isActive?: () => boolean | undefined;
+  bold?: boolean;
+  italic?: boolean;
 }
 
 const getToken = () => {
@@ -102,7 +116,7 @@ const useConteudo = (id: string) => {
   });
 
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [StarterKit()],
     content: formData.corpo,
     onUpdate: ({ editor }: { editor: Editor }) => {
       const html = editor.getHTML();
@@ -125,7 +139,7 @@ const useConteudo = (id: string) => {
     }
   }, [editor, formData.corpo]);
 
-  const carregarDados = async () => {
+  const carregarDados = useCallback(async () => {
     try {
       const token = getToken();
       const [linguagensData, conteudoData] = await Promise.all([
@@ -140,7 +154,11 @@ const useConteudo = (id: string) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    carregarDados();
+  }, [carregarDados]);
 
   const salvarConteudo = async () => {
     setSaving(true);
@@ -168,7 +186,7 @@ const useConteudo = (id: string) => {
     }));
   };
 
-  const handleEmojiSelect = (emoji: EmojiData) => {
+  const handleEmojiSelect = (emoji: EmojiObject) => {
     if (editor) {
       editor.chain().focus().insertContent(emoji.native).run();
     }
@@ -228,10 +246,6 @@ const useConteudo = (id: string) => {
     },
   ];
 
-  useEffect(() => {
-    carregarDados();
-  }, [id]);
-
   return {
     loading,
     saving,
@@ -286,8 +300,8 @@ const FormularioConteudo = ({
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   handleSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
-  handleEmojiSelect: (emoji: EmojiData) => void;
-  toolbarButtons: any[];
+  handleEmojiSelect: (emoji: EmojiObject) => void;
+  toolbarButtons: ToolbarButton[];
 }) => (
   <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors">
     {/* Header */}
@@ -466,7 +480,7 @@ const FormularioConteudo = ({
                   {showEmojiPicker && (
                     <div className="absolute top-12 right-0 z-50">
                       <Picker 
-                        data={data} 
+                        data={data as unknown as Record<string, EmojiObject>} 
                         onEmojiSelect={handleEmojiSelect}
                         theme="dark"
                       />
@@ -567,7 +581,25 @@ const FormularioConteudo = ({
 
 export default function EditarConteudoPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const resolvedParams = use(params);
+  const [id, setId] = useState<string>("");
+  const [paramsLoaded, setParamsLoaded] = useState(false);
+
+  // Resolver o params Promise
+  useEffect(() => {
+    const resolveParams = async () => {
+      try {
+        const resolvedParams = await params;
+        setId(resolvedParams.id);
+        setParamsLoaded(true);
+      } catch (error) {
+        console.error("Erro ao resolver params:", error);
+        router.push("/dashboard/conteudo");
+      }
+    };
+
+    resolveParams();
+  }, [params, router]);
+
   const {
     loading,
     saving,
@@ -581,21 +613,22 @@ export default function EditarConteudoPage({ params }: { params: Promise<{ id: s
     handleEmojiSelect,
     toolbarButtons,
     editor
-  } = useConteudo(resolvedParams.id);
+  } = useConteudo(id);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const sucesso = await salvarConteudo();
     if (sucesso) {
-      router.push(`/dashboard/conteudo/${resolvedParams.id}`);
+      router.push(`/dashboard/conteudo/${id}`);
     }
   };
 
   const handleCancel = () => {
-    router.push(`/dashboard/conteudo/${resolvedParams.id}`);
+    router.push(`/dashboard/conteudo/${id}`);
   };
 
-  if (loading) {
+  // Mostrar loading enquanto params não estão carregados ou dados estão sendo carregados
+  if (!paramsLoaded || loading) {
     return <LoadingSpinner />;
   }
 

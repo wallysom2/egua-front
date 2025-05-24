@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -29,6 +29,13 @@ interface ToastNotification {
   description?: string;
 }
 
+interface SortableValue {
+  titulo: string;
+  tipo: "pratico" | "quiz";
+  status: "em_andamento" | "concluido" | "nao_iniciado";
+  criado: Date;
+}
+
 export default function Licoes() {
   const router = useRouter();
   const [exercicios, setExercicios] = useState<Exercicio[]>([]);
@@ -51,6 +58,13 @@ export default function Licoes() {
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
   const [deletingExercicio, setDeletingExercicio] = useState<number | null>(null);
+
+  const getStatusExercicio = useCallback((exercicioId: number) => {
+    const userExercicio = userExercicios.find(
+      (ue: UserExercicio) => ue.exercicio_id === exercicioId
+    );
+    return userExercicio?.status || null;
+  }, [userExercicios]);
 
   const addToast = (toast: Omit<ToastNotification, 'id'>) => {
     const id = Math.random().toString(36).substr(2, 9);
@@ -141,7 +155,7 @@ export default function Licoes() {
 
     // Ordenação
     filtered.sort((a, b) => {
-      let aVal: any, bVal: any;
+      let aVal: SortableValue[keyof SortableValue], bVal: SortableValue[keyof SortableValue];
       
       switch (sortBy) {
         case "titulo":
@@ -171,7 +185,7 @@ export default function Licoes() {
     });
 
     setFilteredExercicios(filtered);
-  }, [exercicios, searchTerm, selectedTipo, selectedStatus, selectedLinguagem, sortBy, sortOrder, userExercicios]);
+  }, [exercicios, searchTerm, selectedTipo, selectedStatus, selectedLinguagem, sortBy, sortOrder, userExercicios, getStatusExercicio]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -235,15 +249,6 @@ export default function Licoes() {
     fetchData();
   }, [router]);
 
-  const getStatusExercicio = (exercicioId: number) => {
-    const userExercicio = userExercicios.find(
-      (ue: UserExercicio) => ue.exercicio_id === exercicioId
-    );
-    return userExercicio?.status || null;
-  };
-
-  const exerciciosCompletos = userExercicios.filter(ue => ue.status === "concluido").length;
-  const exerciciosEmAndamento = userExercicios.filter(ue => ue.status === "em_andamento").length;
   const totalExercicios = exercicios.length;
 
   if (loading) {
@@ -312,93 +317,6 @@ export default function Licoes() {
           </div>
         </div>
 
-        {/* Estatísticas
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-800/50">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center">
-                <span className="text-2xl">📚</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-300">Total</h3>
-                <p className="text-3xl font-bold text-blue-400">{totalExercicios}</p>
-                <p className="text-sm text-slate-400">exercícios</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-800/50">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center">
-                <span className="text-2xl">✅</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-300">Concluídos</h3>
-                <p className="text-3xl font-bold text-green-400">{exerciciosCompletos}</p>
-                <p className="text-sm text-slate-400">finalizados</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-800/50">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl flex items-center justify-center">
-                <span className="text-2xl">⏳</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-300">Em Progresso</h3>
-                <p className="text-3xl font-bold text-yellow-400">{exerciciosEmAndamento}</p>
-                <p className="text-sm text-slate-400">iniciados</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-800/50">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
-                <span className="text-2xl">🎯</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-300">Progresso</h3>
-                <p className="text-3xl font-bold text-purple-400">
-                  {totalExercicios > 0 ? Math.round((exerciciosCompletos / totalExercicios) * 100) : 0}%
-                </p>
-                <p className="text-sm text-slate-400">completo</p>
-              </div>
-            </div>
-          </div>
-        </div> */}
-
-        {/* Progress Bar Detalhado */}
-        {/* <div className="mb-8 bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-800/50">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-              📊 Progresso Detalhado
-            </h3>
-            <div className="flex gap-4 text-sm">
-              <span className="text-green-400">● {exerciciosCompletos} Concluídos</span>
-              <span className="text-yellow-400">● {exerciciosEmAndamento} Em Progresso</span>
-              <span className="text-slate-400">● {totalExercicios - exerciciosCompletos - exerciciosEmAndamento} Não Iniciados</span>
-            </div>
-          </div>
-          <div className="w-full bg-slate-800 rounded-full h-4 overflow-hidden">
-            <div className="h-full flex">
-              <div 
-                className="bg-gradient-to-r from-green-500 to-green-600 transition-all duration-500"
-                style={{ 
-                  width: `${totalExercicios > 0 ? (exerciciosCompletos / totalExercicios) * 100 : 0}%` 
-                }}
-              ></div>
-              <div 
-                className="bg-gradient-to-r from-yellow-500 to-yellow-600 transition-all duration-500"
-                style={{ 
-                  width: `${totalExercicios > 0 ? (exerciciosEmAndamento / totalExercicios) * 100 : 0}%` 
-                }}
-              ></div>
-            </div>
-          </div>
-        </div> */}
-
         {/* Filtros e Busca */}
         <div className="bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-800/50 mb-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -423,7 +341,7 @@ export default function Licoes() {
               </label>
               <select
                 value={selectedTipo}
-                onChange={(e) => setSelectedTipo(e.target.value as any)}
+                onChange={(e) => setSelectedTipo(e.target.value as "todos" | "pratico" | "quiz")}
                 className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="todos">Todos</option>
@@ -439,7 +357,7 @@ export default function Licoes() {
               </label>
               <select
                 value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value as any)}
+                onChange={(e) => setSelectedStatus(e.target.value as "todos" | "nao_iniciado" | "em_andamento" | "concluido")}
                 className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="todos">Todos</option>
@@ -474,7 +392,7 @@ export default function Licoes() {
               <div className="flex gap-2">
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
+                  onChange={(e) => setSortBy(e.target.value as "titulo" | "tipo" | "status" | "criado")}
                   className="flex-1 px-3 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                 >
                   <option value="titulo">Título</option>
@@ -500,7 +418,7 @@ export default function Licoes() {
                 <span className="text-sm text-slate-400">Filtros ativos:</span>
                 {searchTerm && (
                   <span className="px-3 py-1 bg-blue-900/50 text-blue-300 rounded-full text-sm border border-blue-700">
-                    Busca: "{searchTerm}"
+                    Busca: &quot;{searchTerm}&quot;
                   </span>
                 )}
                 {selectedTipo !== "todos" && (

@@ -80,7 +80,7 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
         let questoesData = [];
         if (questoesResponse.ok) {
           questoesData = await questoesResponse.json();
-          questoesData.sort((a: any, b: any) => a.ordem - b.ordem);
+          questoesData.sort((a: Questao, b: Questao) => a.ordem - b.ordem);
         }
 
         // Buscar nome da linguagem se necessário
@@ -98,7 +98,7 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
             } else {
               exercicioData.nome_linguagem = "Égua";
             }
-          } catch (langError) {
+          } catch {
             exercicioData.nome_linguagem = "Égua";
           }
         }
@@ -113,7 +113,7 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
           setCodigo(exercicioData.codigo_exemplo);
         }
 
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Erro ao carregar exercício:", error);
         setError("Não foi possível carregar o exercício. Tente novamente mais tarde.");
       } finally {
@@ -147,6 +147,7 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
         setResultadoExecucao('Código executado com sucesso!');
       }
     } catch (error) {
+      console.error("Erro ao executar código:", error);
       setResultadoExecucao('Erro ao executar o código');
     } finally {
       setExecutando(false);

@@ -25,13 +25,6 @@ interface FormData {
   linguagem_id: string;
 }
 
-interface EmojiData {
-  native: string;
-  id: string;
-  name: string;
-  unified: string;
-}
-
 const fetchLinguagens = async (token: string) => {
   const response = await fetch(`${API_URL}/linguagens`, {
     headers: {
@@ -81,7 +74,7 @@ export default function NovoConteudoPage() {
   });
 
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [StarterKit()],
     content: formData.corpo,
     onUpdate: ({ editor }: { editor: Editor }) => {
       setFormData(prev => ({
@@ -144,7 +137,7 @@ export default function NovoConteudoPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleEmojiSelect = (emoji: EmojiData) => {
+  const handleEmojiSelect = (emoji: { native: string }) => {
     if (editor) {
       editor.chain().focus().insertContent(emoji.native).run();
     }
@@ -382,9 +375,9 @@ export default function NovoConteudoPage() {
                     {showEmojiPicker && (
                       <div className="absolute top-12 right-0 z-50">
                         <Picker 
-                          data={data} 
+                          data={data as never} 
                           onEmojiSelect={handleEmojiSelect}
-                          theme="dark"
+                          theme="light"
                         />
                       </div>
                     )}
