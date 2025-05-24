@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 // Define a proper interface for the user object
 interface User {
@@ -17,6 +19,7 @@ export default function Dashboard() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
     // Verificar se o usuário está logado
@@ -48,97 +51,276 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 text-slate-800">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
         <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-xl font-semibold">Carregando...</p>
+        <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">Carregando...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
-      {/* Cabeçalho Simplificado */}
-      <header className="py-4 bg-white shadow-sm">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <Link href="/dashboard" className="text-3xl font-bold text-blue-600">
-            Égua
-          </Link>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center">
-              <p className="font-medium mr-4">Olá, {user?.nome?.split(' ')[0] || 'Aluno'}</p>
-            </div>
-            <button 
-              onClick={handleLogout}
-              className="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 transition-colors text-lg"
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white flex flex-col transition-colors">
+      {/* Header */}
+      <motion.div 
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className="fixed w-full z-40 py-3 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md"
+      >
+        <div className="container mx-auto px-6">
+          <div className="flex justify-between items-center">
+            {/* Logo */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              Sair
-            </button>
+              <Link href="/dashboard" className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                🏛️ <span>Égua</span>
+              </Link>
+            </motion.div>
+            
+            {/* Área do Usuário */}
+            <div className="flex items-center gap-3">
+              {/* Theme Toggle */}
+              <ThemeToggle />
+              
+              {/* Separador */}
+              <div className="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
+              
+              {/* Menu do Usuário */}
+              <div className="relative">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <div className="w-9 h-9 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+                    <span className="text-white font-semibold text-sm">
+                      {user?.nome?.charAt(0).toUpperCase() || 'U'}
+                    </span>
+                  </div>
+                  <div className="hidden sm:block text-left">
+                    <p className="font-medium text-sm text-slate-900 dark:text-white">
+                      {user?.nome?.split(' ')[0] || 'Usuário'}
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
+                      {user?.tipo || 'Usuário'}
+                    </p>
+                  </div>
+                  <svg 
+                    className={`w-4 h-4 text-slate-500 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`}
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </motion.button>
+
+                {/* Dropdown Menu */}
+                <AnimatePresence>
+                  {userMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 py-2"
+                    >
+                      {/* Informações do Usuário */}
+                      <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+                            <span className="text-white font-bold">
+                              {user?.nome?.charAt(0).toUpperCase() || 'U'}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-semibold text-slate-900 dark:text-white">
+                              {user?.nome || 'Usuário'}
+                            </p>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 capitalize">
+                              {user?.tipo || 'Usuário'}
+                            </p>
+                            {user?.email && (
+                              <p className="text-xs text-slate-400 dark:text-slate-500">
+                                {user.email}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Menu Mobile - Links */}
+                      <div className="md:hidden border-b border-slate-200 dark:border-slate-700">
+                        <Link 
+                          href="/dashboard/conteudo" 
+                          className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          📚 <span>Conteúdo Teórico</span>
+                        </Link>
+                        <Link 
+                          href="/dashboard/licoes" 
+                          className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          🎯 <span>Lições Práticas</span>
+                        </Link>
+                        <Link 
+                          href="/dashboard/compilador" 
+                          className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          💻 <span>Compilador Online</span>
+                        </Link>
+                      </div>
+
+                      {/* Logout */}
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 w-full px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      >
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          strokeWidth={1.5} 
+                          stroke="currentColor" 
+                          className="w-5 h-5"
+                        >
+                          <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" 
+                          />
+                        </svg>
+                        <span className="font-medium">Sair da conta</span>
+                      </motion.button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
           </div>
         </div>
-      </header>
+      </motion.div>
 
-      {/* Conteúdo Principal Simplificado */}
-      <main className="flex-1 py-8">
-        <div className="container mx-auto px-4">
-          <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold mb-2">Bem-vindo(a) à sua área de estudo</h1>
-            <p className="text-slate-600 text-xl">O que você deseja fazer hoje?</p>
-          </div>
+      {/* Overlay para fechar menu */}
+      {userMenuOpen && (
+        <div 
+          className="fixed inset-0 z-30" 
+          onClick={() => setUserMenuOpen(false)}
+        />
+      )}
 
-          {/* Três módulos simplificados */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+      {/* Módulos Principais */}
+      <main className="flex-grow py-16 pt-32">
+        <div className="container mx-auto px-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="mb-12 text-center"
+          >
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
+              O que você deseja fazer hoje?
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Conteúdo */}
-            <div className="bg-white rounded-xl p-6 shadow-md flex flex-col text-center hover:shadow-lg transition-shadow">
-              <div className="text-5xl mb-4 mx-auto">📚</div>
-              <h2 className="text-2xl font-bold mb-3">Conteúdo</h2>
-              <p className="text-slate-600 text-lg mb-6">
-                Aprenda as bases da programação com materiais fáceis de entender.
-              </p>
-              <Link 
-                href="/dashboard/conteudo"
-                className="mt-auto w-full text-center py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all text-lg font-medium"
-              >
-                Acessar Conteúdo
-              </Link>
-            </div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="group bg-white dark:bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all hover:shadow-2xl hover:scale-105"
+            >
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <span className="text-3xl">📚</span>
+                </div>
+                <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
+                  Conteúdo Teórico
+                </h3>
+                <p className="text-slate-600 dark:text-slate-300 text-lg mb-8 leading-relaxed">
+                  Materiais didáticos estruturados e conceitos fundamentais.
+                </p>
+                <Link 
+                  href="/dashboard/conteudo"
+                  className="block w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all font-medium text-lg transform hover:scale-105"
+                >
+                  📖 Estudar Conteúdo
+                </Link>
+              </div>
+            </motion.div>
 
             {/* Lições */}
-            <div className="bg-white rounded-xl p-6 shadow-md flex flex-col text-center hover:shadow-lg transition-shadow">
-              <div className="text-5xl mb-4 mx-auto">📝</div>
-              <h2 className="text-2xl font-bold mb-3">Lições</h2>
-              <p className="text-slate-600 text-lg mb-6">
-                Pratique com exercícios simples e aprenda no seu próprio ritmo.
-              </p>
-              <Link 
-                href="/dashboard/licoes"
-                className="mt-auto w-full text-center py-4 px-6 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all text-lg font-medium"
-              >
-                Acessar Lições
-              </Link>
-            </div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="group bg-white dark:bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all hover:shadow-2xl hover:scale-105"
+            >
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <span className="text-3xl">🎯</span>
+                </div>
+                <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
+                  Lições Práticas
+                </h3>
+                <p className="text-slate-600 dark:text-slate-300 text-lg mb-8 leading-relaxed">
+                  Exercícios interativos com feedback imediato.
+                </p>
+                <Link 
+                  href="/dashboard/licoes"
+                  className="block w-full py-4 px-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all font-medium text-lg transform hover:scale-105"
+                >
+                  🚀 Fazer Lições
+                </Link>
+              </div>
+            </motion.div>
 
             {/* Compilador */}
-            <div className="bg-white rounded-xl p-6 shadow-md flex flex-col text-center hover:shadow-lg transition-shadow">
-              <div className="text-5xl mb-4 mx-auto">💻</div>
-              <h2 className="text-2xl font-bold mb-3">Compilador</h2>
-              <p className="text-slate-600 text-lg mb-6">
-                Experimente seu código em um ambiente simples e amigável.
-              </p>
-              <Link 
-                href="/dashboard/compilador"
-                className="mt-auto w-full text-center py-4 px-6 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-all text-lg font-medium"
-              >
-                Acessar Compilador
-              </Link>
-            </div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="group bg-white dark:bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all hover:shadow-2xl hover:scale-105"
+            >
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <span className="text-3xl">💻</span>
+                </div>
+                <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
+                  Compilador Online
+                </h3>
+                <p className="text-slate-600 dark:text-slate-300 text-lg mb-8 leading-relaxed">
+                  Editor de código com execução em tempo real.
+                </p>
+                <Link 
+                  href="/dashboard/compilador"
+                  className="block w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg transition-all font-medium text-lg transform hover:scale-105"
+                >
+                  ⚡ Abrir Compilador
+                </Link>
+              </div>
+            </motion.div>
           </div>
         </div>
       </main>
 
-      {/* Rodapé Simplificado */}
-      <footer className="py-4 border-t border-slate-200 bg-white">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-slate-600 text-lg">Égua - Plataforma de Aprendizado de Programação</p>
+      {/* Footer */}
+      <footer className="py-8 border-t border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30 mt-auto">
+        <div className="container mx-auto px-6 text-center">
+          <motion.p 
+            className="text-slate-600 dark:text-slate-400"
+            whileHover={{ scale: 1.02 }}
+          >
+            🏛️ Égua
+          </motion.p>
         </div>
       </footer>
     </div>
