@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -127,54 +129,84 @@ export default function ConteudoPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950">
-        <div className="text-center">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
           <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-xl font-semibold text-white">Carregando conteúdos...</p>
-          <p className="text-slate-400 mt-2">Aguarde enquanto buscamos o melhor conteúdo para você</p>
-        </div>
+          <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">Carregando conteúdos...</p>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">Aguarde enquanto buscamos o melhor conteúdo para você</p>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <div className="container mx-auto px-6 py-8">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-slate-400 mb-6">
-          <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
-          <span>›</span>
-          <span className="text-white">Conteúdo</span>
-        </nav>
-
-        {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6 mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-3">
-              📚 Biblioteca de Conteúdo
-            </h1>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <button className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2">
-              ☀️ Claro
-            </button>
-            {(isProfessor || isDesenvolvedor) && (
-              <Link
-                href="/dashboard/conteudo/criar"
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium"
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors">
+      {/* Header */}
+      <motion.div 
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className="sticky top-0 z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md"
+      >
+        <div className="container mx-auto px-6">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <Link 
+                href="/dashboard" 
+                className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2 hover:scale-105 transition-transform"
               >
-                ➕ Novo Conteúdo
+                🏛️ <span>Égua</span>
               </Link>
-            )}
+              <nav className="hidden md:flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                <Link href="/dashboard" className="hover:text-slate-900 dark:hover:text-white transition-colors">Dashboard</Link>
+                <span>›</span>
+                <span className="text-slate-900 dark:text-white font-medium">Conteúdo Teórico</span>
+              </nav>
+            </div>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              {(isProfessor || isDesenvolvedor) && (
+                <Link
+                  href="/dashboard/conteudo/criar"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
+                >
+                  <span className="text-lg">➕</span> Novo Conteúdo
+                </Link>
+              )}
+            </div>
           </div>
         </div>
+      </motion.div>
+
+      <div className="container mx-auto px-6 py-8">
+        {/* Page Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-3">
+            📚 Biblioteca de Conteúdo
+          </h1>
+          <p className="text-lg text-slate-600 dark:text-slate-400">
+            Explore materiais didáticos estruturados e conceitos fundamentais
+          </p>
+        </motion.div>
 
         {/* Filters and Search */}
-        <div className="bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-800/50 mb-8">
-          <div className="flex flex-col lg:flex-row gap-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-200 dark:border-slate-800 mb-8 shadow-sm"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Search */}
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+            <div className="lg:col-span-6">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 🔍 Buscar conteúdo
               </label>
               <input
@@ -182,19 +214,19 @@ export default function ConteudoPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Digite o título ou palavras-chave..."
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
             </div>
 
             {/* Level Filter */}
-            <div className="lg:w-64">
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                📊 Filtrar por nível
+            <div className="lg:col-span-3">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                📊 Nível
               </label>
               <select
                 value={selectedLevel}
                 onChange={(e) => setSelectedLevel(e.target.value as any)}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="todos">Todos os níveis</option>
                 <option value="basico">🌱 Básico</option>
@@ -203,30 +235,36 @@ export default function ConteudoPage() {
             </div>
 
             {/* View Mode */}
-            <div className="lg:w-32">
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+            <div className="lg:col-span-3">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 👁️ Visualização
               </label>
-              <div className="flex rounded-lg border border-slate-700 overflow-hidden">
+              <div className="flex rounded-lg border border-slate-300 dark:border-slate-700 overflow-hidden bg-slate-50 dark:bg-slate-800">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`flex-1 px-3 py-3 text-sm font-medium transition-colors ${
+                  className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
                     viewMode === "grid" 
-                      ? "bg-blue-600 text-white" 
-                      : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                      ? "bg-blue-600 text-white shadow-sm" 
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
                   }`}
                 >
-                  ⊞
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                  Grade
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`flex-1 px-3 py-3 text-sm font-medium transition-colors ${
+                  className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
                     viewMode === "list" 
-                      ? "bg-blue-600 text-white" 
-                      : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                      ? "bg-blue-600 text-white shadow-sm" 
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
                   }`}
                 >
-                  ☰
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  </svg>
+                  Lista
                 </button>
               </div>
             </div>
@@ -234,63 +272,83 @@ export default function ConteudoPage() {
 
           {/* Active Filters */}
           {(searchTerm || selectedLevel !== "todos") && (
-            <div className="mt-4 pt-4 border-t border-slate-700">
+            <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
               <div className="flex items-center gap-3 flex-wrap">
-                <span className="text-sm text-slate-400">Filtros ativos:</span>
+                <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">Filtros ativos:</span>
                 {searchTerm && (
-                  <span className="px-3 py-1 bg-blue-900/50 text-blue-300 rounded-full text-sm border border-blue-700">
+                  <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full text-sm border border-blue-200 dark:border-blue-700">
                     Busca: "{searchTerm}"
                   </span>
                 )}
                 {selectedLevel !== "todos" && (
-                  <span className="px-3 py-1 bg-purple-900/50 text-purple-300 rounded-full text-sm border border-purple-700">
+                  <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-full text-sm border border-purple-200 dark:border-purple-700">
                     Nível: {selectedLevel === "basico" ? "🌱 Básico" : "🚀 Intermediário"}
                   </span>
                 )}
                 <button
                   onClick={clearFilters}
-                  className="px-3 py-1 bg-slate-700 text-slate-300 rounded-full text-sm hover:bg-slate-600 transition-colors"
+                  className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-full text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors flex items-center gap-1"
                 >
-                  ✕ Limpar filtros
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Limpar filtros
                 </button>
               </div>
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-900/50 border border-red-700 text-red-200 px-6 py-4 rounded-lg mb-8 backdrop-blur">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-6 py-4 rounded-lg mb-8"
+          >
             <div className="flex items-center gap-3">
               <span className="text-xl">⚠️</span>
               <div>
                 <p className="font-medium">Erro ao carregar conteúdo</p>
-                <p className="text-sm text-red-300">{error}</p>
+                <p className="text-sm text-red-600 dark:text-red-300">{error}</p>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Results Info */}
-        <div className="flex items-center justify-between mb-6">
-          <p className="text-slate-400">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="flex items-center justify-between mb-6"
+        >
+          <p className="text-slate-600 dark:text-slate-400">
             {filteredConteudos.length === conteudos.length 
               ? `Mostrando todos os ${filteredConteudos.length} conteúdos`
               : `Mostrando ${filteredConteudos.length} de ${conteudos.length} conteúdos`
             }
           </p>
-        </div>
+        </motion.div>
 
         {/* Content Display */}
         {filteredConteudos.length > 0 ? (
-          <div className={viewMode === "grid" 
-            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
-            : "space-y-4"
-          }>
-            {filteredConteudos.map((conteudo) => (
-              <div
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className={viewMode === "grid" 
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
+              : "space-y-4"
+            }
+          >
+            {filteredConteudos.map((conteudo, index) => (
+              <motion.div
                 key={conteudo.id}
-                className={`group bg-slate-900/50 backdrop-blur rounded-xl shadow-lg border border-slate-800/50 hover:border-slate-700/50 transition-all hover:shadow-2xl ${
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index }}
+                className={`group bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all hover:shadow-md ${
                   viewMode === "grid" ? "p-6 hover:scale-105" : "p-4 flex items-center gap-6"
                 }`}
               >
@@ -305,8 +363,8 @@ export default function ConteudoPage() {
                         <span
                           className={`px-3 py-1 rounded-full text-sm font-medium ${
                             conteudo.nivel_leitura === "basico"
-                              ? "bg-green-900/50 text-green-300 border border-green-700/50"
-                              : "bg-purple-900/50 text-purple-300 border border-purple-700/50"
+                              ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-700"
+                              : "bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-700"
                           }`}
                         >
                           {conteudo.nivel_leitura === "basico" ? "Básico" : "Intermediário"}
@@ -315,35 +373,31 @@ export default function ConteudoPage() {
                     </div>
 
                     <h2 
-                      className="text-xl font-bold mb-3 text-white leading-tight line-clamp-2" 
+                      className="text-xl font-bold mb-3 text-slate-900 dark:text-white leading-tight line-clamp-2" 
                       dangerouslySetInnerHTML={{ __html: conteudo.titulo }} 
                     />
 
-                    <div
-                      className="text-slate-300 mb-6 line-clamp-3 text-sm leading-relaxed"
-                      //dangerouslySetInnerHTML={{ __html: conteudo.corpo }}
-                    />
 
                     <div className="flex gap-3">
                       <Link
                         href={`/dashboard/conteudo/${conteudo.id}`}
-                        className="flex-1 text-center py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg transition-all font-medium transform hover:scale-105"
+                        className="flex-1 text-center py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all font-medium transform hover:scale-105"
                       >
-                        📖 Ler
+                        📖 Ler Conteúdo
                       </Link>
                       
                       {(isProfessor || isDesenvolvedor) && (
                         <div className="flex gap-2">
                           <Link
                             href={`/dashboard/conteudo/editar/${conteudo.id}`}
-                            className="p-3 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-slate-600 hover:text-yellow-400 transition-colors"
+                            className="p-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/20 hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors"
                             title="Editar conteúdo"
                           >
                             ✏️
                           </Link>
                           <button
                             onClick={() => handleDelete(conteudo.id)}
-                            className="p-3 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-red-600 hover:text-white transition-colors"
+                            className="p-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                             title="Excluir conteúdo"
                           >
                             🗑️
@@ -361,29 +415,26 @@ export default function ConteudoPage() {
                           {conteudo.nivel_leitura === "basico" ? "🌱" : "🚀"}
                         </div>
                         <h2 
-                          className="text-lg font-bold text-white flex-1" 
+                          className="text-lg font-bold text-slate-900 dark:text-white flex-1" 
                           dangerouslySetInnerHTML={{ __html: conteudo.titulo }} 
                         />
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium ${
                             conteudo.nivel_leitura === "basico"
-                              ? "bg-green-900/50 text-green-300 border border-green-700/50"
-                              : "bg-purple-900/50 text-purple-300 border border-purple-700/50"
+                              ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-700"
+                              : "bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-700"
                           }`}
                         >
                           {conteudo.nivel_leitura === "basico" ? "Básico" : "Intermediário"}
                         </span>
                       </div>
-                      <div
-                        className="text-slate-400 line-clamp-2 text-sm"
-                        //dangerouslySetInnerHTML={{ __html: conteudo.corpo }}
-                      />
+
                     </div>
                     
                     <div className="flex gap-2 flex-shrink-0">
                       <Link
                         href={`/dashboard/conteudo/${conteudo.id}`}
-                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg transition-all font-medium text-sm"
+                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all font-medium text-sm"
                       >
                         📖 Ler
                       </Link>
@@ -392,14 +443,14 @@ export default function ConteudoPage() {
                         <>
                           <Link
                             href={`/dashboard/conteudo/editar/${conteudo.id}`}
-                            className="p-2 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-slate-600 hover:text-yellow-400 transition-colors"
+                            className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/20 hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors"
                             title="Editar"
                           >
                             ✏️
                           </Link>
                           <button
                             onClick={() => handleDelete(conteudo.id)}
-                            className="p-2 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-red-600 hover:text-white transition-colors"
+                            className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                             title="Excluir"
                           >
                             🗑️
@@ -409,22 +460,27 @@ export default function ConteudoPage() {
                     </div>
                   </>
                 )}
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : (
           /* Empty State */
-          <div className="text-center py-16 bg-slate-900/50 backdrop-blur rounded-xl border border-slate-800/50">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-center py-16 bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl border border-slate-200 dark:border-slate-800"
+          >
             <div className="text-6xl mb-6">
               {searchTerm || selectedLevel !== "todos" ? "🔍" : "📚"}
             </div>
-            <h2 className="text-3xl font-bold text-white mb-4">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
               {searchTerm || selectedLevel !== "todos" 
                 ? "Nenhum conteúdo encontrado" 
                 : "Nenhum conteúdo disponível"
               }
             </h2>
-            <p className="text-slate-400 text-lg mb-8 max-w-md mx-auto leading-relaxed">
+            <p className="text-slate-600 dark:text-slate-400 text-lg mb-8 max-w-md mx-auto leading-relaxed">
               {searchTerm || selectedLevel !== "todos" 
                 ? "Tente ajustar os filtros ou fazer uma nova busca"
                 : (isProfessor || isDesenvolvedor) 
@@ -435,7 +491,7 @@ export default function ConteudoPage() {
             {searchTerm || selectedLevel !== "todos" ? (
               <button
                 onClick={clearFilters}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
               >
                 🔄 Limpar filtros
               </button>
@@ -447,7 +503,7 @@ export default function ConteudoPage() {
                 ➕ Criar Primeiro Conteúdo
               </Link>
             )}
-          </div>
+          </motion.div>
         )}
       </div>
     </div>
