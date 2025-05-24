@@ -99,8 +99,7 @@ export default function Dashboard() {
               Bem-vindo à sua jornada de programação
             </h1>
             <p className="text-xl text-slate-300 mb-8 leading-relaxed">
-              Explore o mundo da programação com a linguagem Égua. 
-              Aprenda, pratique e crie projetos incríveis no seu próprio ritmo.
+              Aprenda programação com a linguagem Égua de forma prática e interativa.
             </p>
             <div className="flex items-center justify-center gap-8 text-slate-400">
               <div className="flex items-center gap-2">
@@ -129,9 +128,6 @@ export default function Dashboard() {
             <h2 className="text-3xl font-bold text-white mb-4">
               O que você deseja fazer hoje?
             </h2>
-            <p className="text-slate-400 text-lg">
-              Escolha uma das opções abaixo para começar sua jornada
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -145,23 +141,8 @@ export default function Dashboard() {
                   Conteúdo Teórico
                 </h3>
                 <p className="text-slate-300 text-lg mb-8 leading-relaxed">
-                  Aprenda os fundamentos da programação com materiais didáticos 
-                  estruturados e fáceis de entender.
+                  Materiais didáticos estruturados e conceitos fundamentais.
                 </p>
-                <div className="space-y-3 mb-8">
-                  <div className="flex items-center gap-3 text-slate-400">
-                    <span className="text-green-400">✓</span>
-                    <span>Conceitos fundamentais</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-slate-400">
-                    <span className="text-green-400">✓</span>
-                    <span>Exemplos práticos</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-slate-400">
-                    <span className="text-green-400">✓</span>
-                    <span>Material interativo</span>
-                  </div>
-                </div>
                 <Link 
                   href="/dashboard/conteudo"
                   className="block w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all font-medium text-lg transform hover:scale-105"
@@ -181,23 +162,8 @@ export default function Dashboard() {
                   Lições Práticas
                 </h3>
                 <p className="text-slate-300 text-lg mb-8 leading-relaxed">
-                  Pratique com exercícios interativos e desenvolva suas 
-                  habilidades de programação passo a passo.
+                  Exercícios interativos com feedback imediato.
                 </p>
-                <div className="space-y-3 mb-8">
-                  <div className="flex items-center gap-3 text-slate-400">
-                    <span className="text-green-400">✓</span>
-                    <span>Exercícios progressivos</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-slate-400">
-                    <span className="text-green-400">✓</span>
-                    <span>Quiz interativo</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-slate-400">
-                    <span className="text-green-400">✓</span>
-                    <span>Feedback imediato</span>
-                  </div>
-                </div>
                 <Link 
                   href="/dashboard/licoes"
                   className="block w-full py-4 px-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all font-medium text-lg transform hover:scale-105"
@@ -217,23 +183,8 @@ export default function Dashboard() {
                   Compilador Online
                 </h3>
                 <p className="text-slate-300 text-lg mb-8 leading-relaxed">
-                  Experimente e teste seus códigos em um ambiente de 
-                  desenvolvimento online completo e intuitivo.
+                  Editor de código com execução em tempo real.
                 </p>
-                <div className="space-y-3 mb-8">
-                  <div className="flex items-center gap-3 text-slate-400">
-                    <span className="text-green-400">✓</span>
-                    <span>Editor de código</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-slate-400">
-                    <span className="text-green-400">✓</span>
-                    <span>Execução em tempo real</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-slate-400">
-                    <span className="text-green-400">✓</span>
-                    <span>Detecção de erros</span>
-                  </div>
-                </div>
                 <Link 
                   href="/dashboard/compilador"
                   className="block w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg transition-all font-medium text-lg transform hover:scale-105"
@@ -273,11 +224,8 @@ export default function Dashboard() {
       {/* Footer */}
       <footer className="py-8 border-t border-slate-800 bg-slate-900/30">
         <div className="container mx-auto px-6 text-center">
-          <p className="text-slate-400 text-lg">
-            🏛️ Égua Learning - Plataforma de Aprendizado de Programação
-          </p>
-          <p className="text-slate-500 text-sm mt-2">
-            Desenvolvido com ❤️ para democratizar o ensino de programação
+          <p className="text-slate-400">
+            🏛️ Égua Learning
           </p>
         </div>
       </footer>

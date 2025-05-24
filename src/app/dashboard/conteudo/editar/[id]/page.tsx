@@ -297,9 +297,6 @@ const FormularioConteudo = ({
           <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-3">
             ✏️ Editar Conteúdo
           </h1>
-          <p className="text-slate-400 text-lg">
-            Modifique seu conteúdo educacional
-          </p>
         </div>
         <div className="flex gap-3">
           <Link
@@ -332,9 +329,9 @@ const FormularioConteudo = ({
             </h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div>
+              <div className="lg:col-span-2">
                 <label htmlFor="titulo" className="block text-sm font-medium text-slate-300 mb-2">
-                  📝 Título do Conteúdo
+                  Título do Conteúdo
                 </label>
                 <input
                   type="text"
@@ -351,7 +348,7 @@ const FormularioConteudo = ({
 
               <div>
                 <label htmlFor="nivel_leitura" className="block text-sm font-medium text-slate-300 mb-2">
-                  📊 Nível de Dificuldade
+                  Nível de Dificuldade
                 </label>
                 <select
                   id="nivel_leitura"
@@ -366,9 +363,9 @@ const FormularioConteudo = ({
                 </select>
               </div>
 
-              <div className="lg:col-span-2">
+              <div>
                 <label htmlFor="linguagem_id" className="block text-sm font-medium text-slate-300 mb-2">
-                  🔤 Linguagem de Programação
+                  Linguagem de Programação
                 </label>
                 <select
                   id="linguagem_id"
@@ -394,9 +391,6 @@ const FormularioConteudo = ({
               <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                 ✍️ Editor de Conteúdo
               </h2>
-              <p className="text-slate-400 text-sm">
-                Use a barra de ferramentas para formatar seu texto
-              </p>
             </div>
 
             {/* Toolbar */}
@@ -447,18 +441,10 @@ const FormularioConteudo = ({
                 className="min-h-[400px] [&_.ProseMirror]:focus:outline-none [&_.ProseMirror]:p-4 [&_.ProseMirror]:text-slate-200"
               />
             </div>
-            
-            <p className="text-slate-400 text-sm mt-2">
-              💡 Dica: Use markdown ou a barra de ferramentas para formatar seu conteúdo
-            </p>
           </div>
 
           {/* Ações */}
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-6 p-6 bg-slate-900/30 backdrop-blur rounded-xl border border-slate-800/30">
-            <div className="text-center sm:text-left">
-              <p className="text-slate-300 font-medium">Pronto para salvar?</p>
-              <p className="text-slate-400 text-sm">Suas alterações serão aplicadas imediatamente</p>
-            </div>
+          <div className="flex flex-col sm:flex-row justify-end items-center gap-6 p-6 bg-slate-900/30 backdrop-blur rounded-xl border border-slate-800/30">
             <div className="flex gap-3">
               <button
                 type="button"

@@ -318,9 +318,6 @@ export default function NovoConteudoPage() {
                 <h2 className="text-2xl font-bold text-white flex items-center gap-3">
                   ✍️ Editor de Conteúdo
                 </h2>
-                <p className="text-slate-400 text-sm">
-                  Use a barra de ferramentas para formatar seu texto
-                </p>
               </div>
 
               {/* Toolbar */}
@@ -371,10 +368,6 @@ export default function NovoConteudoPage() {
                   className="min-h-[400px] [&_.ProseMirror]:focus:outline-none [&_.ProseMirror]:p-4 [&_.ProseMirror]:text-slate-200"
                 />
               </div>
-              
-              <p className="text-slate-400 text-sm mt-2">
-                💡 Dica: Use markdown ou a barra de ferramentas para formatar seu conteúdo
-              </p>
             </div>
 
             {/* Ações */}
