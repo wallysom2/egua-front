@@ -361,7 +361,7 @@ export default function Home() {
             className="text-slate-600 dark:text-slate-400"
             whileHover={{ scale: 1.02 }}
           >
-            🏛️ Égua Learning - Aprenda programação de forma simples e eficaz
+            🏛️ Égua - Aprenda programação de forma simples e eficaz
           </motion.p>
         </div>
       </footer>
