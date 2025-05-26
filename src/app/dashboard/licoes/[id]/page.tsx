@@ -232,7 +232,7 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold text-white mb-2">
-              {exercicio.tipo === "pratico" ? "💻" : "🧩"} {exercicio.titulo}
+              {exercicio.tipo === "pratico" ? "" : ""} {exercicio.titulo}
             </h1>
             <p className="text-slate-400 text-lg">
               {questoesRespondidas} de {totalQuestoes} questões respondidas

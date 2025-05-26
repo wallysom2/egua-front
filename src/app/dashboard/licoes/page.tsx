@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -44,6 +46,8 @@ export default function Licoes() {
   const [userExercicios, setUserExercicios] = useState<UserExercicio[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isProfessor, setIsProfessor] = useState(false);
+  const [isDesenvolvedor, setIsDesenvolvedor] = useState(false);
   
   // Estados para filtros e busca
   const [searchTerm, setSearchTerm] = useState("");
@@ -194,6 +198,18 @@ export default function Licoes() {
       return;
     }
 
+    // Verificar tipo de usuário
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setIsProfessor(userData.tipo === "professor");
+        setIsDesenvolvedor(userData.tipo === "desenvolvedor");
+      } catch (error) {
+        console.error("Erro ao processar dados do usuário:", error);
+      }
+    }
+
     const fetchData = async () => {
       try {
         const [exerciciosResponse, linguagensResponse, userExerciciosResponse] = await Promise.allSettled([
@@ -253,21 +269,27 @@ export default function Licoes() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-xl font-semibold text-white">Carregando lições...</p>
-        <p className="text-slate-400 mt-2">Preparando seus exercícios</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">Carregando lições...</p>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">Preparando seus exercícios</p>
+        </motion.div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950">
-        <div className="text-center py-16 bg-slate-900/50 backdrop-blur rounded-xl border border-slate-800/50 max-w-md mx-auto">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
+        <div className="text-center py-16 bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl border border-slate-200 dark:border-slate-800/50 max-w-md mx-auto shadow-lg">
           <div className="text-6xl mb-6">⚠️</div>
-          <h2 className="text-2xl font-bold text-white mb-4">Erro ao carregar</h2>
-          <p className="text-slate-400 mb-6">{error}</p>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Erro ao carregar</h2>
+          <p className="text-slate-600 dark:text-slate-400 mb-6">{error}</p>
           <div className="flex gap-3 justify-center">
             <button
               onClick={() => window.location.reload()}
@@ -277,7 +299,7 @@ export default function Licoes() {
             </button>
             <Link
               href="/dashboard"
-              className="px-6 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors flex items-center gap-2"
+              className="px-6 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors flex items-center gap-2"
             >
               ← Voltar ao Dashboard
             </Link>
@@ -288,77 +310,102 @@ export default function Licoes() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <div className="container mx-auto px-6 py-8">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-slate-400 mb-6">
-          <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
-          <span>›</span>
-          <span className="text-white">Lições de Programação</span>
-        </nav>
-
-        {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-6 mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-3">
-              🎓 Lições de Programação
-            </h1>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <button className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2">
-              ☀️ Claro
-            </button>
-            <Link
-              href="/dashboard/licoes/criar/exercicio"
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium"
-            >
-              ➕ Novo Exercício
-            </Link>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors">
+      {/* Header */}
+      <motion.div 
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className="sticky top-0 z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md"
+      >
+        <div className="container mx-auto px-6">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <Link 
+                href="/dashboard" 
+                className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2 hover:scale-105 transition-transform"
+              >
+                🏛️ <span>Égua</span>
+              </Link>
+              <nav className="hidden md:flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                <Link href="/dashboard" className="hover:text-slate-900 dark:hover:text-white transition-colors">Dashboard</Link>
+                <span>›</span>
+                <span className="text-slate-900 dark:text-white font-medium">Lições de Programação</span>
+              </nav>
+            </div>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              {(isProfessor || isDesenvolvedor) && (
+                <Link
+                  href="/dashboard/licoes/criar/exercicio"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
+                >
+                  Novo Exercício
+                </Link>
+              )}
+            </div>
           </div>
         </div>
+      </motion.div>
+
+      <div className="container mx-auto px-6 py-8">
+        {/* Page Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-3">
+            🎓 Lições de Programação
+          </h1>
+        </motion.div>
 
         {/* Filtros e Busca */}
-        <div className="bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-800/50 mb-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-200 dark:border-slate-800 mb-8 shadow-sm"
+        >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Busca */}
             <div className="lg:col-span-4">
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                🔍 Buscar exercício
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Buscar exercício
               </label>
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Digite o título do exercício..."
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
             </div>
 
             {/* Filtro por Tipo */}
             <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                🎯 Tipo
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Tipo
               </label>
               <select
                 value={selectedTipo}
                 onChange={(e) => setSelectedTipo(e.target.value as "todos" | "pratico" | "quiz")}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="todos">Todos</option>
-                <option value="pratico">💻 Prático</option>
-                <option value="quiz">🧩 Quiz</option>
+                <option value="pratico">Prático</option>
+                <option value="quiz">Quiz</option>
               </select>
             </div>
 
             {/* Filtro por Status */}
             <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                📊 Status
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Status
               </label>
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value as "todos" | "nao_iniciado" | "em_andamento" | "concluido")}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="todos">Todos</option>
                 <option value="nao_iniciado">🆕 Não Iniciado</option>
@@ -369,13 +416,13 @@ export default function Licoes() {
 
             {/* Filtro por Linguagem */}
             <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                🔤 Linguagem
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Linguagem
               </label>
               <select
                 value={selectedLinguagem}
                 onChange={(e) => setSelectedLinguagem(e.target.value === "todas" ? "todas" : Number(e.target.value))}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="todas">Todas</option>
                 {Array.from(linguagensMap.entries()).map(([id, nome]) => (
@@ -386,14 +433,14 @@ export default function Licoes() {
 
             {/* Ordenação */}
             <div className="lg:col-span-2">
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                📋 Ordenar por
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Ordenar por
               </label>
               <div className="flex gap-2">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as "titulo" | "tipo" | "status" | "criado")}
-                  className="flex-1 px-3 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
+                  className="flex-1 px-3 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                 >
                   <option value="titulo">Título</option>
                   <option value="tipo">Tipo</option>
@@ -402,7 +449,7 @@ export default function Licoes() {
                 </select>
                 <button
                   onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-                  className="px-3 py-3 bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600 hover:text-white transition-colors"
+                  className="px-3 py-3 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 hover:text-slate-900 dark:hover:text-white transition-colors"
                   title={`Ordenar ${sortOrder === "asc" ? "decrescente" : "crescente"}`}
                 >
                   {sortOrder === "asc" ? "↑" : "↓"}
@@ -412,51 +459,54 @@ export default function Licoes() {
           </div>
 
           {/* Filtros Ativos e Ações */}
-          <div className="mt-6 pt-6 border-t border-slate-700">
+          <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex items-center gap-3 flex-wrap">
-                <span className="text-sm text-slate-400">Filtros ativos:</span>
+                <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">Filtros ativos:</span>
                 {searchTerm && (
-                  <span className="px-3 py-1 bg-blue-900/50 text-blue-300 rounded-full text-sm border border-blue-700">
+                  <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full text-sm border border-blue-200 dark:border-blue-700">
                     Busca: &quot;{searchTerm}&quot;
                   </span>
                 )}
                 {selectedTipo !== "todos" && (
-                  <span className="px-3 py-1 bg-purple-900/50 text-purple-300 rounded-full text-sm border border-purple-700">
-                    {selectedTipo === "pratico" ? "💻 Prático" : "🧩 Quiz"}
+                  <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-full text-sm border border-purple-200 dark:border-purple-700">
+                    {selectedTipo === "pratico" ? "Prático" : "Quiz"}
                   </span>
                 )}
                 {selectedStatus !== "todos" && (
-                  <span className="px-3 py-1 bg-green-900/50 text-green-300 rounded-full text-sm border border-green-700">
+                  <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-full text-sm border border-green-200 dark:border-green-700">
                     Status: {selectedStatus.replace("_", " ")}
                   </span>
                 )}
                 {selectedLinguagem !== "todas" && (
-                  <span className="px-3 py-1 bg-yellow-900/50 text-yellow-300 rounded-full text-sm border border-yellow-700">
+                  <span className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 rounded-full text-sm border border-yellow-200 dark:border-yellow-700">
                     {linguagensMap.get(selectedLinguagem as number)}
                   </span>
                 )}
                 {(searchTerm || selectedTipo !== "todos" || selectedStatus !== "todos" || selectedLinguagem !== "todas") && (
                   <button
                     onClick={clearFilters}
-                    className="px-3 py-1 bg-slate-700 text-slate-300 rounded-full text-sm hover:bg-slate-600 transition-colors"
+                    className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-full text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors flex items-center gap-1"
                   >
-                    ✕ Limpar filtros
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Limpar filtros
                   </button>
                 )}
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="text-sm text-slate-400">
+                <span className="text-sm text-slate-600 dark:text-slate-400">
                   {filteredExercicios.length} de {totalExercicios} exercícios
                 </span>
-                <div className="flex rounded-lg border border-slate-700 overflow-hidden">
+                <div className="flex rounded-lg border border-slate-300 dark:border-slate-700 overflow-hidden">
                   <button
                     onClick={() => setViewMode("grid")}
                     className={`px-3 py-2 text-sm font-medium transition-colors ${
                       viewMode === "grid" 
                         ? "bg-blue-600 text-white" 
-                        : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                        : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                     }`}
                   >
                     ⊞ Grid
@@ -466,7 +516,7 @@ export default function Licoes() {
                     className={`px-3 py-2 text-sm font-medium transition-colors ${
                       viewMode === "list" 
                         ? "bg-blue-600 text-white" 
-                        : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                        : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                     }`}
                   >
                     ☰ Lista
@@ -475,24 +525,24 @@ export default function Licoes() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Exercícios */}
         {filteredExercicios.length === 0 ? (
-          <div className="text-center py-16 bg-slate-900/50 backdrop-blur rounded-xl border border-slate-800/50">
+          <div className="text-center py-16 bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl border border-slate-200 dark:border-slate-800/50 shadow-sm">
             <div className="text-6xl mb-6">
               {searchTerm || selectedTipo !== "todos" || selectedStatus !== "todos" || selectedLinguagem !== "todas" 
                 ? "🔍" 
                 : "📚"
               }
             </div>
-            <h3 className="text-3xl font-bold text-white mb-4">
+            <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
               {searchTerm || selectedTipo !== "todos" || selectedStatus !== "todos" || selectedLinguagem !== "todas"
                 ? "Nenhum exercício encontrado"
                 : "Nenhum exercício criado ainda"
               }
             </h3>
-            <p className="text-slate-400 text-lg mb-8 max-w-md mx-auto leading-relaxed">
+            <p className="text-slate-600 dark:text-slate-400 text-lg mb-8 max-w-md mx-auto leading-relaxed">
               {searchTerm || selectedTipo !== "todos" || selectedStatus !== "todos" || selectedLinguagem !== "todas"
                 ? "Tente ajustar os filtros ou fazer uma nova busca"
                 : "Comece criando seu primeiro exercício de programação!"
@@ -501,7 +551,7 @@ export default function Licoes() {
             {searchTerm || selectedTipo !== "todos" || selectedStatus !== "todos" || selectedLinguagem !== "todas" ? (
               <button
                 onClick={clearFilters}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
               >
                 🔄 Limpar filtros
               </button>
@@ -515,19 +565,27 @@ export default function Licoes() {
             )}
           </div>
         ) : (
-          <div className={viewMode === "grid" 
-            ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" 
-            : "space-y-4"
-          }>
-            {filteredExercicios.map((exercicio: Exercicio) => {
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className={viewMode === "grid" 
+              ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" 
+              : "space-y-4"
+            }
+          >
+            {filteredExercicios.map((exercicio: Exercicio, index: number) => {
               const status = getStatusExercicio(exercicio.id);
               const isCompleted = status === "concluido";
               const isInProgress = status === "em_andamento";
               
               return (
-                <div
+                <motion.div
                   key={exercicio.id}
-                  className={`group bg-slate-900/50 backdrop-blur rounded-xl shadow-lg border border-slate-800/50 hover:border-slate-700/50 transition-all hover:shadow-2xl ${
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className={`group bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl shadow-lg border border-slate-200 dark:border-slate-800/50 hover:border-slate-300 dark:hover:border-slate-700/50 transition-all hover:shadow-2xl ${
                     viewMode === "grid" ? "p-6 hover:scale-105" : "p-4 flex items-center gap-6"
                   }`}
                 >
@@ -535,20 +593,15 @@ export default function Licoes() {
                     <>
                       {/* Header do Card */}
                       <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="text-2xl">
-                            {exercicio.tipo === "pratico" ? "💻" : "🧩"}
-                          </div>
-                          <span
-                            className={`px-3 py-1 rounded-full text-sm font-medium ${
-                              exercicio.tipo === "pratico"
-                                ? "bg-blue-900/50 text-blue-300 border border-blue-700/50"
-                                : "bg-purple-900/50 text-purple-300 border border-purple-700/50"
-                            }`}
-                          >
-                            {exercicio.tipo === "pratico" ? "Prático" : "Quiz"}
-                          </span>
-                        </div>
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-medium ${
+                            exercicio.tipo === "pratico"
+                              ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
+                              : "bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300"
+                          }`}
+                        >
+                          {exercicio.tipo === "pratico" ? "Prático" : "Quiz"}
+                        </span>
                         
                         {/* Status Badge */}
                         {status && (
@@ -564,12 +617,11 @@ export default function Licoes() {
                       </div>
 
                       {/* Título e Descrição */}
-                      <h2 className="text-xl font-bold mb-3 text-white leading-tight line-clamp-2">
+                      <h2 className="text-xl font-bold mb-3 text-slate-900 dark:text-white leading-tight line-clamp-2">
                         {exercicio.titulo}
                       </h2>
-                      <div className="flex items-center gap-2 mb-6 text-slate-400">
-                        <span className="text-sm">🔤</span>
-                        <span className="text-sm">
+                      <div className="mb-6">
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
                           {linguagensMap.get(exercicio.linguagem_id) || "Carregando..."}
                         </span>
                       </div>
@@ -584,26 +636,28 @@ export default function Licoes() {
                             ? "📖 Revisar"
                             : isInProgress
                             ? "▶️ Continuar"
-                            : "🚀 Iniciar"}
+                            : "Iniciar"}
                         </Link>
                         
                         {/* Menu de Ações */}
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEditExercicio(exercicio.id)}
-                            className="p-3 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-slate-600 hover:text-blue-400 transition-colors"
-                            title="Editar exercício"
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            onClick={() => setShowDeleteModal(exercicio.id)}
-                            className="p-3 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-red-600 hover:text-white transition-colors"
-                            title="Excluir exercício"
-                          >
-                            🗑️
-                          </button>
-                        </div>
+                        {(isProfessor || isDesenvolvedor) && (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEditExercicio(exercicio.id)}
+                              className="p-3 bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                              title="Editar exercício"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              onClick={() => setShowDeleteModal(exercicio.id)}
+                              className="p-3 bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-600 hover:text-red-600 dark:hover:text-white transition-colors"
+                              title="Excluir exercício"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </>
                   ) : (
@@ -611,17 +665,14 @@ export default function Licoes() {
                       {/* List View */}
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="text-xl">
-                            {exercicio.tipo === "pratico" ? "💻" : "🧩"}
-                          </div>
-                          <h2 className="text-lg font-bold text-white flex-1">
+                          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex-1">
                             {exercicio.titulo}
                           </h2>
                           <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            className={`px-2 py-1 rounded text-xs font-medium ${
                               exercicio.tipo === "pratico"
-                                ? "bg-blue-900/50 text-blue-300 border border-blue-700/50"
-                                : "bg-purple-900/50 text-purple-300 border border-purple-700/50"
+                                ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
+                                : "bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300"
                             }`}
                           >
                             {exercicio.tipo === "pratico" ? "Prático" : "Quiz"}
@@ -636,9 +687,8 @@ export default function Licoes() {
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 text-slate-400 text-sm">
-                          <span>🔤</span>
-                          <span>{linguagensMap.get(exercicio.linguagem_id) || "Carregando..."}</span>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">
+                          {linguagensMap.get(exercicio.linguagem_id) || "Carregando..."}
                         </div>
                       </div>
                       
@@ -647,104 +697,125 @@ export default function Licoes() {
                           href={`/dashboard/licoes/${exercicio.id}`}
                           className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg transition-all font-medium text-sm"
                         >
-                          {isCompleted ? "📖 Revisar" : isInProgress ? "▶️ Continuar" : "🚀 Iniciar"}
+                          {isCompleted ? "📖 Revisar" : isInProgress ? "▶️ Continuar" : "Iniciar"}
                         </Link>
                         
-                        <button
-                          onClick={() => handleEditExercicio(exercicio.id)}
-                          className="p-2 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-slate-600 hover:text-blue-400 transition-colors"
-                          title="Editar"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          onClick={() => setShowDeleteModal(exercicio.id)}
-                          className="p-2 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-red-600 hover:text-white transition-colors"
-                          title="Excluir"
-                        >
-                          🗑️
-                        </button>
+                        {(isProfessor || isDesenvolvedor) && (
+                          <>
+                            <button
+                              onClick={() => handleEditExercicio(exercicio.id)}
+                              className="p-2 bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                              title="Editar"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              onClick={() => setShowDeleteModal(exercicio.id)}
+                              className="p-2 bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-600 hover:text-red-600 dark:hover:text-white transition-colors"
+                              title="Excluir"
+                            >
+                              🗑️
+                            </button>
+                          </>
+                        )}
                       </div>
                     </>
                   )}
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         )}
       </div>
 
       {/* Modal de Confirmação de Exclusão */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-xl border border-slate-700 p-6 max-w-md w-full">
-            <div className="text-center">
-              <div className="text-6xl mb-4">⚠️</div>
-              <h3 className="text-xl font-bold text-white mb-2">Confirmar Exclusão</h3>
-              <p className="text-slate-400 mb-6">
-                Tem certeza que deseja excluir este exercício? Esta ação não pode ser desfeita.
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowDeleteModal(null)}
-                  disabled={deletingExercicio === showDeleteModal}
-                  className="flex-1 px-4 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors disabled:opacity-50"
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={() => handleDeleteExercicio(showDeleteModal)}
-                  disabled={deletingExercicio === showDeleteModal}
-                  className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  {deletingExercicio === showDeleteModal ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Excluindo...
-                    </>
-                  ) : (
-                    "🗑️ Excluir"
-                  )}
-                </button>
+      <AnimatePresence>
+        {showDeleteModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 max-w-md w-full shadow-2xl"
+            >
+              <div className="text-center">
+                <div className="text-6xl mb-4">⚠️</div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Confirmar Exclusão</h3>
+                <p className="text-slate-600 dark:text-slate-400 mb-6">
+                  Tem certeza que deseja excluir este exercício? Esta ação não pode ser desfeita.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowDeleteModal(null)}
+                    disabled={deletingExercicio === showDeleteModal}
+                    className="flex-1 px-4 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={() => handleDeleteExercicio(showDeleteModal)}
+                    disabled={deletingExercicio === showDeleteModal}
+                    className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {deletingExercicio === showDeleteModal ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Excluindo...
+                      </>
+                    ) : (
+                      "🗑️ Excluir"
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Toast Notifications */}
       <div className="fixed top-4 right-4 z-50 space-y-2">
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className={`p-4 rounded-lg border backdrop-blur shadow-2xl max-w-sm animate-in slide-in-from-right ${
-              toast.type === 'success' ? 'bg-green-900/90 border-green-700 text-green-200' :
-              toast.type === 'error' ? 'bg-red-900/90 border-red-700 text-red-200' :
-              toast.type === 'warning' ? 'bg-yellow-900/90 border-yellow-700 text-yellow-200' :
-              'bg-blue-900/90 border-blue-700 text-blue-200'
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <span className="text-xl">
-                {toast.type === 'success' ? '✅' : 
-                 toast.type === 'error' ? '❌' : 
-                 toast.type === 'warning' ? '⚠️' : 'ℹ️'}
-              </span>
-              <div className="flex-1">
-                <p className="font-medium">{toast.message}</p>
-                {toast.description && (
-                  <p className="text-sm opacity-90 mt-1">{toast.description}</p>
-                )}
+        <AnimatePresence>
+          {toasts.map((toast) => (
+            <motion.div
+              key={toast.id}
+              initial={{ opacity: 0, x: 100, scale: 0.95 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 100, scale: 0.95 }}
+              className={`p-4 rounded-lg border backdrop-blur shadow-2xl max-w-sm ${
+                toast.type === 'success' ? 'bg-green-50 dark:bg-green-900/90 border-green-200 dark:border-green-700 text-green-800 dark:text-green-200' :
+                toast.type === 'error' ? 'bg-red-50 dark:bg-red-900/90 border-red-200 dark:border-red-700 text-red-800 dark:text-red-200' :
+                toast.type === 'warning' ? 'bg-yellow-50 dark:bg-yellow-900/90 border-yellow-200 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200' :
+                'bg-blue-50 dark:bg-blue-900/90 border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200'
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <span className="text-xl">
+                  {toast.type === 'success' ? '✅' : 
+                   toast.type === 'error' ? '❌' : 
+                   toast.type === 'warning' ? '⚠️' : 'ℹ️'}
+                </span>
+                <div className="flex-1">
+                  <p className="font-medium">{toast.message}</p>
+                  {toast.description && (
+                    <p className="text-sm opacity-90 mt-1">{toast.description}</p>
+                  )}
+                </div>
+                <button
+                  onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))}
+                  className="text-current opacity-70 hover:opacity-100 transition-opacity"
+                >
+                  ✕
+                </button>
               </div>
-              <button
-                onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))}
-                className="text-current opacity-70 hover:opacity-100 transition-opacity"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-        ))}
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );

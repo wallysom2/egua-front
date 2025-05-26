@@ -299,7 +299,6 @@ const FormularioConteudo = ({
   handleChange,
   handleSubmit,
   onCancel,
-  handleEmojiSelect,
   toolbarButtons
 }: {
   formData: Conteudo;

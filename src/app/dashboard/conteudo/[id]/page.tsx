@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -164,18 +164,12 @@ function ConteudoNaoEncontrado() {
 }
 
 function ConteudoView({ 
-  conteudo, 
-  isProfessor, 
-  isDesenvolvedor, 
-  onDelete 
+  conteudo
 }: { 
-  conteudo: Conteudo; 
-  isProfessor: boolean;
-  isDesenvolvedor: boolean;
+  conteudo: Conteudo
   onDelete: () => void;
 }) {
   const readingTime = estimateReadingTime(conteudo.corpo);
-  const canEdit = isProfessor || isDesenvolvedor;
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">
@@ -303,8 +297,6 @@ export default function VisualizarConteudoPage({ params }: { params: Promise<Pag
   return (
     <ConteudoView 
       conteudo={conteudo} 
-      isProfessor={isProfessor}
-      isDesenvolvedor={isDesenvolvedor}
       onDelete={handleDelete}
     />
   );
