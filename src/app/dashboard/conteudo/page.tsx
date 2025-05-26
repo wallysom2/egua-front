@@ -170,7 +170,7 @@ export default function ConteudoPage() {
                   href="/dashboard/conteudo/criar"
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
                 >
-                  <span className="text-lg">➕</span> Novo Conteúdo
+                  <span className="text-lg"></span> Novo Conteúdo
                 </Link>
               )}
             </div>
@@ -201,7 +201,7 @@ export default function ConteudoPage() {
             {/* Search */}
             <div className="lg:col-span-6">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                🔍 Buscar conteúdo
+                Buscar conteúdo
               </label>
               <input
                 type="text"
@@ -215,7 +215,7 @@ export default function ConteudoPage() {
             {/* Level Filter */}
             <div className="lg:col-span-3">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                📊 Nível
+                Nível
               </label>
               <select
                 value={selectedLevel}
@@ -231,7 +231,7 @@ export default function ConteudoPage() {
             {/* View Mode */}
             <div className="lg:col-span-3">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                👁️ Visualização
+                Visualização
               </label>
               <div className="flex rounded-lg border border-slate-300 dark:border-slate-700 overflow-hidden bg-slate-50 dark:bg-slate-800">
                 <button

@@ -362,9 +362,6 @@ const FormularioConteudo = ({
         <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-3">
           Editar Conteúdo
         </h1>
-        <p className="text-lg text-slate-600 dark:text-slate-400">
-          Atualize e melhore o material didático existente
-        </p>
       </motion.div>
 
       {/* Error Message */}
@@ -478,35 +475,6 @@ const FormularioConteudo = ({
                     {button.icon}
                   </button>
                 ))}
-                
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                    className="px-3 py-2 text-sm rounded bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors"
-                    title="Adicionar emoji"
-                  >
-                    😊
-                  </button>
-                  
-                  {showEmojiPicker && (
-                    <div className="absolute top-12 right-0 z-50 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg p-4 max-w-xs">
-                      <div className="grid grid-cols-8 gap-2 max-h-48 overflow-y-auto">
-                        {COMMON_EMOJIS.map((emoji, index) => (
-                          <button
-                            key={index}
-                            type="button"
-                            onClick={() => handleEmojiSelect({ native: emoji })}
-                            className="text-xl hover:bg-slate-100 dark:hover:bg-slate-700 p-2 rounded transition-colors"
-                            title={emoji}
-                          >
-                            {emoji}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
 
