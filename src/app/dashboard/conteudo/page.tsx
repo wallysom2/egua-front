@@ -223,8 +223,8 @@ export default function ConteudoPage() {
                 className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               >
                 <option value="todos">Todos os níveis</option>
-                <option value="basico">🌱 Básico</option>
-                <option value="intermediario">🚀 Intermediário</option>
+                <option value="basico">Básico</option>
+                <option value="intermediario">Intermediário</option>
               </select>
             </div>
 
@@ -276,7 +276,7 @@ export default function ConteudoPage() {
                 )}
                 {selectedLevel !== "todos" && (
                   <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded-full text-sm border border-purple-200 dark:border-purple-700">
-                    Nível: {selectedLevel === "basico" ? "🌱 Básico" : "🚀 Intermediário"}
+                    Nível: {selectedLevel === "basico" ? "Básico" : "Intermediário"}
                   </span>
                 )}
                 <button
@@ -352,7 +352,7 @@ export default function ConteudoPage() {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
                         <div className="text-2xl">
-                          {conteudo.nivel_leitura === "basico" ? "🌱" : "🚀"}
+                          {conteudo.nivel_leitura === "basico" ? "" : ""}
                         </div>
                         <span
                           className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -406,7 +406,7 @@ export default function ConteudoPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <div className="text-xl">
-                          {conteudo.nivel_leitura === "basico" ? "🌱" : "🚀"}
+                          {conteudo.nivel_leitura === "basico" ? "" : ""}
                         </div>
                         <h2 
                           className="text-lg font-bold text-slate-900 dark:text-white flex-1" 

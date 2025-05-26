@@ -314,7 +314,7 @@ function ConteudoView({
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="text-3xl">
-              {conteudo.nivel_leitura === "basico" ? "🌱" : "🚀"}
+              {conteudo.nivel_leitura === "basico" ? "" : ""}
             </div>
             <div className="flex flex-wrap gap-3">
               <span

@@ -18,7 +18,7 @@ interface Linguagem {
 }
 
 type EditarExercicioProps = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export default function EditarExercicio({ params }: EditarExercicioProps) {
@@ -37,8 +37,9 @@ export default function EditarExercicio({ params }: EditarExercicioProps) {
 
     const fetchData = async () => {
       try {
+        const resolvedParams = await params;
         const [exercicioResponse, linguagensResponse] = await Promise.all([
-          fetch(`${API_URL}/exercicios/${params.id}`, {
+          fetch(`${API_URL}/exercicios/${resolvedParams.id}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -70,7 +71,7 @@ export default function EditarExercicio({ params }: EditarExercicioProps) {
     };
 
     fetchData();
-  }, [params.id, router]);
+  }, [params, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,7 +79,8 @@ export default function EditarExercicio({ params }: EditarExercicioProps) {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_URL}/exercicios/${params.id}`, {
+      const resolvedParams = await params;
+      const response = await fetch(`${API_URL}/exercicios/${resolvedParams.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
