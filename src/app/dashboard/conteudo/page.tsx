@@ -349,21 +349,16 @@ export default function ConteudoPage() {
                 {viewMode === "grid" ? (
                   <>
                     {/* Grid View */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="text-2xl">
-                          {conteudo.nivel_leitura === "basico" ? "" : ""}
-                        </div>
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-medium ${
-                            conteudo.nivel_leitura === "basico"
-                              ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-700"
-                              : "bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-700"
-                          }`}
-                        >
-                          {conteudo.nivel_leitura === "basico" ? "Básico" : "Intermediário"}
-                        </span>
-                      </div>
+                    <div className="flex items-start justify-end mb-4">
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-medium ${
+                          conteudo.nivel_leitura === "basico"
+                            ? "bg-slate-100 dark:bg-slate-800 text-green-600 dark:text-green-400"
+                            : "bg-slate-100 dark:bg-slate-800 text-purple-600 dark:text-purple-400"
+                        }`}
+                      >
+                        {conteudo.nivel_leitura === "basico" ? "Básico" : "Intermediário"}
+                      </span>
                     </div>
 
                     <h2 
@@ -377,24 +372,28 @@ export default function ConteudoPage() {
                         href={`/dashboard/conteudo/${conteudo.id}`}
                         className="flex-1 text-center py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all font-medium transform hover:scale-105"
                       >
-                        📖 Ler Conteúdo
+                        Ler Conteúdo
                       </Link>
                       
                       {(isProfessor || isDesenvolvedor) && (
                         <div className="flex gap-2">
                           <Link
                             href={`/dashboard/conteudo/editar/${conteudo.id}`}
-                            className="p-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/20 hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors"
+                            className="p-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                             title="Editar conteúdo"
                           >
-                            ✏️
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
                           </Link>
                           <button
                             onClick={() => handleDelete(conteudo.id)}
                             className="p-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                             title="Excluir conteúdo"
                           >
-                            🗑️
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
                           </button>
                         </div>
                       )}
@@ -405,18 +404,15 @@ export default function ConteudoPage() {
                     {/* List View */}
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="text-xl">
-                          {conteudo.nivel_leitura === "basico" ? "" : ""}
-                        </div>
                         <h2 
                           className="text-lg font-bold text-slate-900 dark:text-white flex-1" 
                           dangerouslySetInnerHTML={{ __html: conteudo.titulo }} 
                         />
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          className={`px-2 py-1 rounded text-xs font-medium ${
                             conteudo.nivel_leitura === "basico"
-                              ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-700"
-                              : "bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-700"
+                              ? "bg-slate-100 dark:bg-slate-800 text-green-600 dark:text-green-400"
+                              : "bg-slate-100 dark:bg-slate-800 text-purple-600 dark:text-purple-400"
                           }`}
                         >
                           {conteudo.nivel_leitura === "basico" ? "Básico" : "Intermediário"}
@@ -437,17 +433,21 @@ export default function ConteudoPage() {
                         <>
                           <Link
                             href={`/dashboard/conteudo/editar/${conteudo.id}`}
-                            className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/20 hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors"
+                            className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                             title="Editar"
                           >
-                            ✏️
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
                           </Link>
                           <button
                             onClick={() => handleDelete(conteudo.id)}
                             className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                             title="Excluir"
                           >
-                            🗑️
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
                           </button>
                         </>
                       )}

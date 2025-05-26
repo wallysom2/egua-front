@@ -341,12 +341,6 @@ const FormularioConteudo = ({
           </div>
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <button
-              onClick={onCancel}
-              className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center gap-2"
-            >
-              ← Cancelar
-            </button>
           </div>
         </div>
       </div>
@@ -357,9 +351,9 @@ const FormularioConteudo = ({
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-4xl mx-auto mb-8"
+        className="max-w-4xl mx-auto mb-6"
       >
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-3">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
           Editar Conteúdo
         </h1>
       </motion.div>
@@ -369,13 +363,13 @@ const FormularioConteudo = ({
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-4xl mx-auto mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-6 py-4 rounded-lg"
+          className="max-w-4xl mx-auto mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-lg"
         >
-          <div className="flex items-center gap-3">
-            <span className="text-xl">⚠️</span>
+          <div className="flex items-start gap-3">
+            <span className="text-lg mt-0.5">⚠️</span>
             <div>
-              <p className="font-medium">Erro ao salvar conteúdo</p>
-              <p className="text-sm text-red-600 dark:text-red-300">{error}</p>
+              <p className="font-medium text-sm">Erro ao salvar conteúdo</p>
+              <p className="text-xs text-red-600 dark:text-red-300 mt-1">{error}</p>
             </div>
           </div>
         </motion.div>
@@ -391,7 +385,7 @@ const FormularioConteudo = ({
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Basic Information */}
           <div className="bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-6">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
               Informações Básicas
             </h2>
             
@@ -454,21 +448,21 @@ const FormularioConteudo = ({
           {/* Content Editor */}
           <div className="bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
             <div className="p-6 border-b border-slate-200 dark:border-slate-700">
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                 Conteúdo do Material
               </h2>
               
               {/* Toolbar */}
-              <div className="flex flex-wrap items-center gap-2 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+              <div className="flex flex-wrap items-center gap-1 p-2 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
                 {toolbarButtons.map((button, index) => (
                   <button
                     key={index}
                     type="button"
                     onClick={button.action}
-                    className={`px-3 py-2 text-sm rounded transition-colors ${
+                    className={`px-3 py-2 text-sm rounded-md transition-all duration-150 ${
                       button.isActive?.() 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600'
+                        ? 'bg-blue-600 text-white shadow-sm' 
+                        : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 hover:shadow-sm'
                     } ${button.bold ? 'font-bold' : ''} ${button.italic ? 'italic' : ''}`}
                     title={button.label}
                   >
@@ -488,19 +482,19 @@ const FormularioConteudo = ({
           </div>
 
           {/* Form Actions */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-between">
+          <div className="flex flex-col sm:flex-row gap-3 justify-end">
             <button
               type="button"
               onClick={onCancel}
-              className="px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
+              className="px-6 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center justify-center gap-2 font-medium"
             >
-              ← Cancelar e Voltar
+              ← Cancelar
             </button>
             
             <button
               type="submit"
               disabled={saving || !formData.titulo?.trim() || !formData.corpo?.trim() || !formData.linguagem_id}
-              className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center justify-center gap-2 font-medium"
+              className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-sm hover:shadow-md"
             >
               {saving ? (
                 <>
@@ -508,9 +502,9 @@ const FormularioConteudo = ({
                   Salvando...
                 </>
               ) : (
-                                  <>
-                    Salvar Alterações
-                  </>
+                <>
+                  Salvar Alterações
+                </>
               )}
             </button>
           </div>
