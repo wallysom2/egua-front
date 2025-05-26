@@ -2,16 +2,35 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useEditor, EditorContent } from '@tiptap/react';
-import { Editor } from '@tiptap/core';
+import { useEditor, EditorContent, type Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import data from '@emoji-mart/data';
-import Picker from '@emoji-mart/react';
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+// Lista de emojis comuns para o picker simples
+const COMMON_EMOJIS = [
+  '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
+  '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
+  '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩',
+  '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣',
+  '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬',
+  '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗',
+  '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯',
+  '😦', '😧', '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐',
+  '🥴', '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '😈',
+  '👍', '👎', '👌', '🤌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙',
+  '👈', '👉', '👆', '🖕', '👇', '☝️', '👋', '🤚', '🖐️', '✋',
+  '🖖', '👏', '🙌', '🤝', '🙏', '✍️', '💪', '🦾', '🦿', '🦵',
+  '🦶', '👂', '🦻', '👃', '🧠', '🫀', '🫁', '🦷', '🦴', '👀',
+  '👁️', '👅', '👄', '💋', '🩸', '💯', '💢', '💥', '💫', '💦',
+  '💨', '🕳️', '💣', '💬', '👁️‍🗨️', '🗨️', '🗯️', '💭', '💤', '🔥',
+  '⭐', '🌟', '✨', '⚡', '☄️', '💥', '🔥', '🌈', '☀️', '🌤️',
+  '⛅', '🌦️', '🌧️', '⛈️', '🌩️', '🌨️', '❄️', '☃️', '⛄', '🌬️',
+  '💨', '💧', '💦', '☔', '☂️', '🌊', '🌍', '🌎', '🌏', '🌕'
+];
 
 interface Linguagem {
   id: number;
@@ -27,15 +46,7 @@ interface Conteudo {
 }
 
 interface EmojiObject {
-  id: string;
-  name: string;
   native: string;
-  unified: string;
-  keywords: string[];
-  skins: Array<{
-    unified: string;
-    native: string;
-  }>;
 }
 
 interface ToolbarButton {
@@ -116,8 +127,9 @@ const useConteudo = (id: string) => {
   });
 
   const editor = useEditor({
-    extensions: [StarterKit()],
-    content: formData.corpo,
+    extensions: [StarterKit],
+    content: formData.corpo || "",
+    immediatelyRender: false,
     onUpdate: ({ editor }: { editor: Editor }) => {
       const html = editor.getHTML();
       setFormData(prev => ({
@@ -135,7 +147,7 @@ const useConteudo = (id: string) => {
 
   useEffect(() => {
     if (editor && formData.corpo && editor.getHTML() !== formData.corpo) {
-      editor.chain().setContent(formData.corpo).run();
+      editor.chain().setContent(formData.corpo || "").run();
     }
   }, [editor, formData.corpo]);
 
@@ -347,8 +359,8 @@ const FormularioConteudo = ({
         animate={{ opacity: 1, y: 0 }}
         className="max-w-4xl mx-auto mb-8"
       >
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-3">
-          ✏️ Editar Conteúdo
+        <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-3">
+          Editar Conteúdo
         </h1>
         <p className="text-lg text-slate-600 dark:text-slate-400">
           Atualize e melhore o material didático existente
@@ -382,8 +394,8 @@ const FormularioConteudo = ({
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Basic Information */}
           <div className="bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-              📝 Informações Básicas
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-6">
+              Informações Básicas
             </h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -395,7 +407,7 @@ const FormularioConteudo = ({
                 <input
                   type="text"
                   name="titulo"
-                  value={formData.titulo}
+                  value={formData.titulo || ""}
                   onChange={handleChange}
                   required
                   placeholder="Digite um título claro e descritivo..."
@@ -410,12 +422,12 @@ const FormularioConteudo = ({
                 </label>
                 <select
                   name="nivel_leitura"
-                  value={formData.nivel_leitura}
+                  value={formData.nivel_leitura || "basico"}
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 >
-                  <option value="basico">🌱 Básico</option>
-                  <option value="intermediario">🚀 Intermediário</option>
+                  <option value="basico">Básico</option>
+                  <option value="intermediario">Intermediário</option>
                 </select>
               </div>
 
@@ -426,7 +438,7 @@ const FormularioConteudo = ({
                 </label>
                 <select
                   name="linguagem_id"
-                  value={formData.linguagem_id}
+                  value={formData.linguagem_id || ""}
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -434,7 +446,7 @@ const FormularioConteudo = ({
                   <option value="">Selecione uma linguagem...</option>
                   {linguagens.map((linguagem) => (
                     <option key={linguagem.id} value={linguagem.id}>
-                      💻 {linguagem.nome}
+                      {linguagem.nome}
                     </option>
                   ))}
                 </select>
@@ -445,8 +457,8 @@ const FormularioConteudo = ({
           {/* Content Editor */}
           <div className="bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
             <div className="p-6 border-b border-slate-200 dark:border-slate-700">
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                ✍️ Conteúdo do Material
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
+                Conteúdo do Material
               </h2>
               
               {/* Toolbar */}
@@ -478,12 +490,20 @@ const FormularioConteudo = ({
                   </button>
                   
                   {showEmojiPicker && (
-                    <div className="absolute top-12 right-0 z-50">
-                      <Picker 
-                        data={data as unknown as Record<string, EmojiObject>} 
-                        onEmojiSelect={handleEmojiSelect}
-                        theme="dark"
-                      />
+                    <div className="absolute top-12 right-0 z-50 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg p-4 max-w-xs">
+                      <div className="grid grid-cols-8 gap-2 max-h-48 overflow-y-auto">
+                        {COMMON_EMOJIS.map((emoji, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => handleEmojiSelect({ native: emoji })}
+                            className="text-xl hover:bg-slate-100 dark:hover:bg-slate-700 p-2 rounded transition-colors"
+                            title={emoji}
+                          >
+                            {emoji}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -511,7 +531,7 @@ const FormularioConteudo = ({
             
             <button
               type="submit"
-              disabled={saving || !formData.titulo.trim() || !formData.corpo.trim() || !formData.linguagem_id}
+              disabled={saving || !formData.titulo?.trim() || !formData.corpo?.trim() || !formData.linguagem_id}
               className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center justify-center gap-2 font-medium"
             >
               {saving ? (
@@ -520,9 +540,9 @@ const FormularioConteudo = ({
                   Salvando...
                 </>
               ) : (
-                <>
-                  💾 Salvar Alterações
-                </>
+                                  <>
+                    Salvar Alterações
+                  </>
               )}
             </button>
           </div>
