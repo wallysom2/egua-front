@@ -8,24 +8,54 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 interface Questao {
   id: number;
+  conteudo_id: number;
   enunciado: string;
-  tipo: "multipla_escolha" | "verdadeiro_falso" | "codigo";
-  exercicio_id: number;
-  ordem: number;
+  nivel: "facil" | "medio" | "dificil";
+  exemplo_resposta: string | null;
+  opcoes: string[] | null;
+  resposta_correta: string | null;
+  tipo: "multipla_escolha" | "verdadeiro_falso" | "programacao";
 }
 
-interface Exercicio {
+interface Conteudo {
   id: number;
   titulo: string;
   tipo: "pratico" | "quiz";
-  linguagem_id: number;
+  linguagem_id?: number;
+  licao_id?: number;
 }
+
+const getTipoQuestaoLabel = (tipo: string) => {
+  switch (tipo) {
+    case "multipla_escolha":
+      return "Múltipla Escolha";
+    case "verdadeiro_falso":
+      return "Verdadeiro/Falso";
+    case "programacao":
+      return "Programação";
+    default:
+      return tipo;
+  }
+};
+
+const getNivelLabel = (nivel: string) => {
+  switch (nivel) {
+    case "facil":
+      return "Fácil";
+    case "medio":
+      return "Médio";
+    case "dificil":
+      return "Difícil";
+    default:
+      return nivel;
+  }
+};
 
 export default function Questoes({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const resolvedParams = use(params);
   const [questoes, setQuestoes] = useState<Questao[]>([]);
-  const [exercicio, setExercicio] = useState<Exercicio | null>(null);
+  const [exercicio, setExercicio] = useState<Conteudo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,33 +68,43 @@ export default function Questoes({ params }: { params: Promise<{ id: string }> }
 
     const fetchData = async () => {
       try {
-        const [exercicioResponse, questoesResponse] = await Promise.all([
-          fetch(`${API_URL}/exercicios/${resolvedParams.id}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-          fetch(`${API_URL}/exercicios/${resolvedParams.id}/questoes`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-        ]);
+        console.log("Buscando conteúdo ID:", resolvedParams.id);
+    
 
-        if (!exercicioResponse.ok || !questoesResponse.ok) {
-          throw new Error("Erro ao carregar dados");
+        // Busca todas as questões disponíveis
+        const questoesUrl = `${API_URL}/questoes`;
+        console.log("Buscando todas as questões em:", questoesUrl);
+        
+        const questoesResponse = await fetch(questoesUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("Resposta questões:", questoesResponse.status);
+
+        if (questoesResponse.ok) {
+          const todasQuestoes = await questoesResponse.json();
+          console.log("Todas as questões:", todasQuestoes);
+          
+          // Filtra questões relacionadas ao conteúdo atual
+          const questoesFiltradas = Array.isArray(todasQuestoes) 
+            ? todasQuestoes.filter(questao => 
+                questao.conteudo_id === parseInt(resolvedParams.id) || 
+                questao.exercicio_id === parseInt(resolvedParams.id)
+              )
+            : [];
+          
+          console.log("Questões filtradas:", questoesFiltradas);
+          setQuestoes(questoesFiltradas);
+        } else {
+          console.warn("Não foi possível carregar questões, status:", questoesResponse.status);
+          setQuestoes([]);
         }
 
-        const [exercicioData, questoesData] = await Promise.all([
-          exercicioResponse.json(),
-          questoesResponse.json(),
-        ]);
-
-        setExercicio(exercicioData);
-        setQuestoes(questoesData);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
-        setError("Não foi possível carregar os dados.");
+        setError(error instanceof Error ? error.message : "Não foi possível carregar os dados.");
       } finally {
         setLoading(false);
       }
@@ -114,7 +154,7 @@ export default function Questoes({ params }: { params: Promise<{ id: string }> }
   if (error || !exercicio) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950">
-        <p className="text-xl font-semibold text-red-400 mb-4">{error || "Exercício não encontrado"}</p>
+        <p className="text-xl font-semibold text-red-400 mb-4">{error || "Conteúdo não encontrado"}</p>
         <button
           onClick={() => router.push("/dashboard/licoes")}
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -132,7 +172,7 @@ export default function Questoes({ params }: { params: Promise<{ id: string }> }
           <div>
             <h1 className="text-3xl font-bold text-blue-400 mb-2">Questões - {exercicio.titulo}</h1>
             <p className="text-slate-300 text-lg">
-              Gerencie as questões deste exercício
+              Gerencie as questões deste conteúdo
             </p>
           </div>
           <Link
@@ -162,21 +202,30 @@ export default function Questoes({ params }: { params: Promise<{ id: string }> }
               className="bg-slate-900 rounded-xl p-6 shadow-md hover:bg-slate-800 transition-all"
             >
               <div className="flex items-center justify-between mb-4">
-                <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    questao.tipo === "multipla_escolha"
-                      ? "bg-purple-900 text-purple-300"
-                      : questao.tipo === "verdadeiro_falso"
-                      ? "bg-green-900 text-green-300"
-                      : "bg-blue-900 text-blue-300"
-                  }`}
-                >
-                  {questao.tipo === "multipla_escolha"
-                    ? "Múltipla Escolha"
-                    : questao.tipo === "verdadeiro_falso"
-                    ? "Verdadeiro/Falso"
-                    : "Código"}
-                </span>
+                <div className="flex gap-2">
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      questao.tipo === "multipla_escolha"
+                        ? "bg-purple-900 text-purple-300"
+                        : questao.tipo === "verdadeiro_falso"
+                        ? "bg-green-900 text-green-300"
+                        : "bg-blue-900 text-blue-300"
+                    }`}
+                  >
+                    {getTipoQuestaoLabel(questao.tipo)}
+                  </span>
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      questao.nivel === "facil"
+                        ? "bg-green-900 text-green-300"
+                        : questao.nivel === "medio"
+                        ? "bg-yellow-900 text-yellow-300"
+                        : "bg-red-900 text-red-300"
+                    }`}
+                  >
+                    {getNivelLabel(questao.nivel)}
+                  </span>
+                </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEditQuestao(questao.id)}
@@ -199,8 +248,53 @@ export default function Questoes({ params }: { params: Promise<{ id: string }> }
                 </div>
               </div>
 
-              <p className="text-white mb-2">Questão {questao.ordem}</p>
-              <p className="text-slate-300">{questao.enunciado}</p>
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-white font-semibold mb-1">Enunciado:</h3>
+                  <p className="text-slate-300">{questao.enunciado}</p>
+                </div>
+
+                {questao.exemplo_resposta && (
+                  <div>
+                    <h4 className="text-white font-semibold mb-1">Exemplo de Resposta:</h4>
+                    <div className="bg-slate-800 rounded-lg p-3">
+                      <pre className="text-slate-300 text-sm whitespace-pre-wrap">{questao.exemplo_resposta}</pre>
+                    </div>
+                  </div>
+                )}
+
+                {questao.opcoes && questao.opcoes.length > 0 && (
+                  <div>
+                    <h4 className="text-white font-semibold mb-2">Opções:</h4>
+                    <div className="space-y-1">
+                      {questao.opcoes.map((opcao, index) => (
+                        <div
+                          key={index}
+                          className={`p-2 rounded-lg text-sm ${
+                            questao.resposta_correta === opcao
+                              ? "bg-green-900 text-green-300 border border-green-700"
+                              : "bg-slate-800 text-slate-300"
+                          }`}
+                        >
+                          <span className="font-medium">{String.fromCharCode(65 + index)})</span> {opcao}
+                          {questao.resposta_correta === opcao && (
+                            <span className="ml-2 text-green-400">✓ Correta</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {questao.resposta_correta && !questao.opcoes && (
+                  <div>
+                    <h4 className="text-white font-semibold mb-1">Resposta Correta:</h4>
+                    <div className="bg-green-900 border border-green-700 rounded-lg p-3">
+                      <p className="text-green-300 text-sm">{questao.resposta_correta}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           ))}
 
