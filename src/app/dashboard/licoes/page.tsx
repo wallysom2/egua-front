@@ -212,14 +212,11 @@ export default function Licoes() {
 
     const fetchData = async () => {
       try {
-        const [exerciciosResponse, linguagensResponse, userExerciciosResponse] = await Promise.allSettled([
+        const [exerciciosResponse, linguagensResponse] = await Promise.allSettled([
           fetch(`${API_URL}/exercicios`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch(`${API_URL}/linguagens`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${API_URL}/user-exercicios`, {
             headers: { Authorization: `Bearer ${token}` },
           })
         ]);
@@ -239,13 +236,6 @@ export default function Licoes() {
               map.set(lang.id, lang.nome)
             );
             setLinguagensMap(map);
-          }
-        }
-
-        if (userExerciciosResponse.status === 'fulfilled' && userExerciciosResponse.value.ok) {
-          const data = await userExerciciosResponse.value.json();
-          if (Array.isArray(data)) {
-            setUserExercicios(data);
           }
         }
 

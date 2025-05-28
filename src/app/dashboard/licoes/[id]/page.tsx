@@ -6,35 +6,22 @@ import Link from "next/link";
 import { use } from "react";
 import { motion } from "framer-motion";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { 
+  processarExercicio, 
+  processarQuestoesDoEndpoint
+} from "@/utils/exercicioProcessors";
+import { 
+  type Exercicio
+} from "@/types/exercicio";
+import {
+  QuestaoQuiz,
+  ExercicioProgramacao,
+  QuestaoTextoLivre,
+  NavegacaoQuestoes,
+  PainelQuestao
+} from "./components";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
-interface Opcao {
-  id: string;
-  texto: string;
-}
-
-interface Questao {
-  id: number;
-  conteudo_id?: number;
-  enunciado: string;
-  nivel: "facil" | "medio" | "dificil";
-  tipo: "multipla_escolha" | "verdadeiro_falso" | "codigo" | "quiz";
-  opcoes?: Opcao[];
-  resposta_correta?: string;
-  exemplo_resposta?: string | null;
-  ordem?: number;
-}
-
-interface Exercicio {
-  id: number;
-  titulo: string;
-  tipo: "pratico" | "quiz";
-  linguagem_id: number;
-  nome_linguagem?: string;
-  codigo_exemplo?: string;
-  questoes: Questao[];
-}
 
 export default function ExercicioDetalhes({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -42,32 +29,11 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
   const [exercicio, setExercicio] = useState<Exercicio | null>(null);
   const [questaoAtual, setQuestaoAtual] = useState(0);
   const [respostas, setRespostas] = useState<{ [key: number]: string }>({});
-  const [codigo, setCodigo] = useState('');
-  const [resultadoExecucao, setResultadoExecucao] = useState('');
-  const [executando, setExecutando] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [exercicioFinalizado, setExercicioFinalizado] = useState(false);
-
-  // Função para processar e normalizar questões da API
-  const processarQuestoes = (questoes: any[]): Questao[] => {
-    console.log("Processando questões:", questoes);
-    return questoes.map((questao, index) => {
-      const questaoProcessada = {
-        id: questao.id,
-        conteudo_id: questao.conteudo_id,
-        enunciado: questao.enunciado,
-        nivel: questao.nivel,
-        tipo: questao.tipo,
-        opcoes: questao.opcoes || [],
-        resposta_correta: questao.resposta_correta,
-        exemplo_resposta: questao.exemplo_resposta,
-        ordem: questao.ordem !== undefined ? questao.ordem : index
-      };
-      console.log(`Questão ${index + 1} processada:`, questaoProcessada);
-      return questaoProcessada;
-    });
-  };
+  const [resultados, setResultados] = useState<{acertos: number, total: number} | null>(null);
+  const [mostrarModalResultados, setMostrarModalResultados] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -91,65 +57,61 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
         }
 
         const exercicioData = await exercicioResponse.json();
+        console.log("Dados do exercício recebidos:", exercicioData);
 
-        // Buscar questões do exercício
-        const questoesResponse = await fetch(`${API_URL}/questoes/${resolvedParams.id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-        });
+        // Processar exercício usando o novo sistema
+        let exercicioProcessado = processarExercicio(exercicioData);
 
-        let questoesData = [];
-        if (questoesResponse.ok) {
-          const responseData = await questoesResponse.json();
-          console.log("Questões recebidas da API:", responseData);
+        // Se não há questões no exercício processado, tentar buscar separadamente
+        if (exercicioProcessado.questoes.length === 0) {
+          console.log("Nenhuma questão encontrada no exercício, buscando separadamente...");
           
-          // Se a resposta for um array, usar diretamente
-          if (Array.isArray(responseData)) {
-            questoesData = responseData;
-          } 
-          // Se a resposta for um objeto com uma propriedade que contém as questões
-          else if (responseData.questoes && Array.isArray(responseData.questoes)) {
-            questoesData = responseData.questoes;
-          }
-          // Se a resposta for uma única questão, colocar em um array
-          else if (responseData.id) {
-            questoesData = [responseData];
-          }
-          
-          questoesData.sort((a: Questao, b: Questao) => (a.ordem || 0) - (b.ordem || 0));
-        } else {
-          console.warn("Erro ao buscar questões:", questoesResponse.status);
-          // Tentar buscar todas as questões e filtrar
-          try {
-            const todasQuestoesResponse = await fetch(`${API_URL}/questoes`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json'
-              },
-            });
+          // Buscar questões do exercício separadamente
+          const questoesResponse = await fetch(`${API_URL}/exercicios/${resolvedParams.id}/questoes`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+          });
+
+          if (questoesResponse.ok) {
+            const questoesData = await questoesResponse.json();
+            const questoesProcessadas = processarQuestoesDoEndpoint(questoesData, parseInt(resolvedParams.id));
+            exercicioProcessado.questoes = questoesProcessadas;
+          } else {
+            console.warn("Erro ao buscar questões:", questoesResponse.status);
             
-            if (todasQuestoesResponse.ok) {
-              const todasQuestoes = await todasQuestoesResponse.json();
-              console.log("Todas as questões:", todasQuestoes);
+            // Última tentativa: buscar todas as questões e filtrar
+            try {
+              const todasQuestoesResponse = await fetch(`${API_URL}/questoes`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                },
+              });
               
-              if (Array.isArray(todasQuestoes)) {
-                questoesData = todasQuestoes.filter(q => 
-                  q.conteudo_id === parseInt(resolvedParams.id) || 
-                  q.exercicio_id === parseInt(resolvedParams.id)
-                );
+              if (todasQuestoesResponse.ok) {
+                const todasQuestoes = await todasQuestoesResponse.json();
+                console.log("Todas as questões:", todasQuestoes);
+                
+                if (Array.isArray(todasQuestoes)) {
+                  const questoesFiltradas = todasQuestoes.filter(q => 
+                    q.conteudo_id === parseInt(resolvedParams.id) || 
+                    q.exercicio_id === parseInt(resolvedParams.id)
+                  );
+                  exercicioProcessado.questoes = processarQuestoesDoEndpoint(questoesFiltradas, parseInt(resolvedParams.id));
+                }
               }
+            } catch (error) {
+              console.error("Erro ao buscar todas as questões:", error);
             }
-          } catch (error) {
-            console.error("Erro ao buscar todas as questões:", error);
           }
         }
 
         // Buscar nome da linguagem se necessário
-        if (exercicioData.linguagem_id && !exercicioData.nome_linguagem) {
+        if (exercicioProcessado.linguagem_id && !exercicioProcessado.nome_linguagem) {
           try {
-            const langResponse = await fetch(`${API_URL}/linguagens/${exercicioData.linguagem_id}`, {
+            const langResponse = await fetch(`${API_URL}/linguagens/${exercicioProcessado.linguagem_id}`, {
               headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -157,29 +119,17 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
             });
             if (langResponse.ok) {
               const langData = await langResponse.json();
-              exercicioData.nome_linguagem = langData.nome;
+              exercicioProcessado.nome_linguagem = langData.nome;
             } else {
-              exercicioData.nome_linguagem = "Égua";
+              exercicioProcessado.nome_linguagem = "Égua";
             }
           } catch {
-            exercicioData.nome_linguagem = "Égua";
+            exercicioProcessado.nome_linguagem = "Égua";
           }
         }
 
-        setExercicio({
-          ...exercicioData,
-          questoes: processarQuestoes(questoesData)
-        });
-
-        console.log("Exercício final configurado:", {
-          ...exercicioData,
-          questoes: processarQuestoes(questoesData)
-        });
-
-        // Inicializar código se for exercício prático
-        if (exercicioData.tipo === "pratico" && exercicioData.codigo_exemplo) {
-          setCodigo(exercicioData.codigo_exemplo);
-        }
+        setExercicio(exercicioProcessado);
+        console.log("Exercício final configurado:", exercicioProcessado);
 
       } catch (error: unknown) {
         console.error("Erro ao carregar exercício:", error);
@@ -194,41 +144,11 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
 
   const questaoAtualData = exercicio?.questoes[questaoAtual];
   const totalQuestoes = exercicio?.questoes.length || 0;
-  const questoesRespondidas = Object.keys(respostas).length;
-
-  // Debug: log da questão atual
-  if (questaoAtualData) {
-    console.log("Questão atual:", questaoAtualData);
-    console.log("Tipo do exercício:", exercicio?.tipo);
-    console.log("Tipo da questão:", questaoAtualData.tipo);
-    console.log("Opções:", questaoAtualData.opcoes);
-  }
-
-  const executarCodigo = async () => {
-    setExecutando(true);
-    setResultadoExecucao('');
-    
-    try {
-      // Simular execução do código Égua
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (codigo.includes('escreva(')) {
-        const match = codigo.match(/escreva\("([^"]+)"\)/);
-        if (match) {
-          setResultadoExecucao(match[1]);
-        } else {
-          setResultadoExecucao('Olá, Mundo!');
-        }
-      } else {
-        setResultadoExecucao('Código executado com sucesso!');
-      }
-    } catch (error) {
-      console.error("Erro ao executar código:", error);
-      setResultadoExecucao('Erro ao executar o código');
-    } finally {
-      setExecutando(false);
-    }
-  };
+  const respostasPreenchidas = new Set(
+    Object.keys(respostas).map(id => 
+      exercicio?.questoes.findIndex(q => q.id === parseInt(id)) || -1
+    ).filter(index => index !== -1)
+  );
 
   const handleRespostaChange = (questaoId: number, resposta: string) => {
     if (exercicioFinalizado) return;
@@ -251,8 +171,26 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
     }
   };
 
+  const mudarQuestao = (indice: number) => {
+    if (indice >= 0 && indice < totalQuestoes) {
+      setQuestaoAtual(indice);
+    }
+  };
+
   const finalizarExercicio = async () => {
+    // Calcular resultados antes de finalizar
+    let acertos = 0;
+    const totalQuestoes = exercicio?.questoes.length || 0;
+    
+    exercicio?.questoes.forEach(questao => {
+      if (questao.resposta_correta && respostas[questao.id] === questao.resposta_correta) {
+        acertos++;
+      }
+    });
+    
+    setResultados({ acertos, total: totalQuestoes });
     setExercicioFinalizado(true);
+    setMostrarModalResultados(true);
     
     const token = localStorage.getItem("token");
     try {
@@ -263,7 +201,8 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ 
-          respostas: exercicio?.tipo === "pratico" ? { codigo } : respostas 
+          respostas: exercicio?.tipo === "pratico" ? {} : respostas,
+          pontuacao: (acertos / totalQuestoes) * 100
         }),
       });
 
@@ -271,32 +210,90 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
         // Exercício finalizado com sucesso
         setTimeout(() => {
           router.push("/dashboard/licoes");
-        }, 2000);
+        }, 4000);
       }
     } catch (error) {
       console.error("Erro ao finalizar exercício:", error);
     }
   };
 
+  const renderResposta = () => {
+    if (!questaoAtualData || !exercicio) return null;
+
+    // Para exercícios práticos, sempre mostrar o editor de código
+    if (exercicio.tipo === "pratico") {
+      return (
+        <ExercicioProgramacao
+          questao={questaoAtualData}
+          codigoExemplo={exercicio.codigo_exemplo}
+          exercicioFinalizado={exercicioFinalizado}
+        />
+      );
+    }
+
+    // Para questões de quiz com opções
+    if ((exercicio.tipo === "quiz" || questaoAtualData.tipo === "quiz" || questaoAtualData.tipo === "multipla_escolha") 
+        && questaoAtualData.opcoes && questaoAtualData.opcoes.length > 0) {
+      return (
+        <QuestaoQuiz
+          questao={questaoAtualData}
+          respostaSelecionada={respostas[questaoAtualData.id]}
+          onRespostaChange={handleRespostaChange}
+          exercicioFinalizado={exercicioFinalizado}
+          mostrarResultado={exercicioFinalizado}
+        />
+      );
+    }
+
+    // Para questões de texto livre
+    return (
+      <QuestaoTextoLivre
+        questao={questaoAtualData}
+        resposta={respostas[questaoAtualData.id]}
+        onRespostaChange={handleRespostaChange}
+        exercicioFinalizado={exercicioFinalizado}
+      />
+    );
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-xl font-semibold text-white">Carregando...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin mb-4"></div>
+          <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">Carregando exercício...</h3>
+          <p className="text-sm text-slate-600 dark:text-slate-400">Preparando sua experiência de aprendizado</p>
+        </div>
       </div>
     );
   }
 
   if (error || !exercicio) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950">
-        <p className="text-xl font-semibold text-red-400 mb-4">{error || "Exercício não encontrado"}</p>
-        <button
-          onClick={() => router.push("/dashboard/licoes")}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Voltar para Lições
-        </button>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-4">😕</div>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+            Oops! Algo deu errado
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 mb-6">
+            {error || "Não foi possível encontrar este exercício. Ele pode ter sido removido ou você não tem permissão para acessá-lo."}
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              🔄 Tentar Novamente
+            </button>
+            <button
+              onClick={() => router.push("/dashboard/licoes")}
+              className="w-full px-6 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-medium rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+            >
+              ← Voltar para Lições
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -340,282 +337,139 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
       </motion.div>
 
       <div className="container mx-auto px-4 sm:px-6 py-6">
-        {/* Layout responsivo melhorado */}
-        <div className="flex flex-col xl:flex-row gap-6 h-full">
-          {/* Painel da questão */}
-          <div className="xl:w-1/2 space-y-6">
-            <div className="bg-slate-900/80 backdrop-blur-sm rounded-xl border border-slate-800 shadow-xl">
-              {questaoAtualData ? (
-                <div className="p-6">
-                  {/* Cabeçalho da questão */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg font-semibold text-white">
-                        Questão {questaoAtual + 1}
-                      </span>
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          questaoAtualData.nivel === "facil"
-                            ? "bg-green-900/50 text-green-300 border border-green-700"
-                            : questaoAtualData.nivel === "medio"
-                            ? "bg-yellow-900/50 text-yellow-300 border border-yellow-700"
-                            : "bg-red-900/50 text-red-300 border border-red-700"
-                        }`}
-                      >
-                        {questaoAtualData.nivel.charAt(0).toUpperCase() + questaoAtualData.nivel.slice(1)}
-                      </span>
-                    </div>
-                    <span className="text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded">
-                      {exercicio.tipo === "pratico" ? "Prático" : "Quiz"}
-                    </span>
-                  </div>
+        {/* Descrição da Tarefa - Full Width no Topo */}
+        <div className="mb-6">
+          <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
+            <PainelQuestao
+              exercicio={exercicio}
+              questao={questaoAtualData}
+              questaoAtual={questaoAtual}
+              totalQuestoes={totalQuestoes}
+            />
 
-                  {/* Enunciado */}
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                      📋 Enunciado
-                    </h3>
-                    <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                      <p className="text-slate-200 leading-relaxed whitespace-pre-wrap">
-                        {questaoAtualData.enunciado}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Exemplo de resposta */}
-                  {questaoAtualData.exemplo_resposta && (
-                    <div className="mb-6">
-                      <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
-                        💡 Exemplo de Resposta
-                      </h4>
-                      <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                        <pre className="text-yellow-300 font-mono text-sm overflow-x-auto">
-                          {questaoAtualData.exemplo_resposta}
-                        </pre>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Código de exemplo */}
-                  {exercicio.codigo_exemplo && exercicio.tipo === "pratico" && (
-                    <div className="mb-6">
-                      <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
-                        📋 Código de Exemplo
-                      </h4>
-                      <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                        <pre className="text-yellow-300 font-mono text-sm overflow-x-auto">
-                          {exercicio.codigo_exemplo}
-                        </pre>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="p-6 text-center">
-                  <div className="text-slate-400 py-8">
-                    <div className="text-4xl mb-4">📝</div>
-                    <p>Nenhuma questão encontrada para este exercício.</p>
-                    <p className="text-sm mt-2">ID do exercício: {resolvedParams.id}</p>
-                    <p className="text-sm">Tipo do exercício: {exercicio.tipo}</p>
-                    <p className="text-sm">Total de questões carregadas: {totalQuestoes}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Navegação entre questões */}
-              {totalQuestoes > 1 && (
-                <div className="border-t border-slate-800 p-4">
-                  <div className="flex justify-between items-center">
-                    <button
-                      onClick={questaoAnterior}
-                      disabled={questaoAtual === 0}
-                      className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      ← Anterior
-                    </button>
-                    
-                    <div className="flex gap-1">
-                      {Array.from({ length: totalQuestoes }, (_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setQuestaoAtual(i)}
-                          className={`w-8 h-8 rounded-full text-xs font-medium transition-colors ${
-                            i === questaoAtual
-                              ? "bg-blue-600 text-white"
-                              : respostas[exercicio.questoes[i]?.id]
-                              ? "bg-green-600 text-white"
-                              : "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                          }`}
-                        >
-                          {i + 1}
-                        </button>
-                      ))}
-                    </div>
-
-                    <button
-                      onClick={proximaQuestao}
-                      disabled={questaoAtual === totalQuestoes - 1}
-                      className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      Próxima →
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+            <NavegacaoQuestoes
+              questaoAtual={questaoAtual}
+              totalQuestoes={totalQuestoes}
+              respostasPreenchidas={respostasPreenchidas}
+              onMudarQuestao={mudarQuestao}
+              onProximaQuestao={proximaQuestao}
+              onQuestaoAnterior={questaoAnterior}
+            />
           </div>
+        </div>
 
-          {/* Painel de resposta */}
-          <div className="xl:w-1/2">
-            <div className="bg-slate-900/80 backdrop-blur-sm rounded-xl border border-slate-800 shadow-xl h-full">
-              <div className="p-6">
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                    {exercicio.tipo === "pratico" ? "💻 Área de Programação" : "📝 Sua Resposta"}
-                  </h2>
-                  <p className="text-slate-400 text-sm">
-                    {exercicio.tipo === "pratico" 
-                      ? "Digite seu código e execute para ver o resultado"
-                      : "Selecione a resposta correta"}
-                  </p>
-                </div>
+        {/* Área de Execução e Feedback */}
+        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
+          <div className="p-6">
+            {renderResposta()}
 
-                <div className="space-y-4">
-                  {questaoAtualData && (
-                    exercicio.tipo === "quiz" || 
-                    questaoAtualData.tipo === "quiz" || 
-                    questaoAtualData.tipo === "multipla_escolha"
-                  ) && questaoAtualData.opcoes && questaoAtualData.opcoes.length > 0 ? (
-                    // Quiz - Múltipla escolha
-                    <div className="space-y-3">
-                      {questaoAtualData.opcoes.map((opcao, index) => (
-                        <label
-                          key={opcao.id}
-                          className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
-                            respostas[questaoAtualData.id] === opcao.id
-                              ? "bg-blue-900/30 border-blue-500 text-blue-100"
-                              : "bg-slate-800/50 border-slate-700 hover:bg-slate-700/50 text-slate-300"
-                          }`}
-                        >
-                          <div className="flex items-center">
-                            <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
-                              respostas[questaoAtualData.id] === opcao.id
-                                ? "border-blue-500 bg-blue-500"
-                                : "border-slate-500"
-                            }`}>
-                              {respostas[questaoAtualData.id] === opcao.id && (
-                                <div className="w-2 h-2 bg-white rounded-full"></div>
-                              )}
-                            </div>
-                            <span className="font-medium mr-3 text-slate-400">
-                              {String.fromCharCode(65 + index)}.
-                            </span>
-                          </div>
-                          <span className="flex-1">{opcao.texto}</span>
-                          <input
-                            type="radio"
-                            name={`questao-${questaoAtualData.id}`}
-                            value={opcao.id}
-                            checked={respostas[questaoAtualData.id] === opcao.id}
-                            onChange={(e) => handleRespostaChange(questaoAtualData.id, e.target.value)}
-                            disabled={exercicioFinalizado}
-                            className="sr-only"
-                          />
-                        </label>
-                      ))}
-                    </div>
-                  ) : exercicio.tipo === "pratico" ? (
-                    // Prático - Editor de código
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-slate-300 mb-3 font-medium">
-                          💻 Editor de Código
-                        </label>
-                        <div className="relative">
-                          <textarea
-                            value={codigo}
-                            onChange={(e) => setCodigo(e.target.value)}
-                            className="w-full h-48 bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-white font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                            placeholder={questaoAtualData?.exemplo_resposta || 'escreva("Olá, Mundo!");'}
-                            disabled={exercicioFinalizado}
-                          />
-                          <div className="absolute top-2 right-2 text-xs text-slate-500 bg-slate-900 px-2 py-1 rounded">
-                            Égua
-                          </div>
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={executarCodigo}
-                        disabled={executando || !codigo.trim() || exercicioFinalizado}
-                        className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
-                      >
-                        {executando ? (
-                          <>
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            Executando...
-                          </>
-                        ) : (
-                          <>
-                            ▶️ Executar Código
-                          </>
-                        )}
-                      </button>
-
-                      {resultadoExecucao && (
-                        <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                          <h4 className="text-white font-medium mb-3 flex items-center gap-2">
-                            📤 Resultado da Execução
-                          </h4>
-                          <div className="bg-black/50 border border-slate-600 rounded p-4 font-mono text-green-400 text-sm">
-                            {resultadoExecucao}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    // Resposta em texto livre
-                    <div>
-                      <label className="block text-slate-300 mb-3 font-medium">
-                        ✍️ Digite sua resposta
-                      </label>
-                      <textarea
-                        value={questaoAtualData ? (respostas[questaoAtualData.id] || "") : ""}
-                        onChange={(e) => questaoAtualData && handleRespostaChange(questaoAtualData.id, e.target.value)}
-                        className="w-full h-32 bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                        placeholder="Digite sua resposta aqui..."
-                        disabled={exercicioFinalizado}
-                      />
-                    </div>
-                  )}
-
-                  {/* Botão de finalizar */}
-                  {questaoAtual === totalQuestoes - 1 && !exercicioFinalizado && (
-                    <button
-                      onClick={finalizarExercicio}
-                      className="w-full py-4 bg-gradient-to-r from-green-600 to-green-700 text-white font-medium rounded-lg hover:from-green-700 hover:to-green-800 transition-all flex items-center justify-center gap-2 shadow-lg"
-                    >
-                      ✅ Finalizar Exercício
-                    </button>
-                  )}
-
-                  {exercicioFinalizado && (
-                    <div className="bg-green-900/20 border border-green-700 rounded-lg p-6 text-center">
-                      <div className="text-4xl mb-3">🎉</div>
-                      <p className="text-green-300 font-medium text-lg mb-2">
-                        Exercício finalizado com sucesso!
-                      </p>
-                      <p className="text-slate-400 text-sm">
-                        Redirecionando para a lista de lições...
-                      </p>
-                    </div>
-                  )}
-                </div>
+            {/* Botão de finalizar */}
+            {questaoAtual === totalQuestoes - 1 && !exercicioFinalizado && (
+              <div className="border-t border-slate-200 dark:border-slate-700 mt-6 pt-6">
+                <button
+                  onClick={finalizarExercicio}
+                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-2"
+                >
+                  Finalizar Exercício
+                </button>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Modal de Resultados */}
+      {mostrarModalResultados && resultados && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setMostrarModalResultados(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white dark:bg-slate-900 rounded-2xl p-8 max-w-md w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center">
+              <div className="text-6xl mb-4">
+                {resultados.acertos === resultados.total ? "🏆" : 
+                 resultados.acertos >= resultados.total * 0.7 ? "🎉" : "👍"}
+              </div>
+              
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
+                Exercício Finalizado!
+              </h2>
+              
+              {exercicio?.tipo === "quiz" && (
+                <div className="mb-6">
+                  <div className="grid grid-cols-3 gap-4 text-center mb-6">
+                    <div className="p-4 bg-green-100 dark:bg-green-900/30 rounded-xl">
+                      <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                        {resultados.acertos}
+                      </div>
+                      <div className="text-sm text-green-700 dark:text-green-300 font-medium">
+                        Acertos
+                      </div>
+                    </div>
+                    <div className="p-4 bg-red-100 dark:bg-red-900/30 rounded-xl">
+                      <div className="text-3xl font-bold text-red-600 dark:text-red-400">
+                        {resultados.total - resultados.acertos}
+                      </div>
+                      <div className="text-sm text-red-700 dark:text-red-300 font-medium">
+                        Erros
+                      </div>
+                    </div>
+                    <div className="p-4 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+                      <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                        {Math.round((resultados.acertos / resultados.total) * 100)}%
+                      </div>
+                      <div className="text-sm text-blue-700 dark:text-blue-300 font-medium">
+                        Aproveitamento
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-6">
+                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(resultados.acertos / resultados.total) * 100}%` }}
+                        transition={{ duration: 1, delay: 0.5 }}
+                        className={`h-3 rounded-full ${
+                          resultados.acertos === resultados.total ? "bg-green-500" :
+                          resultados.acertos >= resultados.total * 0.7 ? "bg-yellow-500" : "bg-red-500"
+                        }`}
+                      />
+                    </div>
+                  </div>
+                  
+                  <p className="text-lg text-slate-700 dark:text-slate-300 mb-6">
+                    {resultados.acertos === resultados.total ? 
+                      "🌟 Perfeito! Você acertou todas as questões!" :
+                     resultados.acertos >= resultados.total * 0.7 ? 
+                      "🎯 Muito bem! Bom aproveitamento!" :
+                      "💪 Continue praticando, você vai melhorar!"}
+                  </p>
+                </div>
+              )}
+              
+              <div className="space-y-3">
+                <button
+                  onClick={() => router.push("/dashboard/licoes")}
+                  className="w-full py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Voltar para Lições
+                </button>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  Ou aguarde, você será redirecionado automaticamente
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 } 
