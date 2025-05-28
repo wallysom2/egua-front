@@ -60,7 +60,7 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
         console.log("Dados do exercício recebidos:", exercicioData);
 
         // Processar exercício usando o novo sistema
-        let exercicioProcessado = processarExercicio(exercicioData);
+        const exercicioProcessado = processarExercicio(exercicioData);
 
         // Se não há questões no exercício processado, tentar buscar separadamente
         if (exercicioProcessado.questoes.length === 0) {

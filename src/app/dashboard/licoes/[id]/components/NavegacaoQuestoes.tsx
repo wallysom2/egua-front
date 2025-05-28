@@ -19,9 +19,6 @@ export function NavegacaoQuestoes({
     return null;
   }
 
-  const progressoPercentual = Math.round(((questaoAtual + 1) / totalQuestoes) * 100);
-  const questoesRespondidas = respostasPreenchidas.size;
-
   return (
     <div className="border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
 

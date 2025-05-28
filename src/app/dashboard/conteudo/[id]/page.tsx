@@ -35,16 +35,28 @@ function useConteudo(id: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [conteudo, setConteudo] = useState<Conteudo | null>(null);
-  const [isProfessor, setIsProfessor] = useState(false);
-  const [isDesenvolvedor, setIsDesenvolvedor] = useState(false);
-  const router = useRouter();
 
-  const checkUserType = useCallback(() => {
-    const user = localStorage.getItem("user");
-    if (user) {
-      const userData = JSON.parse(user);
-      setIsProfessor(userData.tipo === "professor");
-      setIsDesenvolvedor(userData.tipo === "desenvolvedor");
+  const checkUserType = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Token não encontrado");
+      }
+
+      const response = await fetch(`${API_URL}/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao verificar tipo de usuário");
+      }
+
+      // ... existing code ...
+    } catch (error) {
+      console.error("Erro ao verificar tipo de usuário:", error);
     }
   }, []);
 
@@ -52,8 +64,7 @@ function useConteudo(id: string) {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/login");
-        return;
+        throw new Error("Token não encontrado");
       }
 
       const response = await fetch(`${API_URL}/conteudos/${id}`, {
@@ -69,32 +80,31 @@ function useConteudo(id: string) {
 
       const data = await response.json();
       setConteudo(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao carregar conteúdo");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Erro ao carregar conteúdo");
     } finally {
       setLoading(false);
     }
-  }, [id, router]);
+  }, [id]);
 
   const handleDelete = async () => {
-    if (!confirm("⚠️ Tem certeza que deseja excluir este conteúdo? Esta ação não pode ser desfeita.")) return;
-
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_URL}/conteudos/${id}`, {
+      if (!token) {
+        throw new Error("Token não encontrado");
+      }
+
+      await fetch(`${API_URL}/conteudos/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
       });
 
-      if (!response.ok) {
-        throw new Error("Erro ao excluir conteúdo");
-      }
-
-      router.push("/dashboard/conteudo");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao excluir conteúdo");
+      window.location.href = "/dashboard/conteudo";
+    } catch (error) {
+      console.error("Erro ao excluir conteúdo:", error);
     }
   };
 
@@ -107,8 +117,6 @@ function useConteudo(id: string) {
     loading,
     error,
     conteudo,
-    isProfessor,
-    isDesenvolvedor,
     handleDelete
   };
 }
@@ -289,7 +297,7 @@ function ConteudoView({
 
 export default function VisualizarConteudoPage({ params }: { params: Promise<PageParams> }) {
   const resolvedParams = use(params);
-  const { loading, error, conteudo, isProfessor, isDesenvolvedor, handleDelete } = useConteudo(resolvedParams.id);
+  const { loading, error, conteudo, handleDelete } = useConteudo(resolvedParams.id);
 
   if (loading) return <LoadingSpinner />;
   if (error || !conteudo) return <ConteudoNaoEncontrado />;
