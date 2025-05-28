@@ -36,21 +36,21 @@ export function NavegacaoQuestoes({
             ← Anterior
           </button>
           
-          <div className="flex gap-1 max-w-xs overflow-x-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600">
+          <div className="flex gap-2 justify-center">
             {Array.from({ length: totalQuestoes }, (_, i) => (
               <button
                 key={i}
                 onClick={() => onMudarQuestao(i)}
-                className={`min-w-[32px] h-8 rounded-lg text-xs font-medium transition-all duration-200 flex items-center justify-center ${
+                className={`w-8 h-8 text-sm font-medium transition-all duration-200 flex items-center justify-center ${
                   i === questaoAtual
-                    ? "bg-blue-600 text-white shadow-md scale-110"
+                    ? "text-blue-600 dark:text-blue-400 font-bold"
                     : respostasPreenchidas.has(i)
-                    ? "bg-green-500 text-white hover:bg-green-600"
-                    : "bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-500"
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
                 }`}
                 title={`Questão ${i + 1}${i === questaoAtual ? ' (atual)' : ''}${respostasPreenchidas.has(i) ? ' (respondida)' : ''}`}
               >
-                {respostasPreenchidas.has(i) && i !== questaoAtual ? '✓' : i + 1}
+                {i + 1}
               </button>
             ))}
           </div>

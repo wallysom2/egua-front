@@ -346,15 +346,6 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
               questaoAtual={questaoAtual}
               totalQuestoes={totalQuestoes}
             />
-
-            <NavegacaoQuestoes
-              questaoAtual={questaoAtual}
-              totalQuestoes={totalQuestoes}
-              respostasPreenchidas={respostasPreenchidas}
-              onMudarQuestao={mudarQuestao}
-              onProximaQuestao={proximaQuestao}
-              onQuestaoAnterior={questaoAnterior}
-            />
           </div>
         </div>
 
@@ -362,19 +353,28 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
         <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
           <div className="p-6">
             {renderResposta()}
-
-            {/* Botão de finalizar */}
-            {questaoAtual === totalQuestoes - 1 && !exercicioFinalizado && (
-              <div className="border-t border-slate-200 dark:border-slate-700 mt-6 pt-6">
-                <button
-                  onClick={finalizarExercicio}
-                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-2"
-                >
-                  Finalizar Exercício
-                </button>
-              </div>
-            )}
           </div>
+
+          <NavegacaoQuestoes
+            questaoAtual={questaoAtual}
+            totalQuestoes={totalQuestoes}
+            respostasPreenchidas={respostasPreenchidas}
+            onMudarQuestao={mudarQuestao}
+            onProximaQuestao={proximaQuestao}
+            onQuestaoAnterior={questaoAnterior}
+          />
+
+          {/* Botão de finalizar */}
+          {questaoAtual === totalQuestoes - 1 && !exercicioFinalizado && (
+            <div className="border-t border-slate-200 dark:border-slate-700 px-6 py-4">
+              <button
+                onClick={finalizarExercicio}
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-2"
+              >
+                Finalizar Exercício
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -404,7 +404,7 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
               
               {exercicio?.tipo === "quiz" && (
                 <div className="mb-6">
-                  <div className="grid grid-cols-3 gap-4 text-center mb-6">
+                  <div className="grid grid-cols-2 gap-4 text-center mb-6 max-w-xs mx-auto">
                     <div className="p-4 bg-green-100 dark:bg-green-900/30 rounded-xl">
                       <div className="text-3xl font-bold text-green-600 dark:text-green-400">
                         {resultados.acertos}
@@ -419,14 +419,6 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
                       </div>
                       <div className="text-sm text-red-700 dark:text-red-300 font-medium">
                         Erros
-                      </div>
-                    </div>
-                    <div className="p-4 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-                      <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                        {Math.round((resultados.acertos / resultados.total) * 100)}%
-                      </div>
-                      <div className="text-sm text-blue-700 dark:text-blue-300 font-medium">
-                        Aproveitamento
                       </div>
                     </div>
                   </div>
@@ -462,9 +454,6 @@ export default function ExercicioDetalhes({ params }: { params: Promise<{ id: st
                 >
                   Voltar para Lições
                 </button>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Ou aguarde, você será redirecionado automaticamente
-                </p>
               </div>
             </div>
           </motion.div>
