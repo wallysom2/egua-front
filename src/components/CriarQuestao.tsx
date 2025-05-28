@@ -256,22 +256,27 @@ export function CriarQuestao({ conteudos, selectedLinguagem, onQuestaoCriada, ti
   return (
     <div className="space-y-4 mb-6">
       {error && (
-        <div className="bg-red-900/50 text-red-200 p-4 rounded-lg">
-          {error}
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 p-4 rounded-lg">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            {error}
+          </div>
         </div>
       )}
 
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-2">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Conteúdo de Referência
         </label>
         <select
           value={questaoForm.conteudo_id}
           onChange={(e) => setQuestaoForm(prev => ({ ...prev, conteudo_id: Number(e.target.value) }))}
-          className={`w-full px-4 py-2 bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-            validationErrors.conteudo_id ? 'border-red-500' : 'border-slate-700'
+          className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 dark:text-white transition-colors ${
+            validationErrors.conteudo_id ? 'border-red-500' : 'border-slate-300 dark:border-slate-700'
           }`}
-          
+          required
         >
           <option value="">Selecione um conteúdo</option>
           {conteudos
@@ -283,70 +288,71 @@ export function CriarQuestao({ conteudos, selectedLinguagem, onQuestaoCriada, ti
             ))}
         </select>
         {validationErrors.conteudo_id && (
-          <p className="mt-1 text-sm text-red-400">{validationErrors.conteudo_id}</p>
+          <p className="mt-1 text-sm text-red-500 dark:text-red-400">{validationErrors.conteudo_id}</p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-2">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Enunciado da Questão
         </label>
         <textarea
           value={questaoForm.enunciado}
           onChange={(e) => setQuestaoForm(prev => ({ ...prev, enunciado: e.target.value }))}
-          className={`w-full px-4 py-2 bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-            validationErrors.enunciado ? 'border-red-500' : 'border-slate-700'
+          className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-colors ${
+            validationErrors.enunciado ? 'border-red-500' : 'border-slate-300 dark:border-slate-700'
           }`}
           rows={4}
+          placeholder="Descreva sua questão de forma clara e objetiva"
         />
         {validationErrors.enunciado && (
-          <p className="mt-1 text-sm text-red-400">{validationErrors.enunciado}</p>
+          <p className="mt-1 text-sm text-red-500 dark:text-red-400">{validationErrors.enunciado}</p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-2">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Nível da Questão
         </label>
         <select
           value={questaoForm.nivel}
           onChange={(e) => setQuestaoForm(prev => ({ ...prev, nivel: e.target.value as "facil" | "medio" | "dificil" }))}
-          className={`w-full px-4 py-2 bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-            validationErrors.nivel ? 'border-red-500' : 'border-slate-700'
+          className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 dark:text-white transition-colors ${
+            validationErrors.nivel ? 'border-red-500' : 'border-slate-300 dark:border-slate-700'
           }`}
         >
-          <option value="facil">Fácil</option>
-          <option value="medio">Médio</option>
-          <option value="dificil">Difícil</option>
+          <option value="facil">🟢 Fácil</option>
+          <option value="medio">🟡 Médio</option>
+          <option value="dificil">🔴 Difícil</option>
         </select>
         {validationErrors.nivel && (
-          <p className="mt-1 text-sm text-red-400">{validationErrors.nivel}</p>
+          <p className="mt-1 text-sm text-red-500 dark:text-red-400">{validationErrors.nivel}</p>
         )}
       </div>
 
-      {questaoForm.tipo === "quiz" && questaoForm.opcoes && (
+      {questaoForm.tipo === "quiz" && (
         <div className="space-y-4">
-          <label className="block text-sm font-medium text-slate-300">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Alternativas
           </label>
           {validationErrors.opcoes && (
-            <p className="text-sm text-red-400">{validationErrors.opcoes}</p>
+            <p className="text-sm text-red-500 dark:text-red-400">{validationErrors.opcoes}</p>
           )}
-          {questaoForm.opcoes.map((alternativa, index) => (
-            <div key={alternativa.id} className="flex items-center space-x-4">
+          {questaoForm.opcoes?.map((alternativa, index) => (
+            <div key={alternativa.id} className="flex items-center space-x-4 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
               <input
                 type="radio"
                 name="alternativa_correta"
                 checked={alternativa.correta}
                 onChange={() => handleAlternativaChange(index, "correta", true)}
-                className="w-4 h-4 text-blue-600 bg-slate-800 border-slate-700 focus:ring-blue-500"
+                className="w-4 h-4 text-blue-600 bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 focus:ring-blue-500"
               />
               <input
                 type="text"
                 value={alternativa.texto}
                 onChange={(e) => handleAlternativaChange(index, "texto", e.target.value)}
                 placeholder={`Alternativa ${index + 1}`}
-                className="flex-1 px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-colors"
               />
             </div>
           ))}
@@ -355,19 +361,19 @@ export function CriarQuestao({ conteudos, selectedLinguagem, onQuestaoCriada, ti
 
       {questaoForm.tipo === "programacao" && (
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
             Exemplo de Resposta
           </label>
           <textarea
             value={questaoForm.exemplo_resposta}
             onChange={(e) => setQuestaoForm(prev => ({ ...prev, exemplo_resposta: e.target.value }))}
-            className={`w-full h-32 px-4 py-2 bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono ${
-              validationErrors.exemplo_resposta ? 'border-red-500' : 'border-slate-700'
+            className={`w-full h-32 px-4 py-3 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-colors ${
+              validationErrors.exemplo_resposta ? 'border-red-500' : 'border-slate-300 dark:border-slate-700'
             }`}
             placeholder="// Digite aqui um exemplo de resposta em Égua"
           />
           {validationErrors.exemplo_resposta && (
-            <p className="mt-1 text-sm text-red-400">{validationErrors.exemplo_resposta}</p>
+            <p className="mt-1 text-sm text-red-500 dark:text-red-400">{validationErrors.exemplo_resposta}</p>
           )}
         </div>
       )}
@@ -375,8 +381,11 @@ export function CriarQuestao({ conteudos, selectedLinguagem, onQuestaoCriada, ti
       <button
         type="button"
         onClick={handleQuestaoSubmit}
-        className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
       >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        </svg>
         Adicionar Questão
       </button>
     </div>
