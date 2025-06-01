@@ -8,8 +8,13 @@ export interface Questao {
   id: number;
   conteudo_id?: number;
   enunciado: string;
-  nivel: "facil" | "medio" | "dificil";
-  tipo: "multipla_escolha" | "verdadeiro_falso" | "codigo" | "quiz";
+  nivel: 'facil' | 'medio' | 'dificil';
+  tipo:
+    | 'multipla_escolha'
+    | 'verdadeiro_falso'
+    | 'codigo'
+    | 'quiz'
+    | 'programacao';
   opcoes?: Opcao[];
   resposta_correta?: string;
   exemplo_resposta?: string | null;
@@ -19,7 +24,7 @@ export interface Questao {
 export interface Exercicio {
   id: number;
   titulo: string;
-  tipo: "pratico" | "quiz";
+  tipo: 'pratico' | 'quiz';
   linguagem_id: number;
   nome_linguagem?: string;
   codigo_exemplo?: string;
@@ -30,7 +35,7 @@ export interface Exercicio {
 export interface ExercicioComQuestoes {
   id: number;
   titulo: string;
-  tipo: "pratico" | "quiz";
+  tipo: 'pratico' | 'quiz';
   linguagem_id: number;
   exercicio_questao: Array<{
     exercicio_id: number;
@@ -40,7 +45,7 @@ export interface ExercicioComQuestoes {
       id: number;
       conteudo_id: number;
       enunciado: string;
-      nivel: "facil" | "medio" | "dificil";
+      nivel: 'facil' | 'medio' | 'dificil';
       exemplo_resposta?: string | null;
       opcoes?: Opcao[];
       resposta_correta?: string;
@@ -52,14 +57,14 @@ export interface ExercicioComQuestoes {
 export interface ExercicioComConteudo {
   id: number;
   titulo: string;
-  tipo: "pratico" | "quiz";
+  tipo: 'pratico' | 'quiz';
   linguagem_id: number;
   conteudo: {
     id: number;
     questoes: Array<{
       id: number;
       enunciado: string;
-      nivel: "facil" | "medio" | "dificil";
+      nivel: 'facil' | 'medio' | 'dificil';
       tipo: string;
       opcoes?: Opcao[];
       resposta_correta?: string;
@@ -72,7 +77,7 @@ export interface ExercicioComConteudo {
 export interface ExercicioPratico {
   id: number;
   titulo: string;
-  tipo: "pratico";
+  tipo: 'pratico';
   linguagem_id: number;
   codigo_exemplo: string;
   instrucoes?: string;
@@ -91,4 +96,4 @@ export interface RespostaCodigo {
   resultado_execucao?: string;
 }
 
-export type RespostaExercicio = RespostaMultiplaEscolha | RespostaCodigo; 
+export type RespostaExercicio = RespostaMultiplaEscolha | RespostaCodigo;
