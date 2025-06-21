@@ -1,5 +1,5 @@
-import { EguaCompiler } from "@/components/EguaCompiler";
-import { type Questao } from "@/types/exercicio";
+import { EguaCompiler } from '@/components/EguaCompiler';
+import { type Questao } from '@/types/exercicio';
 
 interface ExercicioProgramacaoProps {
   questao?: Questao;
@@ -7,18 +7,21 @@ interface ExercicioProgramacaoProps {
   exercicioFinalizado: boolean;
 }
 
-export function ExercicioProgramacao({ 
-  questao, 
-  codigoExemplo, 
-  exercicioFinalizado 
+export function ExercicioProgramacao({
+  questao,
+  codigoExemplo,
+  exercicioFinalizado,
 }: ExercicioProgramacaoProps) {
-  
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Coluna da Esquerda - Editor de Código */}
       <div className="space-y-4">
         <EguaCompiler
-          codigoInicial={codigoExemplo || questao?.exemplo_resposta || 'escreva("Olá, Mundo!");'}
+          codigoInicial={
+            codigoExemplo ||
+            questao?.exemplo_resposta ||
+            'escreva("Olá, Mundo!");'
+          }
           altura="h-64 lg:h-80"
           disabled={exercicioFinalizado}
           mostrarTempo={true}
@@ -50,10 +53,42 @@ export function ExercicioProgramacao({
             📚 Instruções
           </h4>
           <div className="text-sm text-blue-800 dark:text-blue-300 space-y-2">
-            <p>• Use <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">escreva()</code> para exibir texto</p>
-            <p>• Use <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">variavel nome = valor</code> para criar variáveis</p>
-            <p>• Use <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">se</code> e <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">senao</code> para condicionais</p>
-            <p>• Use <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">para</code> e <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">enquanto</code> para loops</p>
+            <p>
+              • Use{' '}
+              <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">
+                escreva()
+              </code>{' '}
+              para exibir texto
+            </p>
+            <p>
+              • Use{' '}
+              <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">
+                variavel nome = valor
+              </code>{' '}
+              para criar variáveis
+            </p>
+            <p>
+              • Use{' '}
+              <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">
+                se
+              </code>{' '}
+              e{' '}
+              <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">
+                senao
+              </code>{' '}
+              para condicionais
+            </p>
+            <p>
+              • Use{' '}
+              <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">
+                para
+              </code>{' '}
+              e{' '}
+              <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">
+                enquanto
+              </code>{' '}
+              para loops
+            </p>
           </div>
         </div>
 
@@ -70,11 +105,9 @@ export function ExercicioProgramacao({
               </span>
             )}
           </span>
-          <span>
-            Linguagem: Égua
-          </span>
+          <span>Linguagem: Senior Code AI</span>
         </div>
       </div>
     </div>
   );
-} 
+}

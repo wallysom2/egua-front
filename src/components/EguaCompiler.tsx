@@ -4,7 +4,11 @@ import { useEguaCompiler } from '@/hooks/useEguaCompiler';
 interface EguaCompilerProps {
   codigoInicial?: string;
   altura?: string;
-  onResultado?: (resultado: { sucesso: boolean; saida: string[]; erro?: string }) => void;
+  onResultado?: (resultado: {
+    sucesso: boolean;
+    saida: string[];
+    erro?: string;
+  }) => void;
   mostrarTempo?: boolean;
   atalhoTeclado?: boolean;
   disabled?: boolean;
@@ -13,15 +17,16 @@ interface EguaCompilerProps {
 
 export function EguaCompiler({
   codigoInicial = 'escreva("Olá, Mundo!");',
-  altura = "h-64 lg:h-80",
+  altura = 'h-64 lg:h-80',
   onResultado,
   mostrarTempo = true,
   atalhoTeclado = true,
   disabled = false,
-  className = ""
+  className = '',
 }: EguaCompilerProps) {
   const [codigo, setCodigo] = useState(codigoInicial);
-  const { executando, resultado, executarCodigo, limparResultado } = useEguaCompiler();
+  const { executando, resultado, executarCodigo, limparResultado } =
+    useEguaCompiler();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-foco no editor quando carrega
@@ -37,7 +42,7 @@ export function EguaCompiler({
       onResultado({
         sucesso: resultado.sucesso,
         saida: resultado.saida,
-        erro: resultado.erro
+        erro: resultado.erro,
       });
     }
   }, [resultado, onResultado]);
@@ -63,14 +68,18 @@ export function EguaCompiler({
       {/* Header do Editor */}
       <div className="flex items-center justify-between">
         <label className="block text-slate-700 dark:text-slate-300 font-medium">
-          💻 Editor de Código Égua
+          💻 Editor de Código Senior Code AI
         </label>
         <div className="text-xs text-slate-500 dark:text-slate-400 space-x-3">
-          <span>{linhas} linha{linhas !== 1 ? 's' : ''}</span>
-          <span>{caracteres} caractere{caracteres !== 1 ? 's' : ''}</span>
+          <span>
+            {linhas} linha{linhas !== 1 ? 's' : ''}
+          </span>
+          <span>
+            {caracteres} caractere{caracteres !== 1 ? 's' : ''}
+          </span>
         </div>
       </div>
-      
+
       {/* Editor */}
       <div className="relative group">
         <textarea
@@ -84,19 +93,20 @@ export function EguaCompiler({
           spellCheck={false}
           autoComplete="off"
         />
-        
-        {/* Badge Égua */}
+
+        {/* Badge Senior Code AI */}
         <div className="absolute top-2 right-2 flex items-center gap-2">
           <span className="text-xs text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-700 px-2 py-1 rounded border border-slate-200 dark:border-slate-600">
-            Égua
+            Senior Code AI
           </span>
         </div>
-        
+
         {/* Dica de atalho */}
         {atalhoTeclado && (
           <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <span className="text-xs text-slate-400 dark:text-slate-500 bg-white/80 dark:bg-slate-800/80 px-2 py-1 rounded backdrop-blur-sm">
-              {navigator.platform.includes('Mac') ? '⌘' : 'Ctrl'} + Enter para executar
+              {navigator.platform.includes('Mac') ? '⌘' : 'Ctrl'} + Enter para
+              executar
             </span>
           </div>
         )}
@@ -114,9 +124,7 @@ export function EguaCompiler({
             Executando...
           </>
         ) : (
-          <>
-            ▶️ Executar Código
-          </>
+          <>▶️ Executar Código</>
         )}
       </button>
 
@@ -142,14 +150,16 @@ export function EguaCompiler({
             )}
           </div>
         </div>
-        
-        <div className={`p-4 font-mono text-sm min-h-[120px] max-h-[300px] overflow-y-auto transition-all duration-300 ${
-          resultado
-            ? resultado.sucesso
-              ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-              : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-            : 'bg-white dark:bg-slate-700 text-slate-500 dark:text-slate-400'
-        }`}>
+
+        <div
+          className={`p-4 font-mono text-sm min-h-[120px] max-h-[300px] overflow-y-auto transition-all duration-300 ${
+            resultado
+              ? resultado.sucesso
+                ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+              : 'bg-white dark:bg-slate-700 text-slate-500 dark:text-slate-400'
+          }`}
+        >
           {resultado ? (
             resultado.saida.length > 0 ? (
               resultado.saida.map((linha, index) => (
@@ -194,4 +204,4 @@ export function EguaCompiler({
       </div>
     </div>
   );
-} 
+}

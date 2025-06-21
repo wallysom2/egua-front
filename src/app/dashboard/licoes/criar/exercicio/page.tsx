@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { CriarQuestao } from '@/components/CriarQuestao';
@@ -199,42 +200,32 @@ export default function CriarExercicio() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors">
-      {/* Header */}
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
+      {/* Navbar */}
       <motion.div
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="sticky top-0 z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md"
+        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm"
       >
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
+            {/* Logo */}
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/dashboard"
-                className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2 hover:scale-105 transition-transform"
+                className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2"
               >
-                🏛️ <span>Égua</span>
+                <Image
+                  src="/hu.png"
+                  alt="Senior Code AI Logo"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8"
+                />
+                <span>Senior Code AI</span>
               </Link>
-              <nav className="hidden md:flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                <Link
-                  href="/dashboard"
-                  className="hover:text-slate-900 dark:hover:text-white transition-colors"
-                >
-                  Dashboard
-                </Link>
-                <span>›</span>
-                <Link
-                  href="/dashboard/licoes"
-                  className="hover:text-slate-900 dark:hover:text-white transition-colors"
-                >
-                  Lições
-                </Link>
-                <span>›</span>
-                <span className="text-slate-900 dark:text-white font-medium">
-                  Criar Exercício
-                </span>
-              </nav>
-            </div>
+            </motion.div>
+
             <div className="flex items-center gap-3">
               <ThemeToggle />
             </div>
@@ -243,18 +234,21 @@ export default function CriarExercicio() {
       </motion.div>
 
       {/* Conteúdo Principal */}
-      <main className="container mx-auto px-6 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="max-w-4xl mx-auto"
-        >
-          <div className="mb-8">
+      <main className="flex-1 py-16 pt-32">
+        <div className="container mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="mb-8"
+          >
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
               Criar Novo Exercício
             </h1>
-          </div>
+            <p className="text-slate-600 dark:text-slate-400">
+              Crie exercícios práticos para os estudantes
+            </p>
+          </motion.div>
 
           {error && (
             <motion.div
@@ -303,7 +297,7 @@ export default function CriarExercicio() {
                         }))
                       }
                       className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
-                      placeholder="Ex: Introdução às Variáveis em Égua"
+                      placeholder="Ex: Introdução às Variáveis em Senior Code AI"
                       required
                     />
                   </div>
@@ -330,24 +324,25 @@ export default function CriarExercicio() {
                   </div>
                 </div>
 
-                {formData.codigo_exemplo && (
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      Código de Exemplo (opcional)
-                    </label>
-                    <textarea
-                      value={formData.codigo_exemplo}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          codigo_exemplo: e.target.value,
-                        }))
-                      }
-                      className="w-full h-32 px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono transition-colors text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
-                      placeholder="// Digite aqui um exemplo de código em Égua"
-                    />
-                  </div>
-                )}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">
+                    Código de Exemplo
+                  </label>
+                  <textarea
+                    name="codigoExemplo"
+                    value={formData.codigo_exemplo}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        codigo_exemplo: e.target.value,
+                      }))
+                    }
+                    rows={8}
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all font-mono text-sm"
+                    placeholder="// Digite aqui um exemplo de código em Senior Code AI"
+                    required
+                  />
+                </div>
               </div>
             </motion.div>
 
@@ -539,7 +534,7 @@ export default function CriarExercicio() {
               </div>
             </motion.div>
           </form>
-        </motion.div>
+        </div>
       </main>
     </div>
   );

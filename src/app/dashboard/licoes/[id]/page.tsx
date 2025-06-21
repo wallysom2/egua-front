@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { use } from 'react';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -149,10 +150,10 @@ export default function ExercicioDetalhes({
               const langData = await langResponse.json();
               exercicioProcessado.nome_linguagem = langData.nome;
             } else {
-              exercicioProcessado.nome_linguagem = 'Égua';
+              exercicioProcessado.nome_linguagem = 'Senior Code AI';
             }
           } catch {
-            exercicioProcessado.nome_linguagem = 'Égua';
+            exercicioProcessado.nome_linguagem = 'Senior Code AI';
           }
         }
 
@@ -349,22 +350,32 @@ export default function ExercicioDetalhes({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors">
-      {/* Header */}
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
+      {/* Navbar */}
       <motion.div
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="sticky top-0 z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md"
+        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm"
       >
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
+            {/* Logo */}
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/dashboard"
-                className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2 hover:scale-105 transition-transform"
+                className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2"
               >
-                🏛️ <span>Égua</span>
+                <Image
+                  src="/hu.png"
+                  alt="Senior Code AI Logo"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8"
+                />
+                <span>Senior Code AI</span>
               </Link>
+            </motion.div>
+            <div className="flex items-center gap-4">
               <nav className="hidden md:flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                 <Link
                   href="/dashboard"
@@ -398,45 +409,85 @@ export default function ExercicioDetalhes({
         </div>
       </motion.div>
 
-      <div className="container mx-auto px-4 sm:px-6 py-6">
-        {/* Descrição da Tarefa - Full Width no Topo */}
-        <div className="mb-6">
-          <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
-            <PainelQuestao
-              exercicio={exercicio}
-              questao={questaoAtualData}
-              questaoAtual={questaoAtual}
-              totalQuestoes={totalQuestoes}
-            />
+      {/* Conteúdo Principal */}
+      <main className="flex-1 py-16 pt-32">
+        <div className="container mx-auto px-6">
+          <div className="max-w-6xl mx-auto">
+            {/* Cabeçalho da Lição */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="mb-8"
+            >
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+                    {exercicio?.titulo || 'Carregando...'}
+                  </h1>
+                  <p className="text-slate-600 dark:text-slate-400 text-lg">
+                    {exercicio?.descricao || 'Descrição da lição...'}
+                  </p>
+                </div>
+                {user?.tipo === 'professor' && (
+                  <div className="flex gap-2">
+                    <Link
+                      href={`/dashboard/licoes/editar/${params.id}`}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    >
+                      Editar
+                    </Link>
+                    <button
+                      onClick={() => setShowDeleteModal(true)}
+                      className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                    >
+                      Excluir
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Descrição da Tarefa - Full Width no Topo */}
+            <div className="mb-6">
+              <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
+                <PainelQuestao
+                  exercicio={exercicio}
+                  questao={questaoAtualData}
+                  questaoAtual={questaoAtual}
+                  totalQuestoes={totalQuestoes}
+                />
+              </div>
+            </div>
+
+            {/* Área de Execução e Feedback */}
+            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
+              <div className="p-6">{renderResposta()}</div>
+
+              <NavegacaoQuestoes
+                questaoAtual={questaoAtual}
+                totalQuestoes={totalQuestoes}
+                respostasPreenchidas={respostasPreenchidas}
+                onMudarQuestao={mudarQuestao}
+                onProximaQuestao={proximaQuestao}
+                onQuestaoAnterior={questaoAnterior}
+              />
+
+              {/* Botão de finalizar */}
+              {questaoAtual === totalQuestoes - 1 && !exercicioFinalizado && (
+                <div className="border-t border-slate-200 dark:border-slate-700 px-6 py-4">
+                  <button
+                    onClick={finalizarExercicio}
+                    className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-2"
+                  >
+                    Finalizar Exercício
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-
-        {/* Área de Execução e Feedback */}
-        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
-          <div className="p-6">{renderResposta()}</div>
-
-          <NavegacaoQuestoes
-            questaoAtual={questaoAtual}
-            totalQuestoes={totalQuestoes}
-            respostasPreenchidas={respostasPreenchidas}
-            onMudarQuestao={mudarQuestao}
-            onProximaQuestao={proximaQuestao}
-            onQuestaoAnterior={questaoAnterior}
-          />
-
-          {/* Botão de finalizar */}
-          {questaoAtual === totalQuestoes - 1 && !exercicioFinalizado && (
-            <div className="border-t border-slate-200 dark:border-slate-700 px-6 py-4">
-              <button
-                onClick={finalizarExercicio}
-                className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all flex items-center justify-center gap-2"
-              >
-                Finalizar Exercício
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+      </main>
 
       {/* Modal de Resultados */}
       {mostrarModalResultados && resultados && (

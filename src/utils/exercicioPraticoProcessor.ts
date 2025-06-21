@@ -1,8 +1,12 @@
-import { type ExercicioPratico, type Questao, type Exercicio } from "@/types/exercicio";
+import {
+  type ExercicioPratico,
+  type Questao,
+  type Exercicio,
+} from '@/types/exercicio';
 
 // Processador para exercícios práticos com questões de código
 export function processarExercicioPratico(data: any): Exercicio {
-  console.log("Processando exercício prático:", data);
+  console.log('Processando exercício prático:', data);
 
   // Verificar se tem questões de código específicas
   let questoes: Questao[] = [];
@@ -12,95 +16,89 @@ export function processarExercicioPratico(data: any): Exercicio {
       id: questao.id,
       conteudo_id: questao.conteudo_id,
       enunciado: questao.enunciado,
-      nivel: questao.nivel || "facil",
-      tipo: "codigo" as const,
+      nivel: questao.nivel || 'facil',
+      tipo: 'codigo' as const,
       exemplo_resposta: questao.exemplo_resposta,
-      ordem: questao.ordem !== undefined ? questao.ordem : index
+      ordem: questao.ordem !== undefined ? questao.ordem : index,
     }));
   }
 
   return {
     id: data.id,
     titulo: data.titulo,
-    tipo: "pratico",
+    tipo: 'pratico',
     linguagem_id: data.linguagem_id,
     nome_linguagem: data.nome_linguagem,
     codigo_exemplo: data.codigo_exemplo,
-    questoes
+    questoes,
   };
 }
 
-// Função para validar código Égua
-export function validarCodigoEgua(codigo: string): { valido: boolean; erro?: string } {
-  if (!codigo.trim()) {
-    return { valido: false, erro: "Código não pode estar vazio" };
+// Função para validar código Senior Code AI
+export function validarCodigo(codigo: string): {
+  valido: boolean;
+  erro?: string;
+} {
+  if (!codigo || codigo.trim().length === 0) {
+    return { valido: false, erro: 'Código não pode estar vazio' };
   }
 
-  // Validações básicas para a linguagem Égua
+  // Validações básicas para a linguagem Senior Code AI
   const linhas = codigo.split('\n');
-  let temComandoEscreva = false;
 
-  for (const linha of linhas) {
-    const linhaTrimmed = linha.trim();
-    
-    if (linhaTrimmed === '') continue;
-    
-    // Verificar se tem comando escreva
-    if (linhaTrimmed.includes('escreva(')) {
-      temComandoEscreva = true;
-    }
-
-    // Verificar sintaxe básica - parênteses balanceados
-    const abreParenteses = (linhaTrimmed.match(/\(/g) || []).length;
-    const fechaParenteses = (linhaTrimmed.match(/\)/g) || []).length;
-    
-    if (abreParenteses !== fechaParenteses) {
-      return { valido: false, erro: `Parênteses não balanceados na linha: ${linha}` };
+  for (let i = 0; i < linhas.length; i++) {
+    const linha = linhas[i].trim();
+    if (linha.length > 0 && !linha.startsWith('//')) {
+      // Verificar se a linha tem sintaxe básica válida
+      if (linha.includes('(') && !linha.includes(')')) {
+        return {
+          valido: false,
+          erro: `Linha ${i + 1}: Parênteses não balanceados`,
+        };
+      }
     }
   }
 
   return { valido: true };
 }
 
-// Simulador de execução de código Égua
-export async function executarCodigoEgua(codigo: string): Promise<{ resultado: string; erro?: string }> {
-  const validacao = validarCodigoEgua(codigo);
-  
-  if (!validacao.valido) {
-    return { resultado: "", erro: validacao.erro };
-  }
-
+// Simulador de execução de código Senior Code AI
+export function simularExecucao(codigo: string): {
+  sucesso: boolean;
+  resultado?: string;
+  erro?: string;
+} {
   try {
-    // Simular delay de execução
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Simulação básica de execução
+    const linhas = codigo
+      .split('\n')
+      .filter((linha) => linha.trim().length > 0);
 
-    let resultado = "";
-    const linhas = codigo.split('\n');
-
-    for (const linha of linhas) {
-      const linhaTrimmed = linha.trim();
-      
-      if (linhaTrimmed.includes('escreva(')) {
-        // Extrair o conteúdo entre aspas do comando escreva
-        const match = linhaTrimmed.match(/escreva\s*\(\s*["']([^"']+)["']\s*\)/);
-        if (match) {
-          resultado += match[1] + '\n';
-        } else {
-          // Tentar extrair variáveis ou expressões simples
-          const matchVar = linhaTrimmed.match(/escreva\s*\(\s*([^)]+)\s*\)/);
-          if (matchVar) {
-            resultado += matchVar[1] + '\n';
-          }
-        }
-      }
+    if (linhas.length === 0) {
+      return { sucesso: false, erro: 'Código vazio' };
     }
 
-    return { resultado: resultado.trim() || "Código executado com sucesso!" };
-  } catch (error) {
-    return { resultado: "", erro: "Erro durante a execução do código" };
+    // Simular saída básica
+    const resultado = linhas
+      .filter((linha) => linha.includes('escreva') || linha.includes('imprima'))
+      .map((linha) => {
+        const match = linha.match(/escreva\s*\(\s*["']([^"']+)["']\s*\)/);
+        return match ? match[1] : 'Saída simulada';
+      })
+      .join('\n');
+
+    return {
+      sucesso: true,
+      resultado: resultado || 'Execução concluída com sucesso',
+    };
+  } catch (erro) {
+    return {
+      sucesso: false,
+      erro: `Erro na execução: ${erro}`,
+    };
   }
 }
 
 // Re-exporta o compilador real para compatibilidade
-export { useEguaCompiler } from "@/hooks/useEguaCompiler";
-export { EguaCompiler } from "@/components/EguaCompiler"; 
+export { useEguaCompiler } from '@/hooks/useEguaCompiler';
+export { EguaCompiler } from '@/components/EguaCompiler';

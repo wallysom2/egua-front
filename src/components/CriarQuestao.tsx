@@ -484,7 +484,7 @@ export function CriarQuestao({
                 ? 'border-red-500'
                 : 'border-slate-300 dark:border-slate-700'
             }`}
-            placeholder="// Digite aqui um exemplo de resposta em Égua"
+            placeholder="// Digite aqui um exemplo de resposta em Senior Code AI"
           />
           {validationErrors.exemplo_resposta && (
             <p className="mt-1 text-sm text-red-500 dark:text-red-400">
