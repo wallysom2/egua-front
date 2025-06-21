@@ -331,7 +331,7 @@ function ConteudoView({
             Senior Code AI
           </span>
           <span>•</span>
-          <span>{conteudo?.categoria || 'Geral'}</span>
+          <span>{conteudo?.linguagem?.nome || 'Geral'}</span>
         </div>
       </div>
     </div>
