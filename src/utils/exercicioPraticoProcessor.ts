@@ -1,8 +1,4 @@
-import {
-  type ExercicioPratico,
-  type Questao,
-  type Exercicio,
-} from '@/types/exercicio';
+import { type Exercicio, type Questao } from '@/types/exercicio';
 
 // Processador para exercícios práticos com questões de código
 export function processarExercicioPratico(data: any): Exercicio {

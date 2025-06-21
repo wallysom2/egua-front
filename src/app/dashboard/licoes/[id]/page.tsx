@@ -22,6 +22,14 @@ import {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
+interface User {
+  nome: string;
+  tipo: 'aluno' | 'professor' | 'desenvolvedor';
+  email?: string;
+  cpf?: string;
+  id?: string | number;
+}
+
 export default function ExercicioDetalhes({
   params,
 }: {
@@ -30,6 +38,7 @@ export default function ExercicioDetalhes({
   const router = useRouter();
   const resolvedParams = use(params);
   const [exercicio, setExercicio] = useState<Exercicio | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [questaoAtual, setQuestaoAtual] = useState(0);
   const [respostas, setRespostas] = useState<{ [key: number]: string }>({});
   const [loading, setLoading] = useState(true);
@@ -40,12 +49,23 @@ export default function ExercicioDetalhes({
     total: number;
   } | null>(null);
   const [mostrarModalResultados, setMostrarModalResultados] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       router.push('/login');
       return;
+    }
+
+    // Carregar dados do usuário
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error('Erro ao processar dados do usuário:', error);
+      }
     }
 
     const fetchExercicio = async () => {
@@ -426,13 +446,13 @@ export default function ExercicioDetalhes({
                     {exercicio?.titulo || 'Carregando...'}
                   </h1>
                   <p className="text-slate-600 dark:text-slate-400 text-lg">
-                    {exercicio?.descricao || 'Descrição da lição...'}
+                    Exercício prático de programação
                   </p>
                 </div>
                 {user?.tipo === 'professor' && (
                   <div className="flex gap-2">
                     <Link
-                      href={`/dashboard/licoes/editar/${params.id}`}
+                      href={`/dashboard/licoes/editar/${resolvedParams.id}`}
                       className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                     >
                       Editar
@@ -574,6 +594,52 @@ export default function ExercicioDetalhes({
                   className="w-full py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Voltar para Lições
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Modal de confirmação de exclusão */}
+      {showDeleteModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowDeleteModal(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-md w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-center">
+              <div className="text-4xl mb-4">⚠️</div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
+                Confirmar Exclusão
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 mb-6">
+                Tem certeza que deseja excluir este exercício? Esta ação não
+                pode ser desfeita.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => {
+                    // Implementar lógica de exclusão aqui
+                    setShowDeleteModal(false);
+                    router.push('/dashboard/licoes');
+                  }}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Excluir
                 </button>
               </div>
             </div>

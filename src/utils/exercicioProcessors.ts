@@ -1,84 +1,87 @@
 import {
-  type Opcao,
-  type Questao,
   type Exercicio,
+  type Questao,
   type ExercicioComQuestoes,
-  type ExercicioComConteudo
-} from "@/types/exercicio";
+  type ExercicioComConteudo,
+} from '@/types/exercicio';
 
 // Processador para formato com exercicio_questao
-export function processarExercicioComQuestoes(data: ExercicioComQuestoes): Exercicio {
-  console.log("Processando exercício com questões:", data);
-  
+export function processarExercicioComQuestoes(
+  data: ExercicioComQuestoes,
+): Exercicio {
+  console.log('Processando exercício com questões:', data);
+
   const questoes: Questao[] = data.exercicio_questao
     .map((eq) => ({
       id: eq.questao.id,
       conteudo_id: eq.questao.conteudo_id,
       enunciado: eq.questao.enunciado,
       nivel: eq.questao.nivel,
-      tipo: eq.questao.tipo as Questao["tipo"],
+      tipo: eq.questao.tipo as Questao['tipo'],
       opcoes: eq.questao.opcoes || [],
       resposta_correta: eq.questao.resposta_correta,
       exemplo_resposta: eq.questao.exemplo_resposta,
-      ordem: eq.ordem
+      ordem: eq.ordem,
     }))
     .sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
 
-  console.log("Questões processadas:", questoes);
+  console.log('Questões processadas:', questoes);
 
   return {
     id: data.id,
     titulo: data.titulo,
     tipo: data.tipo,
     linguagem_id: data.linguagem_id,
-    questoes
+    questoes,
   };
 }
 
 // Processador para formato com conteúdo
-export function processarExercicioComConteudo(data: ExercicioComConteudo): Exercicio {
-  console.log("Processando exercício com conteúdo:", data);
-  
+export function processarExercicioComConteudo(
+  data: ExercicioComConteudo,
+): Exercicio {
+  console.log('Processando exercício com conteúdo:', data);
+
   const questoes: Questao[] = data.conteudo.questoes
     .map((questao, index) => ({
       id: questao.id,
       conteudo_id: data.conteudo.id,
       enunciado: questao.enunciado,
       nivel: questao.nivel,
-      tipo: questao.tipo as Questao["tipo"],
+      tipo: questao.tipo as Questao['tipo'],
       opcoes: questao.opcoes || [],
       resposta_correta: questao.resposta_correta,
       exemplo_resposta: questao.exemplo_resposta,
-      ordem: questao.ordem !== undefined ? questao.ordem : index
+      ordem: questao.ordem !== undefined ? questao.ordem : index,
     }))
     .sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
 
-  console.log("Questões processadas:", questoes);
+  console.log('Questões processadas:', questoes);
 
   return {
     id: data.id,
     titulo: data.titulo,
     tipo: data.tipo,
     linguagem_id: data.linguagem_id,
-    questoes
+    questoes,
   };
 }
 
 // Processador para formato simples (array de questões direto)
 export function processarQuestoesSimples(questoes: any[]): Questao[] {
-  console.log("Processando questões simples:", questoes);
-  
+  console.log('Processando questões simples:', questoes);
+
   return questoes.map((questao, index) => {
     const questaoProcessada = {
       id: questao.id,
       conteudo_id: questao.conteudo_id,
       enunciado: questao.enunciado,
-      nivel: questao.nivel || "facil",
+      nivel: questao.nivel || 'facil',
       tipo: questao.tipo,
       opcoes: questao.opcoes || [],
       resposta_correta: questao.resposta_correta,
       exemplo_resposta: questao.exemplo_resposta,
-      ordem: questao.ordem !== undefined ? questao.ordem : index
+      ordem: questao.ordem !== undefined ? questao.ordem : index,
     };
     console.log(`Questão ${index + 1} processada:`, questaoProcessada);
     return questaoProcessada;
@@ -87,7 +90,7 @@ export function processarQuestoesSimples(questoes: any[]): Questao[] {
 
 // Função principal para detectar o formato e processar adequadamente
 export function processarExercicio(data: any): Exercicio {
-  console.log("Dados recebidos da API:", data);
+  console.log('Dados recebidos da API:', data);
 
   // Verificar se tem exercicio_questao (formato atual do quiz)
   if (data.exercicio_questao && Array.isArray(data.exercicio_questao)) {
@@ -95,7 +98,11 @@ export function processarExercicio(data: any): Exercicio {
   }
 
   // Verificar se tem conteúdo com questões
-  if (data.conteudo && data.conteudo.questoes && Array.isArray(data.conteudo.questoes)) {
+  if (
+    data.conteudo &&
+    data.conteudo.questoes &&
+    Array.isArray(data.conteudo.questoes)
+  ) {
     return processarExercicioComConteudo(data as ExercicioComConteudo);
   }
 
@@ -107,28 +114,27 @@ export function processarExercicio(data: any): Exercicio {
     linguagem_id: data.linguagem_id,
     nome_linguagem: data.nome_linguagem,
     codigo_exemplo: data.codigo_exemplo,
-    questoes: []
+    questoes: [],
   };
 }
 
 // Função para processar questões que vêm de endpoint separado
-export function processarQuestoesDoEndpoint(questoesData: any, exercicioId: number): Questao[] {
-  console.log("Processando questões do endpoint:", questoesData);
-
-  // Se a resposta for um array, usar diretamente
-  if (Array.isArray(questoesData)) {
-    return processarQuestoesSimples(questoesData);
-  }
-  
-  // Se a resposta for um objeto com uma propriedade que contém as questões
-  if (questoesData.questoes && Array.isArray(questoesData.questoes)) {
-    return processarQuestoesSimples(questoesData.questoes);
-  }
-  
-  // Se a resposta for uma única questão, colocar em um array
-  if (questoesData.id) {
-    return processarQuestoesSimples([questoesData]);
-  }
-
-  return [];
-} 
+export function processarQuestoesDoEndpoint(
+  questoesData: any[],
+  exercicioId: number,
+): Questao[] {
+  return questoesData
+    .filter((questao) => questao.exercicio_id === exercicioId)
+    .map((questao) => ({
+      id: questao.id,
+      conteudo_id: questao.conteudo_id,
+      enunciado: questao.enunciado,
+      nivel: questao.nivel,
+      tipo: questao.tipo,
+      opcoes: questao.opcoes || [],
+      resposta_correta: questao.resposta_correta,
+      exemplo_resposta: questao.exemplo_resposta,
+      ordem: questao.ordem,
+    }))
+    .sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+}

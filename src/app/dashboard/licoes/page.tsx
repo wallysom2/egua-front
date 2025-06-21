@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -16,13 +16,6 @@ interface Exercicio {
   linguagem_id: number;
   created_at?: string;
   updated_at?: string;
-}
-
-interface UserExercicio {
-  id: string;
-  exercicio_id: number;
-  status: 'em_andamento' | 'concluido';
-  finalizado_em: string | null;
 }
 
 interface ToastNotification {
@@ -46,7 +39,6 @@ export default function Licoes() {
   const [linguagensMap, setLinguagensMap] = useState<Map<number, string>>(
     new Map(),
   );
-  const [userExercicios, setUserExercicios] = useState<UserExercicio[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isProfessor, setIsProfessor] = useState(false);
@@ -72,19 +64,14 @@ export default function Licoes() {
   // Estados para UX
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
-  const [deletingExercicio, setDeletingExercicio] = useState<number | null>(
+  const [exercicioToDelete, setExercicioToDelete] = useState<number | null>(
     null,
   );
 
-  const getStatusExercicio = useCallback(
-    (exercicioId: number) => {
-      const userExercicio = userExercicios.find(
-        (ue: UserExercicio) => ue.exercicio_id === exercicioId,
-      );
-      return userExercicio?.status || null;
-    },
-    [userExercicios],
-  );
+  const getStatusExercicio = (): 'em_andamento' | 'concluido' | null => {
+    // Por enquanto retorna null - implementar lógica de status conforme necessário
+    return null;
+  };
 
   const addToast = (toast: Omit<ToastNotification, 'id'>) => {
     const id = Math.random().toString(36).substr(2, 9);
@@ -96,7 +83,7 @@ export default function Licoes() {
   };
 
   const handleDeleteExercicio = async (exercicioId: number) => {
-    setDeletingExercicio(exercicioId);
+    setExercicioToDelete(exercicioId);
     const token = localStorage.getItem('token');
 
     try {
@@ -125,7 +112,7 @@ export default function Licoes() {
         description: 'Tente novamente mais tarde',
       });
     } finally {
-      setDeletingExercicio(null);
+      setExercicioToDelete(null);
       setShowDeleteModal(null);
     }
   };
@@ -170,8 +157,8 @@ export default function Licoes() {
 
     // Filtro por status
     if (selectedStatus !== 'todos') {
-      filtered = filtered.filter((exercicio) => {
-        const status = getStatusExercicio(exercicio.id);
+      filtered = filtered.filter(() => {
+        const status = getStatusExercicio();
         if (selectedStatus === 'nao_iniciado') return !status;
         return status === selectedStatus;
       });
@@ -192,8 +179,8 @@ export default function Licoes() {
           bVal = b.tipo;
           break;
         case 'status':
-          aVal = getStatusExercicio(a.id) || 'nao_iniciado';
-          bVal = getStatusExercicio(b.id) || 'nao_iniciado';
+          aVal = getStatusExercicio() || 'nao_iniciado';
+          bVal = getStatusExercicio() || 'nao_iniciado';
           break;
         case 'criado':
           aVal = new Date(a.created_at || 0);
@@ -218,8 +205,6 @@ export default function Licoes() {
     selectedLinguagem,
     sortBy,
     sortOrder,
-    userExercicios,
-    getStatusExercicio,
   ]);
 
   useEffect(() => {
@@ -677,7 +662,7 @@ export default function Licoes() {
               }
             >
               {filteredExercicios.map((exercicio: Exercicio, index: number) => {
-                const status = getStatusExercicio(exercicio.id);
+                const status = getStatusExercicio();
                 const isCompleted = status === 'concluido';
                 const isInProgress = status === 'em_andamento';
 
@@ -878,17 +863,17 @@ export default function Licoes() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShowDeleteModal(null)}
-                    disabled={deletingExercicio === showDeleteModal}
+                    disabled={exercicioToDelete === showDeleteModal}
                     className="flex-1 px-4 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
                   >
                     Cancelar
                   </button>
                   <button
                     onClick={() => handleDeleteExercicio(showDeleteModal)}
-                    disabled={deletingExercicio === showDeleteModal}
+                    disabled={exercicioToDelete === showDeleteModal}
                     className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                   >
-                    {deletingExercicio === showDeleteModal ? (
+                    {exercicioToDelete === showDeleteModal ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         Excluindo...
