@@ -629,7 +629,9 @@ export default function Licoes() {
                 selectedStatus !== 'todos' ||
                 selectedLinguagem !== 'todas'
                   ? 'Tente ajustar os filtros ou fazer uma nova busca'
-                  : 'Comece criando seu primeiro exercício de programação!'}
+                  : isProfessor || isDesenvolvedor
+                  ? 'Comece criando seu primeiro exercício de programação!'
+                  : 'Entre em contato com um professor ou desenvolvedor para ter acesso aos exercícios'}
               </p>
               {searchTerm ||
               selectedTipo !== 'todos' ||
@@ -642,12 +644,14 @@ export default function Licoes() {
                   🔄 Limpar filtros
                 </button>
               ) : (
-                <Link
-                  href="/dashboard/licoes/criar/exercicio"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors transform hover:scale-105"
-                >
-                  ➕ Criar Primeiro Exercício
-                </Link>
+                (isProfessor || isDesenvolvedor) && (
+                  <Link
+                    href="/dashboard/licoes/criar/exercicio"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors transform hover:scale-105"
+                  >
+                    ➕ Criar Primeiro Exercício
+                  </Link>
+                )
               )}
             </div>
           ) : (

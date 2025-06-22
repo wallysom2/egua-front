@@ -133,7 +133,8 @@ export default function ExercicioAlunoDetalhes({
     acertos: number;
     total: number;
   } | null>(null);
-  const [mostrarModalResultados, setMostrarModalResultados] = useState(false);
+  const [mostrarFeedback, setMostrarFeedback] = useState(false);
+  const [exercicioConcluido, setExercicioConcluido] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -301,32 +302,83 @@ export default function ExercicioAlunoDetalhes({
       }
     });
 
+    const pontuacao = (acertos / totalQuestoes) * 100;
+    const exercicioCompleto = pontuacao >= 70; // Considera aprovado com 70% ou mais
+
     setResultados({ acertos, total: totalQuestoes });
     setExercicioFinalizado(true);
-    setMostrarModalResultados(true);
+    setMostrarFeedback(true);
 
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(
-        `${API_URL}/exercicios/${resolvedParams.id}/submit`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+      // Se o exercício foi aprovado, salvar no banco
+      if (exercicioCompleto) {
+        // Primeiro, verificar se o exercício já foi iniciado
+        const statusResponse = await fetch(
+          `${API_URL}/user-exercicio/status/${resolvedParams.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
           },
-          body: JSON.stringify({
-            respostas: exercicio?.tipo === 'pratico' ? {} : respostas,
-            pontuacao: (acertos / totalQuestoes) * 100,
-          }),
-        },
-      );
+        );
 
-      if (response.ok) {
-        setTimeout(() => {
-          router.push('/aluno');
-        }, 4000);
+        let userExercicioId: string | null = null;
+
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+
+          if (statusData.status === 'nao_iniciado') {
+            // Iniciar o exercício
+            const iniciarResponse = await fetch(
+              `${API_URL}/user-exercicio/iniciar`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  exercicio_id: parseInt(resolvedParams.id),
+                }),
+              },
+            );
+
+            if (iniciarResponse.ok) {
+              const iniciarData = await iniciarResponse.json();
+              userExercicioId = iniciarData.id;
+            }
+          } else if (statusData.progresso) {
+            userExercicioId = statusData.progresso.id;
+          }
+        }
+
+        // Se temos um userExercicioId, finalizar o exercício
+        if (userExercicioId) {
+          const finalizarResponse = await fetch(
+            `${API_URL}/user-exercicio/${userExercicioId}/finalizar`,
+            {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+
+          if (finalizarResponse.ok) {
+            console.log('Exercício finalizado com sucesso no banco de dados');
+            setExercicioConcluido(true);
+          }
+        }
       }
+
+      // Mostrar feedback por 5 segundos e depois redirecionar
+      setTimeout(() => {
+        setMostrarFeedback(false);
+        router.push('/aluno');
+      }, 5000);
     } catch (error) {
       console.error('Erro ao finalizar exercício:', error);
     }
@@ -559,23 +611,25 @@ export default function ExercicioAlunoDetalhes({
         </div>
       </main>
 
-      {/* Modal de Resultados */}
-      {mostrarModalResultados && resultados && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-300 dark:border-slate-700 p-8 max-w-lg w-full text-center shadow-2xl"
-          >
-            <div className="text-8xl mb-6">
+      {/* Feedback em Tela */}
+      {mostrarFeedback && resultados && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed top-4 right-4 z-50 bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 p-6 shadow-2xl max-w-sm"
+        >
+          <div className="text-center">
+            <div className="text-4xl mb-4">
               {resultados.acertos === resultados.total ? '🏆' : '👏'}
             </div>
 
-            <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-6">
-              Parabéns!
-            </h2>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+              {resultados.acertos === resultados.total
+                ? 'Parabéns!'
+                : 'Bom trabalho!'}
+            </h3>
 
-            <div className="text-2xl text-slate-700 dark:text-slate-300 mb-6">
+            <div className="text-lg text-slate-700 dark:text-slate-300 mb-4">
               Você acertou{' '}
               <span className="font-bold text-green-600">
                 {resultados.acertos}
@@ -583,19 +637,20 @@ export default function ExercicioAlunoDetalhes({
               de <span className="font-bold">{resultados.total}</span> questões
             </div>
 
-            <div className="text-xl text-slate-600 dark:text-slate-400 mb-8">
-              {resultados.acertos === resultados.total
-                ? '🌟 Perfeito! Você é incrível!'
-                : resultados.acertos >= resultados.total * 0.7
-                ? '🎯 Muito bem! Excelente trabalho!'
-                : '💪 Bom trabalho! Continue praticando!'}
-            </div>
+            {exercicioConcluido && (
+              <div className="bg-green-100 dark:bg-green-900/20 border border-green-300 dark:border-green-600 rounded-lg p-3 mb-4">
+                <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                  <span className="text-lg">✅</span>
+                  <span className="font-semibold">Exercício concluído!</span>
+                </div>
+              </div>
+            )}
 
-            <div className="text-lg text-slate-500 dark:text-slate-400">
-              Voltando automaticamente em alguns segundos...
+            <div className="text-sm text-slate-500 dark:text-slate-400">
+              Voltando em alguns segundos...
             </div>
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
       )}
     </div>
   );

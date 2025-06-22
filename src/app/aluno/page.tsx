@@ -24,6 +24,8 @@ interface Exercicio {
   linguagem_id: number;
   created_at?: string;
   updated_at?: string;
+  status?: 'nao_iniciado' | 'em_andamento' | 'concluido';
+  progresso?: any;
 }
 
 export default function DashboardAluno() {
@@ -243,12 +245,23 @@ export default function DashboardAluno() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-300 dark:border-slate-700 p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:border-blue-400 dark:hover:border-blue-600 cursor-pointer transform hover:scale-105"
+                      className={`rounded-2xl border p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 ${
+                        exercicio.status === 'concluido'
+                          ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-600 hover:border-green-400 dark:hover:border-green-500'
+                          : 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-600'
+                      }`}
                     >
-                      {/* Título */}
-                      <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white leading-relaxed">
-                        {exercicio.titulo}
-                      </h3>
+                      {/* Header com status */}
+                      <div className="flex justify-between items-start mb-4">
+                        <h3 className="text-2xl font-bold text-slate-900 dark:text-white leading-relaxed">
+                          {exercicio.titulo}
+                        </h3>
+                        {exercicio.status === 'concluido' && (
+                          <div className="flex items-center justify-center w-8 h-8 bg-green-500 text-white rounded-full">
+                            <span className="text-sm">✓</span>
+                          </div>
+                        )}
+                      </div>
 
                       {/* Linguagem */}
                       <div className="mb-4">
@@ -257,6 +270,28 @@ export default function DashboardAluno() {
                           {linguagensMap.get(exercicio.linguagem_id) ||
                             'Carregando...'}
                         </p>
+                      </div>
+
+                      {/* Status do exercício */}
+                      <div className="mt-4">
+                        {exercicio.status === 'concluido' && (
+                          <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                            <span className="text-lg">🎉</span>
+                            <span className="font-semibold">Concluído!</span>
+                          </div>
+                        )}
+                        {exercicio.status === 'em_andamento' && (
+                          <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                            <span className="text-lg">⏳</span>
+                            <span className="font-semibold">Em andamento</span>
+                          </div>
+                        )}
+                        {exercicio.status === 'nao_iniciado' && (
+                          <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                            <span className="text-lg">📚</span>
+                            <span className="font-semibold">Não iniciado</span>
+                          </div>
+                        )}
                       </div>
                     </motion.div>
                   </Link>

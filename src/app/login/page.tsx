@@ -49,7 +49,7 @@ export default function Login() {
         // Redireciona após login bem-sucedido baseado no tipo de usuário
         const usuario = response.data.data.usuario;
         if (usuario.tipo === 'aluno') {
-          router.push('/aluno');
+          router.push('/dashboard');
         } else {
           router.push('/dashboard');
         }

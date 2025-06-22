@@ -35,12 +35,8 @@ export default function Dashboard() {
     try {
       const userData = JSON.parse(storedUser);
 
-      // Redirecionar alunos para sua página específica
-      if (userData.tipo === 'aluno') {
-        router.push('/aluno');
-        return;
-      }
-
+      // Removido o redirecionamento automático de alunos
+      // Alunos agora podem acessar o dashboard normalmente
       setUser(userData);
     } catch (error) {
       console.error('Erro ao processar dados do usuário:', error);
