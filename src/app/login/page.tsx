@@ -46,8 +46,13 @@ export default function Login() {
           JSON.stringify(response.data.data.usuario),
         );
 
-        // Redireciona após login bem-sucedido
-        router.push('/dashboard');
+        // Redireciona após login bem-sucedido baseado no tipo de usuário
+        const usuario = response.data.data.usuario;
+        if (usuario.tipo === 'aluno') {
+          router.push('/aluno');
+        } else {
+          router.push('/dashboard');
+        }
       } else {
         setError(response.data.message || 'Erro ao fazer login');
       }

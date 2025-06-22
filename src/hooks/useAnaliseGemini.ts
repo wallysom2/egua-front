@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { type RespostaComAnalise } from '@/types/exercicio';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 interface UseAnaliseGeminiProps {
   respostaId: string | null;
@@ -100,13 +100,7 @@ export function useAnaliseGemini({
       console.log('Limpando polling de análise');
       clearInterval(interval);
     };
-  }, [
-    respostaId,
-    analise?.analise_disponivel,
-    autoRefresh,
-    refreshInterval,
-    buscarAnalise,
-  ]);
+  });
 
   return {
     analise,

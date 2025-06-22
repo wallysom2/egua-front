@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { EguaCompiler } from '@/components/EguaCompiler';
 import { AnaliseGemini } from './AnaliseGemini';
-import { DebugAnalise } from './DebugAnalise';
 import { type Questao } from '@/types/exercicio';
 
 interface ExercicioProgramacaoProps {
@@ -131,157 +130,79 @@ export function ExercicioProgramacao({
 
   return (
     <div className="space-y-6">
-      {/* Editor de Código */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Coluna da Esquerda - Editor */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-              💻 Editor de Código
-            </h3>
-            {questao && userId && exercicioId && !exercicioFinalizado && (
-              <button
-                onClick={submeterResposta}
-                disabled={submissaoCarregando || !codigoAtual.trim()}
-                className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
-                  submissaoSucesso
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                    : submissaoCarregando
-                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
-                }`}
-              >
-                {submissaoCarregando ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    Enviando...
-                  </>
-                ) : submissaoSucesso ? (
-                  <>✅ Enviado!</>
-                ) : (
-                  <>🚀 Submeter Resposta</>
-                )}
-              </button>
-            )}
+      {/* Editor de Código Simplificado */}
+      <div className="space-y-4">
+        <EguaCompiler
+          codigoInicial={codigoAtual}
+          altura="h-80"
+          disabled={exercicioFinalizado}
+          mostrarTempo={false}
+          atalhoTeclado={true}
+          onCodigoChange={handleCodigoChange}
+        />
+
+        {/* Botão Submeter - Simplificado */}
+        {questao && userId && exercicioId && !exercicioFinalizado && (
+          <button
+            onClick={submeterResposta}
+            disabled={submissaoCarregando || !codigoAtual.trim()}
+            className={`w-full py-4 text-lg font-semibold rounded-lg transition-all ${
+              submissaoSucesso
+                ? 'bg-green-500 text-white'
+                : submissaoCarregando
+                ? 'bg-gray-400 text-white cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700 text-white'
+            }`}
+          >
+            {submissaoCarregando
+              ? 'Enviando...'
+              : submissaoSucesso
+              ? '✅ Enviado com sucesso!'
+              : 'Enviar Resposta'}
+          </button>
+        )}
+
+        {/* Mensagem de Erro Simplificada */}
+        {submissaoError && (
+          <div className="bg-red-100 border border-red-300 rounded-lg p-4">
+            <p className="text-red-700 text-center font-medium">
+              ❌ {submissaoError}
+            </p>
           </div>
+        )}
 
-          <EguaCompiler
-            codigoInicial={codigoAtual}
-            altura="h-64 lg:h-80"
-            disabled={exercicioFinalizado}
-            mostrarTempo={true}
-            atalhoTeclado={true}
-            onCodigoChange={handleCodigoChange}
-          />
-
-          {/* Status da Submissão */}
-          {submissaoError && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-              <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                <span>❌</span>
-                <span className="text-sm">{submissaoError}</span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Coluna da Direita - Instruções e Análise */}
-        <div className="space-y-4">
-          {/* Dica - Exemplo de Resposta */}
-          {questao?.exemplo_resposta && (
-            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg overflow-hidden">
-              <div className="p-3 border-b border-amber-200 dark:border-amber-700 bg-amber-100/50 dark:bg-amber-900/30">
-                <h4 className="text-slate-700 dark:text-slate-300 font-medium flex items-center gap-2 text-sm">
-                  💡 Dica - Exemplo de Resposta
-                </h4>
-              </div>
-              <div className="p-4">
-                <pre className="text-amber-800 dark:text-amber-300 font-mono text-sm overflow-x-auto max-h-40 overflow-y-auto leading-relaxed">
-                  {questao.exemplo_resposta}
-                </pre>
-              </div>
-            </div>
-          )}
-
-          {/* Instruções Adicionais */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-            <h4 className="text-slate-700 dark:text-slate-300 font-medium mb-3 flex items-center gap-2 text-sm">
-              📚 Instruções
+        {/* Exemplo de Resposta - Simplificado */}
+        {questao?.exemplo_resposta && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-6">
+            <h4 className="text-lg font-semibold text-yellow-800 mb-3">
+              💡 Exemplo de como fazer:
             </h4>
-            <div className="text-sm text-blue-800 dark:text-blue-300 space-y-2">
-              <p>
-                • Use{' '}
-                <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">
-                  escreva()
-                </code>{' '}
-                para exibir texto
-              </p>
-              <p>
-                • Use{' '}
-                <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">
-                  variavel nome = valor
-                </code>{' '}
-                para criar variáveis
-              </p>
-              <p>
-                • Use{' '}
-                <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">
-                  se
-                </code>{' '}
-                e{' '}
-                <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">
-                  senao
-                </code>{' '}
-                para condicionais
-              </p>
-              <p>
-                • Use{' '}
-                <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">
-                  para
-                </code>{' '}
-                e{' '}
-                <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">
-                  enquanto
-                </code>{' '}
-                para loops
-              </p>
+            <div className="bg-white p-4 rounded border">
+              <pre className="text-sm text-gray-800 font-mono">
+                {questao.exemplo_resposta}
+              </pre>
             </div>
           </div>
+        )}
 
-          {/* Status do Exercício */}
-          <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between bg-slate-100 dark:bg-slate-800 rounded-lg px-3 py-2">
-            <span>
-              {exercicioFinalizado ? (
-                <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
-                  ✅ Exercício finalizado
-                </span>
-              ) : (
-                <span className="flex items-center gap-1">
-                  ✏️ Exercício em andamento
-                </span>
-              )}
-            </span>
-            <span>Linguagem: Senior Code AI</span>
+        {/* Status Final Simplificado */}
+        {exercicioFinalizado && (
+          <div className="bg-green-100 border border-green-300 rounded-lg p-4 text-center">
+            <p className="text-green-700 text-lg font-semibold">
+              ✅ Exercício concluído!
+            </p>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Análise do Gemini */}
-      <div className="mt-6">
+      {/* Análise do Gemini - Mantida mas simplificada */}
+      <div className="mt-8">
         <AnaliseGemini
           respostaId={respostaId}
           questaoId={questao?.id || 0}
           userId={userId || ''}
         />
       </div>
-
-      {/* Debug em desenvolvimento */}
-      <DebugAnalise
-        respostaId={respostaId}
-        progressoId={progressoId}
-        userId={userId}
-        exercicioId={exercicioId}
-      />
     </div>
   );
 }

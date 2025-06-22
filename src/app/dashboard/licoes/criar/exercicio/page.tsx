@@ -40,7 +40,6 @@ export default function CriarExercicio() {
   const [formData, setFormData] = useState({
     titulo: '',
     linguagem_id: 0,
-    codigo_exemplo: '',
     tipo: 'pratico' as 'pratico' | 'quiz',
     questoes: [] as { questao_id: number; ordem: number }[],
   });
@@ -322,26 +321,6 @@ export default function CriarExercicio() {
                       ))}
                     </select>
                   </div>
-                </div>
-
-                <div className="mb-6">
-                  <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">
-                    Código de Exemplo
-                  </label>
-                  <textarea
-                    name="codigoExemplo"
-                    value={formData.codigo_exemplo}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        codigo_exemplo: e.target.value,
-                      }))
-                    }
-                    rows={8}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all font-mono text-sm"
-                    placeholder="// Digite aqui um exemplo de código em Senior Code AI"
-                    required
-                  />
                 </div>
               </div>
             </motion.div>

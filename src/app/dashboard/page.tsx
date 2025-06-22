@@ -33,7 +33,15 @@ export default function Dashboard() {
     }
 
     try {
-      setUser(JSON.parse(storedUser));
+      const userData = JSON.parse(storedUser);
+
+      // Redirecionar alunos para sua página específica
+      if (userData.tipo === 'aluno') {
+        router.push('/aluno');
+        return;
+      }
+
+      setUser(userData);
     } catch (error) {
       console.error('Erro ao processar dados do usuário:', error);
       localStorage.removeItem('user');
@@ -336,7 +344,7 @@ export default function Dashboard() {
             className="text-slate-600 dark:text-slate-400"
             whileHover={{ scale: 1.02 }}
           >
-            🏛️ Senior Code AI
+            Senior Code AI
           </motion.p>
         </div>
       </footer>
