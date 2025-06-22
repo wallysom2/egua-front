@@ -20,7 +20,7 @@ import {
   PainelQuestao,
 } from './components';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 interface User {
   nome: string;
@@ -289,6 +289,8 @@ export default function ExercicioDetalhes({
           questao={questaoAtualData}
           codigoExemplo={exercicio.codigo_exemplo}
           exercicioFinalizado={exercicioFinalizado}
+          userId={user?.id}
+          exercicioId={resolvedParams.id}
         />
       );
     }

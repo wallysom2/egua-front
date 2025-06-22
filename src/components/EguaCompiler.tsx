@@ -9,6 +9,7 @@ interface EguaCompilerProps {
     saida: string[];
     erro?: string;
   }) => void;
+  onCodigoChange?: (codigo: string) => void;
   mostrarTempo?: boolean;
   atalhoTeclado?: boolean;
   disabled?: boolean;
@@ -19,6 +20,7 @@ export function EguaCompiler({
   codigoInicial = 'escreva("Olá, Mundo!");',
   altura = 'h-64 lg:h-80',
   onResultado,
+  onCodigoChange,
   mostrarTempo = true,
   atalhoTeclado = true,
   disabled = false,
@@ -85,7 +87,10 @@ export function EguaCompiler({
         <textarea
           ref={textareaRef}
           value={codigo}
-          onChange={(e) => setCodigo(e.target.value)}
+          onChange={(e) => {
+            setCodigo(e.target.value);
+            onCodigoChange?.(e.target.value);
+          }}
           onKeyDown={handleKeyDown}
           className={`w-full ${altura} bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg p-4 text-slate-900 dark:text-white font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all duration-200`}
           placeholder="escreva('Olá, Mundo!');"

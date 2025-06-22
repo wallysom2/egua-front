@@ -97,3 +97,35 @@ export interface RespostaCodigo {
 }
 
 export type RespostaExercicio = RespostaMultiplaEscolha | RespostaCodigo;
+
+// Tipos para análise do Gemini
+export interface AnaliseGemini {
+  criterio: string;
+  peso: number;
+  aprovado: boolean;
+  feedback: string;
+  avaliado_em: string;
+}
+
+export interface ResultadoAnalise {
+  aprovado: boolean;
+  pontuacao_media: number;
+}
+
+export interface RespostaComAnalise {
+  id: string;
+  resposta: string;
+  questao: {
+    enunciado: string;
+    tipo: string;
+  };
+  analise_disponivel: boolean;
+  analises: AnaliseGemini[];
+  resultado_geral: ResultadoAnalise;
+}
+
+export interface SubmissaoResposta {
+  user_exercicio_id: string;
+  questao_id: number;
+  resposta: string;
+}
