@@ -112,20 +112,54 @@ export interface ResultadoAnalise {
   pontuacao_media: number;
 }
 
+export interface MensagemPersonalizada {
+  mensagem: string;
+  tom: 'orientacao' | 'parabenizacao' | 'motivacao' | 'correcao';
+}
+
 export interface RespostaComAnalise {
-  id: string;
+  id?: string;
   resposta: string;
   questao: {
     enunciado: string;
     tipo: string;
   };
   analise_disponivel: boolean;
-  analises: AnaliseGemini[];
+  analises?: AnaliseGemini[]; // Opcional para compatibilidade com formato antigo
   resultado_geral: ResultadoAnalise;
+  mensagem_personalizada?: MensagemPersonalizada; // Nova propriedade para mensagem da IA
 }
 
 export interface SubmissaoResposta {
-  user_exercicio_id: string;
+  user_exercicio_id: string; // Obrigatório - deve iniciar exercício primeiro
   questao_id: number;
   resposta: string;
+}
+
+export interface StatusExercicio {
+  status: 'nao_iniciado' | 'em_andamento' | 'concluido';
+  exercicio_id: number;
+  progresso: {
+    id: string;
+    usuario_id: string;
+    exercicio_id: number;
+    iniciado_em: string;
+    status: string;
+    estatisticas: {
+      total_questoes: number;
+      questoes_respondidas: number;
+      questoes_aprovadas: number;
+    };
+  } | null;
+}
+
+export interface IniciarExercicioResponse {
+  message: string;
+  data: {
+    id: string;
+    usuario_id: string;
+    exercicio_id: number;
+    status: string;
+    iniciado_em: string;
+  };
 }

@@ -74,27 +74,6 @@ export function PainelQuestao({
           </p>
         </div>
       </div>
-
-      {/* Exemplo de resposta para questões não práticas */}
-      {questao.exemplo_resposta && exercicio.tipo !== 'pratico' && (
-        <div className="mb-6">
-          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 uppercase tracking-wide flex items-center gap-2">
-            💡 Exemplo de Resposta
-          </h3>
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg overflow-hidden">
-            <div className="bg-amber-100 dark:bg-amber-900/30 px-4 py-2 border-b border-amber-200 dark:border-amber-700">
-              <span className="text-xs font-medium text-amber-800 dark:text-amber-300 uppercase tracking-wide">
-                Referência
-              </span>
-            </div>
-            <div className="p-4">
-              <pre className="text-amber-800 dark:text-amber-300 font-mono text-sm overflow-x-auto leading-relaxed">
-                {questao.exemplo_resposta}
-              </pre>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

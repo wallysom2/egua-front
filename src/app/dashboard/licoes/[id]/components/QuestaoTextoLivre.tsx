@@ -26,17 +26,6 @@ export function QuestaoTextoLivre({
         placeholder="Digite sua resposta aqui..."
         disabled={exercicioFinalizado}
       />
-
-      {questao.exemplo_resposta && (
-        <div className="bg-slate-800/30 border border-slate-600 rounded-lg p-4">
-          <h4 className="text-white font-medium mb-3 flex items-center gap-2">
-            💡 Exemplo de Resposta
-          </h4>
-          <div className="text-slate-300 text-sm bg-slate-900/50 p-3 rounded">
-            {questao.exemplo_resposta}
-          </div>
-        </div>
-      )}
     </div>
   );
 } 

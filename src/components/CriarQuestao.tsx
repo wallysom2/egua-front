@@ -26,64 +26,72 @@ interface QuestaoFormData {
   exemplo_resposta?: string;
 }
 
-// Schemas para validar os dados a serem enviados para a API
-const baseApiQuestaoProps = {
-  conteudo_id: z
-    .number({ required_error: 'Conteúdo de referência é obrigatório' })
-    .min(1, 'Conteúdo de referência é obrigatório'),
-  enunciado: z
-    .string()
-    .min(10, { message: 'Enunciado da questão deve ser mais detalhado' }),
-  nivel: z.enum(['facil', 'medio', 'dificil'], {
-    message: 'Nível da questão inválido',
+// Schema alinhado com o backend - baseado no questaoSchema fornecido
+const questaoApiSchema = z.object({
+  conteudo_id: z.number({ 
+    required_error: 'Conteúdo de referência é obrigatório' 
+  }).int({ 
+    message: 'ID do conteúdo deve ser um número inteiro' 
+  }).positive({ 
+    message: 'ID do conteúdo deve ser um número positivo' 
+  }).optional().nullable(),
+  enunciado: z.string({ 
+    required_error: 'Enunciado é obrigatório' 
+  }).min(10, { 
+    message: 'Enunciado da questão deve ter pelo menos 10 caracteres' 
+  }).max(10000, { 
+    message: 'Enunciado da questão é muito longo (máximo 10.000 caracteres)' 
   }),
-};
-
-const quizApiQuestaoUnrefinedSchema = z.object({
-  ...baseApiQuestaoProps,
-  tipo: z.literal('quiz'),
-  opcoes: z
-    .array(
-      z.object({
-        id: z.string(),
-        texto: z
-          .string()
-          .trim()
-          .min(1, { message: 'Texto da alternativa é obrigatório' }),
-      }),
-    )
-    .min(2, 'A questão deve ter pelo menos 2 alternativas')
-    .max(5, 'A questão deve ter no máximo 5 alternativas'),
-  resposta_correta: z
-    .string({ required_error: 'Uma resposta correta é obrigatória para quiz' })
-    .min(1, 'Uma resposta correta é obrigatória para quiz'),
-  exemplo_resposta: z.undefined().optional(),
+  nivel: z.enum(['facil', 'medio', 'dificil'], { 
+    required_error: 'Nível da questão é obrigatório',
+    invalid_type_error: 'Nível da questão deve ser: facil, medio ou dificil' 
+  }),
+  tipo: z.enum(['quiz', 'programacao'], {
+    required_error: 'Tipo da questão é obrigatório',
+    invalid_type_error: 'Tipo da questão deve ser: quiz ou programacao'
+  }),
+  
+  // Campos para questões de quiz - backend espera array de strings
+  opcoes: z.array(z.string()).optional().nullable(),
+  resposta_correta: z.string().optional().nullable(),
+  
+  // Campo para questões de programação
+  exemplo_resposta: z.string().optional().nullable()
+  
+}).refine((data) => {
+  // Validação condicional para questões de quiz
+  if (data.tipo === 'quiz') {
+    if (!data.opcoes || !Array.isArray(data.opcoes) || data.opcoes.length < 2) {
+      return false;
+    }
+    if (!data.resposta_correta || data.resposta_correta.trim().length === 0) {
+      return false;
+    }
+    // Verificar se resposta_correta está entre as opcoes
+    if (!data.opcoes.includes(data.resposta_correta)) {
+      return false;
+    }
+  }
+  
+  // Validação condicional para questões de programação
+  if (data.tipo === 'programacao') {
+    if (!data.exemplo_resposta || data.exemplo_resposta.trim().length === 0) {
+      return false;
+    }
+    // Para programação, opcoes e resposta_correta devem ser null/undefined
+    if (data.opcoes !== null && data.opcoes !== undefined) {
+      return false;
+    }
+    if (data.resposta_correta !== null && data.resposta_correta !== undefined) {
+      return false;
+    }
+  }
+  
+  return true;
+}, {
+  message: "QUIZ: 'opcoes' (mín. 2) e 'resposta_correta' obrigatórios. A resposta deve estar nas opções. PROGRAMAÇÃO: 'exemplo_resposta' obrigatório, 'opcoes' e 'resposta_correta' devem ser null.",
+  path: ["tipo"]
 });
-
-// Schema refinado para quiz, usado após a validação da união discriminada
-const quizApiQuestaoRefinedSchema = quizApiQuestaoUnrefinedSchema.refine(
-  (data) => data.opcoes.some((op) => op.id === data.resposta_correta),
-  {
-    message: 'A resposta correta deve ser uma das opções fornecidas.',
-    path: ['resposta_correta'],
-  },
-);
-
-const programacaoApiQuestaoSchema = z.object({
-  ...baseApiQuestaoProps,
-  tipo: z.literal('programacao'),
-  exemplo_resposta: z
-    .string()
-    .trim()
-    .min(1, { message: 'Exemplo de resposta é obrigatório' }),
-  opcoes: z.undefined().optional(),
-  resposta_correta: z.undefined().optional(),
-});
-
-const apiQuestaoValidator = z.discriminatedUnion('tipo', [
-  quizApiQuestaoUnrefinedSchema, // Usamos o schema não refinado aqui
-  programacaoApiQuestaoSchema,
-]);
 
 interface CriarQuestaoProps {
   conteudos: Conteudo[];
@@ -208,41 +216,35 @@ export function CriarQuestao({
         throw new Error('Dados inválidos no formulário');
       }
 
-      // Prepara os dados para envio no formato da API
+      // Prepara os dados para envio no formato esperado pelo backend
       const dadosParaEnvio =
         questaoForm.tipo === 'quiz'
           ? {
-              conteudo_id: questaoForm.conteudo_id,
+              conteudo_id: questaoForm.conteudo_id || null,
               enunciado: questaoForm.enunciado.trim(),
               nivel: questaoForm.nivel,
               tipo: 'quiz' as const,
-              opcoes:
-                questaoForm.opcoes?.map((op: Alternativa) => ({
-                  id: op.id,
-                  texto: op.texto.trim(),
-                })) || [],
+              // Backend espera array de strings, não objetos
+              opcoes: questaoForm.opcoes?.map((op: Alternativa) => op.texto.trim()) || null,
               resposta_correta:
-                questaoForm.opcoes?.find((op: Alternativa) => op.correta)?.id ||
-                '',
-              exemplo_resposta: undefined,
+                questaoForm.opcoes?.find((op: Alternativa) => op.correta)?.texto.trim() || null,
+              exemplo_resposta: null,
             }
           : {
-              conteudo_id: questaoForm.conteudo_id,
+              conteudo_id: questaoForm.conteudo_id || null,
               enunciado: questaoForm.enunciado.trim(),
               nivel: questaoForm.nivel,
               tipo: 'programacao' as const,
-              exemplo_resposta: questaoForm.exemplo_resposta?.trim() || '',
-              opcoes: undefined,
-              resposta_correta: undefined,
+              exemplo_resposta: questaoForm.exemplo_resposta?.trim() || null,
+              opcoes: null,
+              resposta_correta: null,
             };
 
-      // Validação com Zod usando o schema da API (união discriminada)
-      let validatedData = apiQuestaoValidator.parse(dadosParaEnvio);
+      // Validação com o schema alinhado ao backend
+      const validatedData = questaoApiSchema.parse(dadosParaEnvio);
 
-      // Validação adicional específica para quiz usando o schema refinado
-      if (validatedData.tipo === 'quiz') {
-        validatedData = quizApiQuestaoRefinedSchema.parse(validatedData);
-      }
+      console.log('🔍 DEBUG: Dados para envio:', dadosParaEnvio);
+      console.log('🔍 DEBUG: Dados validados:', validatedData);
 
       const token = localStorage.getItem('token');
       const API_URL =

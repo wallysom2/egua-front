@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { EguaCompiler } from '@/components/EguaCompiler';
 import { AnaliseGemini } from './AnaliseGemini';
-import { type Questao } from '@/types/exercicio';
+import { type Questao, type StatusExercicio, type IniciarExercicioResponse } from '@/types/exercicio';
 
 interface ExercicioProgramacaoProps {
   questao?: Questao;
@@ -28,39 +28,71 @@ export function ExercicioProgramacao({
   const [submissaoCarregando, setSubmissaoCarregando] = useState(false);
   const [submissaoError, setSubmissaoError] = useState<string | null>(null);
   const [submissaoSucesso, setSubmissaoSucesso] = useState(false);
+  const [iniciandoExercicio, setIniciandoExercicio] = useState(false);
 
-  const obterOuCriarProgresso = async (): Promise<string | null> => {
+  const obterOuCriarProgresso = async (): Promise<string> => {
     if (progressoId) return progressoId;
 
     try {
       const token = localStorage.getItem('token');
 
-      // Primeiro, tentar criar/obter o progresso do exercício
-      const progressoResponse = await fetch(`${API_URL}/user-exercicio`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+      // Primeiro, verificar se já existe progresso para este exercício
+      const statusResponse = await fetch(
+        `${API_URL}/progresso-exercicios/status/${exercicioId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         },
-        body: JSON.stringify({
-          exercicio_id: parseInt(exercicioId?.toString() || '0'),
-        }),
-      });
+      );
 
-      if (progressoResponse.ok) {
-        const progresso = await progressoResponse.json();
-        const novoProgressoId = progresso.id;
+      if (statusResponse.ok) {
+        const statusData = await statusResponse.json();
+        console.log('🔍 DEBUG - Status do exercício:', statusData);
+
+        if (statusData.status === 'em_andamento' && statusData.progresso) {
+          // Exercício já iniciado
+          const existingProgressoId = statusData.progresso.id;
+          console.log('🔍 DEBUG - Progresso existente:', existingProgressoId);
+          setProgressoId(existingProgressoId);
+          return existingProgressoId;
+        }
+      }
+
+      // Se não há progresso ou erro na verificação, iniciar o exercício
+      console.log('🔍 DEBUG - Iniciando exercício...');
+      setIniciandoExercicio(true);
+      
+      const iniciarResponse = await fetch(
+        `${API_URL}/progresso-exercicios/iniciar/${exercicioId}`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (iniciarResponse.ok) {
+        const iniciarData = await iniciarResponse.json();
+        console.log('🔍 DEBUG - Exercício iniciado:', iniciarData);
+        
+        const novoProgressoId = iniciarData.data.id;
         setProgressoId(novoProgressoId);
         return novoProgressoId;
       } else {
-        const errorData = await progressoResponse.json();
+        const errorData = await iniciarResponse.json();
         throw new Error(
-          errorData.message || 'Erro ao criar progresso do exercício',
+          errorData.message || 'Erro ao iniciar exercício',
         );
       }
     } catch (error) {
       console.error('Erro ao obter/criar progresso:', error);
       throw error;
+    } finally {
+      setIniciandoExercicio(false);
     }
   };
 
@@ -76,39 +108,97 @@ export function ExercicioProgramacao({
     try {
       const token = localStorage.getItem('token');
 
-      // Primeiro, garantir que temos o progresso do exercício
+      // Primeiro, garantir que temos o progresso do exercício (obrigatório)
       const userExercicioId = await obterOuCriarProgresso();
       if (!userExercicioId) {
-        throw new Error('Não foi possível criar progresso do exercício');
+        throw new Error('Não foi possível obter ID do progresso do exercício');
       }
 
-      // Agora submeter a resposta
-      const response = await fetch(`${API_URL}/user-resposta`, {
+      // Logs detalhados para debug
+      console.log('🔍 DEBUG - userExercicioId raw:', userExercicioId);
+      console.log('🔍 DEBUG - questao:', questao);
+      console.log('🔍 DEBUG - codigoAtual:', codigoAtual);
+      console.log('🔍 DEBUG - userId:', userId);
+      console.log('🔍 DEBUG - exercicioId:', exercicioId);
+
+      // Preparar dados no formato correto do backend (todos os campos obrigatórios)
+      const dadosResposta = {
+        user_exercicio_id: userExercicioId, // Sempre obrigatório
+        questao_id: questao.id,
+        resposta: codigoAtual.trim(),
+      };
+
+      // Log para debug
+      console.log('🔍 Dados da resposta para envio:', dadosResposta);
+      console.log('🔍 Tipos dos dados:', {
+        user_exercicio_id: typeof dadosResposta.user_exercicio_id,
+        questao_id: typeof dadosResposta.questao_id,
+        resposta: typeof dadosResposta.resposta,
+      });
+
+      // Validar todos os campos obrigatórios
+      if (!dadosResposta.user_exercicio_id || dadosResposta.user_exercicio_id.trim() === '') {
+        throw new Error('ID do progresso do exercício é obrigatório');
+      }
+      if (!dadosResposta.questao_id || dadosResposta.questao_id <= 0) {
+        throw new Error('ID da questão é inválido');
+      }
+      if (!dadosResposta.resposta || dadosResposta.resposta.trim() === '') {
+        throw new Error('Resposta não pode estar vazia');
+      }
+
+      // Serializar dados
+      let bodyString;
+      try {
+        bodyString = JSON.stringify(dadosResposta);
+        console.log('🔍 DEBUG - Body serializado:', bodyString);
+      } catch (serializationError) {
+        console.error('❌ Erro na serialização JSON:', serializationError);
+        throw new Error('Erro ao preparar dados para envio');
+      }
+
+      // Submeter resposta usando o endpoint correto
+      const response = await fetch(`${API_URL}/respostas`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          user_exercicio_id: userExercicioId,
-          questao_id: questao.id,
-          resposta: codigoAtual.trim(),
-        }),
+        body: bodyString,
       });
 
       if (response.ok) {
         const resultado = await response.json();
+        console.log('✅ Resposta submetida com sucesso:', resultado);
+        
         setRespostaId(resultado.id);
         setSubmissaoSucesso(true);
+
+        // Se o backend retornou um progresso, salvar o ID
+        if (resultado.user_exercicio_id && !progressoId) {
+          setProgressoId(resultado.user_exercicio_id);
+        }
 
         // Mostrar mensagem de sucesso por 3 segundos
         setTimeout(() => setSubmissaoSucesso(false), 3000);
       } else {
         const errorData = await response.json();
+        console.error('❌ Erro do servidor:', errorData);
+        console.error('❌ Status da resposta:', response.status);
+        console.error('❌ Dados que foram enviados:', dadosResposta);
+        
+        // Tratamento específico para erros de validação
+        if (errorData.errors && Array.isArray(errorData.errors)) {
+          const errosDetalhados = errorData.errors.map((err: any) => 
+            `${err.path?.join?.('.') || 'Campo'}: ${err.message} (recebido: ${err.received}, esperado: ${err.expected})`
+          ).join(', ');
+          throw new Error(`Dados inválidos: ${errosDetalhados}`);
+        }
+        
         throw new Error(errorData.message || 'Erro ao submeter resposta');
       }
     } catch (error) {
-      console.error('Erro ao submeter resposta:', error);
+      console.error('❌ Erro ao submeter resposta:', error);
       setSubmissaoError(
         error instanceof Error ? error.message : 'Erro ao submeter resposta',
       );
@@ -145,16 +235,18 @@ export function ExercicioProgramacao({
         {questao && userId && exercicioId && !exercicioFinalizado && (
           <button
             onClick={submeterResposta}
-            disabled={submissaoCarregando || !codigoAtual.trim()}
+            disabled={submissaoCarregando || iniciandoExercicio || !codigoAtual.trim()}
             className={`w-full py-4 text-lg font-semibold rounded-lg transition-all ${
               submissaoSucesso
                 ? 'bg-green-500 text-white'
-                : submissaoCarregando
+                : submissaoCarregando || iniciandoExercicio
                 ? 'bg-gray-400 text-white cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700 text-white'
             }`}
           >
-            {submissaoCarregando
+            {iniciandoExercicio
+              ? '🚀 Iniciando exercício...'
+              : submissaoCarregando
               ? 'Enviando...'
               : submissaoSucesso
               ? '✅ Enviado com sucesso!'
@@ -168,20 +260,6 @@ export function ExercicioProgramacao({
             <p className="text-red-700 text-center font-medium">
               ❌ {submissaoError}
             </p>
-          </div>
-        )}
-
-        {/* Exemplo de Resposta - Simplificado */}
-        {questao?.exemplo_resposta && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-6">
-            <h4 className="text-lg font-semibold text-yellow-800 mb-3">
-              💡 Exemplo de como fazer:
-            </h4>
-            <div className="bg-white p-4 rounded border">
-              <pre className="text-sm text-gray-800 font-mono">
-                {questao.exemplo_resposta}
-              </pre>
-            </div>
           </div>
         )}
 

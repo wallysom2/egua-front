@@ -95,7 +95,7 @@ export function DebugAnalise({
               <div className="mt-1 space-y-1">
                 {respostaId ? (
                   <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded text-xs break-all">
-                    GET /api/user-resposta/analise/{respostaId}
+                    GET /respostas/analise/{respostaId}
                   </div>
                 ) : (
                   <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded text-xs text-slate-500 dark:text-slate-400">

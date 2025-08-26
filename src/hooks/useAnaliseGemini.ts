@@ -35,7 +35,7 @@ export function useAnaliseGemini({
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
-        `${API_URL}/user-resposta/analise/${respostaId}`,
+        `${API_URL}/respostas/analise/${respostaId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
