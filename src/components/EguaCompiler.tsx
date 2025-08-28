@@ -69,9 +69,6 @@ export function EguaCompiler({
           <h4 className="text-lg font-semibold text-slate-700 dark:text-slate-300">
             Editor de Código
           </h4>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            {atalhoTeclado ? 'Pressione Ctrl+Enter para executar' : 'Clique em executar para testar'}
-          </p>
         </div>
         <button
           onClick={handleExecutar}

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '@/config/api';
 
 interface Exercicio {
   id: number;
@@ -42,12 +42,12 @@ export default function EditarExercicio({ params }: EditarExercicioProps) {
       try {
         const resolvedParams = await params;
         const [exercicioResponse, linguagensResponse] = await Promise.all([
-          fetch(`${API_URL}/exercicios/${resolvedParams.id}`, {
+          fetch(`${API_BASE_URL}/exercicios/${resolvedParams.id}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch(`${API_URL}/linguagens`, {
+          fetch(`${API_BASE_URL}/linguagens`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -84,7 +84,7 @@ export default function EditarExercicio({ params }: EditarExercicioProps) {
     try {
       const resolvedParams = await params;
       const response = await fetch(
-        `${API_URL}/exercicios/${resolvedParams.id}`,
+        `${API_BASE_URL}/exercicios/${resolvedParams.id}`,
         {
           method: 'PUT',
           headers: {

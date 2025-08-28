@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '@/config/api';
 
 interface Linguagem {
   id: number;
@@ -46,7 +46,7 @@ const getToken = () => {
 };
 
 const fetchLinguagens = async (token: string): Promise<Linguagem[]> => {
-  const response = await fetch(`${API_URL}/linguagens`, {
+  const response = await fetch(`${API_BASE_URL}/linguagens`, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ const fetchLinguagens = async (token: string): Promise<Linguagem[]> => {
 };
 
 const fetchConteudo = async (id: string, token: string): Promise<Conteudo> => {
-  const response = await fetch(`${API_URL}/conteudos/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/conteudos/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ const atualizarConteudo = async (
   conteudo: Conteudo,
   token: string,
 ): Promise<void> => {
-  const response = await fetch(`${API_URL}/conteudos/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/conteudos/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

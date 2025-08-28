@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { CriarQuestao } from '@/components/CriarQuestao';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '@/config/api';
 
 interface Linguagem {
   id: number;
@@ -78,12 +78,12 @@ export default function CriarExercicio() {
       try {
         const [linguagensResponse, conteudosResponse] =
           await Promise.allSettled([
-            fetch(`${API_URL}/linguagens`, {
+            fetch(`${API_BASE_URL}/linguagens`, {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
             }),
-            fetch(`${API_URL}/conteudos`, {
+            fetch(`${API_BASE_URL}/conteudos`, {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
@@ -137,7 +137,7 @@ export default function CriarExercicio() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/exercicios`, {
+      const response = await fetch(`${API_BASE_URL}/exercicios`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

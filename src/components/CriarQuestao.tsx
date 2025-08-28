@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
+import { API_BASE_URL } from '@/config/api';
 
 interface Conteudo {
   id: number;
@@ -247,8 +248,7 @@ export function CriarQuestao({
       console.log('🔍 DEBUG: Dados validados:', validatedData);
 
       const token = localStorage.getItem('token');
-      const API_URL =
-        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const API_URL = API_BASE_URL;
 
       const response = await fetch(`${API_URL}/questoes`, {
         method: 'POST',

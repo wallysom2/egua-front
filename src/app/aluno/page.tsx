@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '@/config/api';
 
 interface User {
   nome: string;
@@ -66,10 +66,10 @@ export default function DashboardAluno() {
       try {
         const [exerciciosResponse, linguagensResponse] =
           await Promise.allSettled([
-            fetch(`${API_URL}/exercicios`, {
+            fetch(`${API_BASE_URL}/exercicios`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
-            fetch(`${API_URL}/linguagens`, {
+            fetch(`${API_BASE_URL}/linguagens`, {
               headers: { Authorization: `Bearer ${token}` },
             }),
           ]);

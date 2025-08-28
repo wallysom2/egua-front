@@ -11,7 +11,7 @@ import { GradientButton } from '@/components/GradientButton';
 import { Tooltip } from '@/components/Tooltip';
 
 // API URL que pode ser substituída em produção
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '@/config/api';
 
 export default function Login() {
   const router = useRouter();
@@ -36,7 +36,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_URL}/api/auth/login`, formData);
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, formData);
 
       if (response.data.success) {
         // Armazena o token e dados do usuário no localStorage

@@ -38,22 +38,7 @@ export function PainelQuestao({
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">
               Questão {questaoAtual + 1}
             </h2>
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${
-                questao.nivel === 'facil'
-                  ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-700'
-                  : questao.nivel === 'medio'
-                  ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300 border border-yellow-300 dark:border-yellow-700'
-                  : 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700'
-              }`}
-            >
-              {questao.nivel}
-            </span>
           </div>
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            {exercicio.titulo} •{' '}
-            {exercicio.tipo === 'pratico' ? 'Exercício Prático' : 'Quiz'}
-          </p>
         </div>
 
         <div className="text-right ml-4">
@@ -65,9 +50,6 @@ export function PainelQuestao({
 
       {/* Enunciado */}
       <div className="mb-6">
-        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 uppercase tracking-wide">
-          Enunciado
-        </h3>
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800/80 border border-blue-100 dark:border-slate-700 rounded-lg p-5">
           <p className="text-slate-800 dark:text-slate-200 leading-relaxed text-base whitespace-pre-wrap">
             {questao.enunciado}

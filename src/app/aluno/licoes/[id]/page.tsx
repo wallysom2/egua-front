@@ -13,7 +13,7 @@ import { type Exercicio, type Questao } from '@/types/exercicio';
 import { ExercicioProgramacao } from '@/app/dashboard/licoes/[id]/components';
 import { motion } from 'framer-motion';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '@/config/api';
 
 interface User {
   nome: string;
@@ -164,7 +164,7 @@ export default function ExercicioAlunoDetalhes({
       try {
         // Buscar exercício
         const exercicioResponse = await fetch(
-          `${API_URL}/exercicios/${resolvedParams.id}`,
+          `${API_BASE_URL}/exercicios/${resolvedParams.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -184,7 +184,7 @@ export default function ExercicioAlunoDetalhes({
         if (exercicioProcessado.questoes.length === 0) {
           // Buscar questões do exercício separadamente
           const questoesResponse = await fetch(
-            `${API_URL}/exercicios/${resolvedParams.id}/questoes`,
+            `${API_BASE_URL}/exercicios/${resolvedParams.id}/questoes`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -203,7 +203,7 @@ export default function ExercicioAlunoDetalhes({
           } else {
             // Última tentativa: buscar todas as questões e filtrar
             try {
-              const todasQuestoesResponse = await fetch(`${API_URL}/questoes`, {
+              const todasQuestoesResponse = await fetch(`${API_BASE_URL}/questoes`, {
                 headers: {
                   Authorization: `Bearer ${token}`,
                   'Content-Type': 'application/json',
@@ -238,7 +238,7 @@ export default function ExercicioAlunoDetalhes({
         ) {
           try {
             const langResponse = await fetch(
-              `${API_URL}/linguagens/${exercicioProcessado.linguagem_id}`,
+              `${API_BASE_URL}/linguagens/${exercicioProcessado.linguagem_id}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -315,7 +315,7 @@ export default function ExercicioAlunoDetalhes({
       if (exercicioCompleto) {
         // Primeiro, verificar se o exercício já foi iniciado
         const statusResponse = await fetch(
-          `${API_URL}/user-exercicio/status/${resolvedParams.id}`,
+          `${API_BASE_URL}/user-exercicio/status/${resolvedParams.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -332,7 +332,7 @@ export default function ExercicioAlunoDetalhes({
           if (statusData.status === 'nao_iniciado') {
             // Iniciar o exercício
             const iniciarResponse = await fetch(
-              `${API_URL}/user-exercicio/iniciar`,
+              `${API_BASE_URL}/user-exercicio/iniciar`,
               {
                 method: 'POST',
                 headers: {
@@ -357,7 +357,7 @@ export default function ExercicioAlunoDetalhes({
         // Se temos um userExercicioId, finalizar o exercício
         if (userExercicioId) {
           const finalizarResponse = await fetch(
-            `${API_URL}/user-exercicio/${userExercicioId}/finalizar`,
+            `${API_BASE_URL}/user-exercicio/${userExercicioId}/finalizar`,
             {
               method: 'PATCH',
               headers: {

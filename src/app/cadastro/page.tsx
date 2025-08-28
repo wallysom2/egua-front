@@ -11,7 +11,7 @@ import { GradientButton } from '@/components/GradientButton';
 import { Tooltip } from '@/components/Tooltip';
 
 // API URL que pode ser substituída em produção
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '@/config/api';
 
 export default function Cadastro() {
   const router = useRouter();
@@ -59,7 +59,7 @@ export default function Cadastro() {
 
     try {
       const response = await axios.post(
-        `${API_URL}/api/auth/cadastro`,
+        `${API_BASE_URL}/api/auth/cadastro`,
         formData,
       );
 

@@ -20,7 +20,7 @@ import {
   PainelQuestao,
 } from './components';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '@/config/api';
 
 interface User {
   nome: string;
@@ -72,7 +72,7 @@ export default function ExercicioDetalhes({
       try {
         // Buscar exercício
         const exercicioResponse = await fetch(
-          `${API_URL}/exercicios/${resolvedParams.id}`,
+          `${API_BASE_URL}/exercicios/${resolvedParams.id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -101,7 +101,7 @@ export default function ExercicioDetalhes({
 
           // Buscar questões do exercício separadamente
           const questoesResponse = await fetch(
-            `${API_URL}/exercicios/${resolvedParams.id}/questoes`,
+            `${API_BASE_URL}/exercicios/${resolvedParams.id}/questoes`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -122,7 +122,7 @@ export default function ExercicioDetalhes({
 
             // Última tentativa: buscar todas as questões e filtrar
             try {
-              const todasQuestoesResponse = await fetch(`${API_URL}/questoes`, {
+              const todasQuestoesResponse = await fetch(`${API_BASE_URL}/questoes`, {
                 headers: {
                   Authorization: `Bearer ${token}`,
                   'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ export default function ExercicioDetalhes({
         ) {
           try {
             const langResponse = await fetch(
-              `${API_URL}/linguagens/${exercicioProcessado.linguagem_id}`,
+              `${API_BASE_URL}/linguagens/${exercicioProcessado.linguagem_id}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -251,7 +251,7 @@ export default function ExercicioDetalhes({
     const token = localStorage.getItem('token');
     try {
       const response = await fetch(
-        `${API_URL}/exercicios/${resolvedParams.id}/submit`,
+        `${API_BASE_URL}/exercicios/${resolvedParams.id}/submit`,
         {
           method: 'POST',
           headers: {

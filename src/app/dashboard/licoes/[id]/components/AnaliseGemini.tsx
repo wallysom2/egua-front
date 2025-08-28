@@ -2,8 +2,6 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useAnaliseGemini } from '@/hooks/useAnaliseGemini';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
 interface AnaliseGeminiProps {
   respostaId: string | null;
   questaoId: number;

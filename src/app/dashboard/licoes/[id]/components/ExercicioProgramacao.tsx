@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { EguaCompiler } from '@/components/EguaCompiler';
 import { AnaliseGemini } from './AnaliseGemini';
 import { type Questao, type StatusExercicio, type IniciarExercicioResponse } from '@/types/exercicio';
+import { API_BASE_URL } from '@/config/api';
 
 interface ExercicioProgramacaoProps {
   questao?: Questao;
@@ -11,7 +12,7 @@ interface ExercicioProgramacaoProps {
   exercicioId?: string | number;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
 
 export function ExercicioProgramacao({
   questao,
@@ -38,7 +39,7 @@ export function ExercicioProgramacao({
 
       // Primeiro, verificar se já existe progresso para este exercício
       const statusResponse = await fetch(
-        `${API_URL}/progresso-exercicios/status/${exercicioId}`,
+        `${API_BASE_URL}/progresso-exercicios/status/${exercicioId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -49,23 +50,20 @@ export function ExercicioProgramacao({
 
       if (statusResponse.ok) {
         const statusData = await statusResponse.json();
-        console.log('🔍 DEBUG - Status do exercício:', statusData);
 
         if (statusData.status === 'em_andamento' && statusData.progresso) {
           // Exercício já iniciado
           const existingProgressoId = statusData.progresso.id;
-          console.log('🔍 DEBUG - Progresso existente:', existingProgressoId);
           setProgressoId(existingProgressoId);
           return existingProgressoId;
         }
       }
 
       // Se não há progresso ou erro na verificação, iniciar o exercício
-      console.log('🔍 DEBUG - Iniciando exercício...');
       setIniciandoExercicio(true);
       
       const iniciarResponse = await fetch(
-        `${API_URL}/progresso-exercicios/iniciar/${exercicioId}`,
+        `${API_BASE_URL}/progresso-exercicios/iniciar/${exercicioId}`,
         {
           method: 'POST',
           headers: {
@@ -77,7 +75,6 @@ export function ExercicioProgramacao({
 
       if (iniciarResponse.ok) {
         const iniciarData = await iniciarResponse.json();
-        console.log('🔍 DEBUG - Exercício iniciado:', iniciarData);
         
         const novoProgressoId = iniciarData.data.id;
         setProgressoId(novoProgressoId);
@@ -115,11 +112,6 @@ export function ExercicioProgramacao({
       }
 
       // Logs detalhados para debug
-      console.log('🔍 DEBUG - userExercicioId raw:', userExercicioId);
-      console.log('🔍 DEBUG - questao:', questao);
-      console.log('🔍 DEBUG - codigoAtual:', codigoAtual);
-      console.log('🔍 DEBUG - userId:', userId);
-      console.log('🔍 DEBUG - exercicioId:', exercicioId);
 
       // Preparar dados no formato correto do backend (todos os campos obrigatórios)
       const dadosResposta = {
@@ -129,12 +121,6 @@ export function ExercicioProgramacao({
       };
 
       // Log para debug
-      console.log('🔍 Dados da resposta para envio:', dadosResposta);
-      console.log('🔍 Tipos dos dados:', {
-        user_exercicio_id: typeof dadosResposta.user_exercicio_id,
-        questao_id: typeof dadosResposta.questao_id,
-        resposta: typeof dadosResposta.resposta,
-      });
 
       // Validar todos os campos obrigatórios
       if (!dadosResposta.user_exercicio_id || dadosResposta.user_exercicio_id.trim() === '') {
@@ -151,14 +137,13 @@ export function ExercicioProgramacao({
       let bodyString;
       try {
         bodyString = JSON.stringify(dadosResposta);
-        console.log('🔍 DEBUG - Body serializado:', bodyString);
       } catch (serializationError) {
         console.error('❌ Erro na serialização JSON:', serializationError);
         throw new Error('Erro ao preparar dados para envio');
       }
 
       // Submeter resposta usando o endpoint correto
-      const response = await fetch(`${API_URL}/respostas`, {
+      const response = await fetch(`${API_BASE_URL}/respostas`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -169,7 +154,6 @@ export function ExercicioProgramacao({
 
       if (response.ok) {
         const resultado = await response.json();
-        console.log('✅ Resposta submetida com sucesso:', resultado);
         
         setRespostaId(resultado.id);
         setSubmissaoSucesso(true);
@@ -183,9 +167,6 @@ export function ExercicioProgramacao({
         setTimeout(() => setSubmissaoSucesso(false), 3000);
       } else {
         const errorData = await response.json();
-        console.error('❌ Erro do servidor:', errorData);
-        console.error('❌ Status da resposta:', response.status);
-        console.error('❌ Dados que foram enviados:', dadosResposta);
         
         // Tratamento específico para erros de validação
         if (errorData.errors && Array.isArray(errorData.errors)) {

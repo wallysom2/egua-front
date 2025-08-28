@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '@/config/api';
 
 // Lista de emojis comuns para o picker simples
 const COMMON_EMOJIS = [
@@ -208,7 +208,7 @@ interface FormData {
 }
 
 const fetchLinguagens = async (token: string) => {
-  const response = await fetch(`${API_URL}/linguagens`, {
+  const response = await fetch(`${API_BASE_URL}/linguagens`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -222,7 +222,7 @@ const fetchLinguagens = async (token: string) => {
 };
 
 const criarConteudo = async (formData: FormData, token: string) => {
-  const response = await fetch(`${API_URL}/conteudos`, {
+  const response = await fetch(`${API_BASE_URL}/conteudos`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

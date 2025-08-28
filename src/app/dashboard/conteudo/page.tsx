@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import Image from 'next/image';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '@/config/api';
 
 interface Conteudo {
   id: number;
@@ -49,7 +49,7 @@ export default function ConteudoPage() {
           return;
         }
 
-        const response = await fetch(`${API_URL}/conteudos`, {
+        const response = await fetch(`${API_BASE_URL}/conteudos`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -112,7 +112,7 @@ export default function ConteudoPage() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/conteudos/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/conteudos/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

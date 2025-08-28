@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { API_BASE_URL } from '@/config/api';
 
 interface Conteudo {
   id: number;
@@ -43,7 +43,7 @@ function useConteudo(id: string) {
         throw new Error('Token não encontrado');
       }
 
-      const response = await fetch(`${API_URL}/auth/me`, {
+      const response = await fetch(`${API_BASE_URL}/auth/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ function useConteudo(id: string) {
         throw new Error('Token não encontrado');
       }
 
-      const response = await fetch(`${API_URL}/conteudos/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/conteudos/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ function useConteudo(id: string) {
         throw new Error('Token não encontrado');
       }
 
-      await fetch(`${API_URL}/conteudos/${id}`, {
+      await fetch(`${API_BASE_URL}/conteudos/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
