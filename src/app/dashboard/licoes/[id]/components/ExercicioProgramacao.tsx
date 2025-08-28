@@ -231,27 +231,51 @@ export function ExercicioProgramacao({
           onCodigoChange={handleCodigoChange}
         />
 
-        {/* Botão Submeter - Simplificado */}
+        {/* Botão Enviar Resposta - Melhorado */}
         {questao && userId && exercicioId && !exercicioFinalizado && (
-          <button
-            onClick={submeterResposta}
-            disabled={submissaoCarregando || iniciandoExercicio || !codigoAtual.trim()}
-            className={`w-full py-4 text-lg font-semibold rounded-lg transition-all ${
-              submissaoSucesso
-                ? 'bg-green-500 text-white'
-                : submissaoCarregando || iniciandoExercicio
-                ? 'bg-gray-400 text-white cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            }`}
-          >
-            {iniciandoExercicio
-              ? '🚀 Iniciando exercício...'
-              : submissaoCarregando
-              ? 'Enviando...'
-              : submissaoSucesso
-              ? '✅ Enviado com sucesso!'
-              : 'Enviar Resposta'}
-          </button>
+          <div className="flex justify-end">
+            <button
+              onClick={submeterResposta}
+              disabled={submissaoCarregando || iniciandoExercicio || !codigoAtual.trim()}
+              className={`group relative px-8 py-3 font-semibold text-white rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-lg ${
+                submissaoSucesso
+                  ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500 shadow-green-500/25'
+                  : submissaoCarregando || iniciandoExercicio
+                  ? 'bg-slate-400 cursor-not-allowed shadow-slate-400/25'
+                  : !codigoAtual.trim()
+                  ? 'bg-slate-400 cursor-not-allowed shadow-slate-400/25'
+                  : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 shadow-blue-500/25 hover:shadow-blue-500/40'
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                {iniciandoExercicio ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Iniciando...</span>
+                  </>
+                ) : submissaoCarregando ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Enviando...</span>
+                  </>
+                ) : submissaoSucesso ? (
+                  <>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Enviado!</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                    <span>Enviar Resposta</span>
+                  </>
+                )}
+              </div>
+            </button>
+          </div>
         )}
 
         {/* Mensagem de Erro Simplificada */}
