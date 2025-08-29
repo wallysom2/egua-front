@@ -1,10 +1,14 @@
 import { type Questao, type Exercicio } from '@/types/exercicio';
+import { AnaliseGemini } from './AnaliseGemini';
 
 interface PainelQuestaoProps {
   exercicio: Exercicio;
   questao?: Questao;
   questaoAtual: number;
   totalQuestoes: number;
+  // Props para o feedback da IA Gemini
+  respostaId?: string | null;
+  userId?: string | number;
 }
 
 export function PainelQuestao({
@@ -12,6 +16,8 @@ export function PainelQuestao({
   questao,
   questaoAtual,
   totalQuestoes,
+  respostaId,
+  userId,
 }: PainelQuestaoProps) {
   if (!questao) {
     return (
@@ -56,6 +62,17 @@ export function PainelQuestao({
           </p>
         </div>
       </div>
+
+      {/* Feedback da IA Gemini - Só para questões de programação */}
+      {(questao.tipo === 'programacao' || questao.tipo === 'codigo') && respostaId && userId && (
+        <div className="mb-6">
+          <AnaliseGemini
+            respostaId={respostaId}
+            questaoId={questao.id}
+            userId={userId}
+          />
+        </div>
+      )}
     </div>
   );
 }

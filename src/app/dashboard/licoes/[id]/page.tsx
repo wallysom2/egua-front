@@ -50,6 +50,7 @@ export default function ExercicioDetalhes({
   } | null>(null);
   const [mostrarModalResultados, setMostrarModalResultados] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [respostaId, setRespostaId] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -291,6 +292,7 @@ export default function ExercicioDetalhes({
           exercicioFinalizado={exercicioFinalizado}
           userId={user?.id}
           exercicioId={resolvedParams.id}
+          onRespostaSubmitida={setRespostaId}
         />
       );
     }
@@ -486,6 +488,8 @@ export default function ExercicioDetalhes({
                 questao={questaoAtualData}
                 questaoAtual={questaoAtual}
                 totalQuestoes={totalQuestoes}
+                respostaId={respostaId}
+                userId={user?.id}
               />
             </motion.div>
           </div>

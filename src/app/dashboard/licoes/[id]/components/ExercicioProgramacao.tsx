@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { EguaCompiler } from '@/components/EguaCompiler';
-import { AnaliseGemini } from './AnaliseGemini';
 import { type Questao, type StatusExercicio, type IniciarExercicioResponse } from '@/types/exercicio';
 import { API_BASE_URL } from '@/config/api';
 
@@ -10,6 +9,7 @@ interface ExercicioProgramacaoProps {
   exercicioFinalizado: boolean;
   userId?: string | number;
   exercicioId?: string | number;
+  onRespostaSubmitida?: (respostaId: string) => void;
 }
 
 
@@ -20,6 +20,7 @@ export function ExercicioProgramacao({
   exercicioFinalizado,
   userId,
   exercicioId,
+  onRespostaSubmitida,
 }: ExercicioProgramacaoProps) {
   const [codigoAtual, setCodigoAtual] = useState(
     codigoExemplo || questao?.exemplo_resposta || 'escreva("Olá, Mundo!");',
@@ -158,6 +159,11 @@ export function ExercicioProgramacao({
         setRespostaId(resultado.id);
         setSubmissaoSucesso(true);
 
+        // Notificar o componente pai sobre a nova resposta
+        if (onRespostaSubmitida && resultado.id) {
+          onRespostaSubmitida(resultado.id);
+        }
+
         // Se o backend retornou um progresso, salvar o ID
         if (resultado.user_exercicio_id && !progressoId) {
           setProgressoId(resultado.user_exercicio_id);
@@ -278,14 +284,7 @@ export function ExercicioProgramacao({
         )}
       </div>
 
-      {/* Análise do Gemini - Mantida mas simplificada */}
-      <div className="mt-8">
-        <AnaliseGemini
-          respostaId={respostaId}
-          questaoId={questao?.id || 0}
-          userId={userId || ''}
-        />
-      </div>
+
     </div>
   );
 }
