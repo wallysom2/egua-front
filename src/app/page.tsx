@@ -98,8 +98,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              Aprenda a Programar <br />
-              com{' '}
+      
               <motion.span
                 className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent"
                 animate={{
@@ -123,8 +122,8 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Uma jornada simplificada para aprender programação, especialmente
-              pensada para você. Comece do zero e torne-se um desenvolvedor.
+              Uma jornada simplificada para aprender sobre Pensamento Computacional com auxílio de Inteligência Artificial, especialmente
+              pensada para você que está começando no mundo da programação.
             </motion.p>
 
             {/* Indicadores de progresso visual */}
@@ -210,7 +209,7 @@ export default function Home() {
               Por que escolher o Senior Code AI?
             </h2>
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Uma plataforma completa pensada para o seu sucesso
+              Uma plataforma completa pensada para o seu desenvolvimento
             </p>
           </motion.div>
 
@@ -219,26 +218,20 @@ export default function Home() {
               {
                 icon: '👋',
                 title: 'Fácil de Começar',
-                description:
-                  'Interface intuitiva e conteúdo didático para iniciantes absolutos',
                 gradient: 'from-green-500 to-green-600',
                 tooltip: 'Comece do zero sem complicações',
               },
               {
                 icon: '⏱️',
                 title: 'Aprenda no seu Ritmo',
-                description:
-                  'Acesso 24/7 ao conteúdo, você define seu próprio horário de estudos',
                 gradient: 'from-blue-500 to-blue-600',
                 tooltip: 'Estude quando e onde quiser',
               },
               {
                 icon: '👥',
-                title: 'Comunidade Ativa',
-                description:
-                  'Conte com o apoio de outros estudantes e professores experientes',
+                title: 'Feedback imediato',
                 gradient: 'from-purple-500 to-purple-600',
-                tooltip: 'Faça parte de uma comunidade engajada',
+                tooltip: 'Receba feedback instantâneo com IA',
               },
             ].map((feature, index) => (
               <motion.div
@@ -279,96 +272,12 @@ export default function Home() {
                   <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
                     {feature.title}
                   </h3>
-                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    {feature.description}
-                  </p>
                 </div>
               </motion.div>
             ))}
           </div>
         </div>
       </div>
-
-      {/* Stats Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Plataforma completa de aprendizado
-            </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Tudo que você precisa para dominar a programação
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto text-center">
-            {[
-              {
-                number: '100+',
-                text: 'Exercícios Práticos',
-                color: 'blue',
-                tooltip: 'Mais de 100 exercícios para praticar',
-              },
-              {
-                number: '50+',
-                text: 'Lições Interativas',
-                color: 'green',
-                tooltip: 'Mais de 50 lições interativas',
-              },
-              {
-                number: '24/7',
-                text: 'Sempre Disponível',
-                color: 'purple',
-                tooltip: 'Acesso ilimitado ao conteúdo',
-              },
-              {
-                number: '∞',
-                text: 'Possibilidades',
-                color: 'yellow',
-                tooltip: 'Inúmeras possibilidades de aprendizado',
-              },
-            ].map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{
-                  scale: 1.05,
-                  transition: { duration: 0.2 },
-                }}
-                className="group space-y-2 p-6 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all"
-              >
-                <Tooltip content={stat.tooltip}>
-                  <motion.div
-                    className={`text-4xl font-bold text-${stat.color}-500 dark:text-${stat.color}-400 cursor-help`}
-                    animate={{
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 5, 0],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      delay: index * 0.2,
-                    }}
-                  >
-                    {stat.number}
-                  </motion.div>
-                </Tooltip>
-                <div className="text-slate-600 dark:text-slate-400">
-                  {stat.text}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
@@ -389,7 +298,7 @@ export default function Home() {
               className="text-xl text-slate-600 dark:text-slate-300 mb-8"
               whileHover={{ scale: 1.02 }}
             >
-              Junte-se a milhares de estudantes que já estão aprendendo
+              Junte-se aos outros estudantes que já estão aprendendo
               programação com o Senior Code AI
             </motion.p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -410,7 +319,7 @@ export default function Home() {
             className="text-slate-600 dark:text-slate-400"
             whileHover={{ scale: 1.02 }}
           >
-            🏛️ Senior Code AI - Aprenda programação de forma simples e eficaz
+            🏛️ Senior Code AI - Aprenda programação de forma simples
           </motion.p>
         </div>
       </footer>
