@@ -93,8 +93,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              Aprenda a Programar <br />
-              com{' '}
+      
               <motion.span
                 className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent"
                 animate={{
@@ -118,8 +117,8 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Uma jornada simplificada para aprender programação, especialmente
-              pensada para você. Comece do zero e torne-se um desenvolvedor.
+              Uma jornada simplificada para aprender sobre Pensamento Computacional com auxílio de Inteligência Artificial, especialmente
+              pensada para você que está começando no mundo da programação.
             </motion.p>
 
             {/* Indicadores de progresso visual */}
@@ -183,7 +182,7 @@ export default function Home() {
               Por que escolher o Senior Code AI?
             </h2>
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Uma plataforma completa pensada para o seu sucesso
+              Uma plataforma completa pensada para o seu desenvolvimento
             </p>
           </motion.div>
 
@@ -200,18 +199,14 @@ export default function Home() {
               {
                 icon: '⏱️',
                 title: 'Aprenda no seu Ritmo',
-                description:
-                  'Acesso 24/7 ao conteúdo, você define seu próprio horário de estudos',
                 gradient: 'from-blue-500 to-blue-600',
                 tooltip: 'Estude quando e onde quiser',
               },
               {
                 icon: '👥',
-                title: 'Comunidade Ativa',
-                description:
-                  'Conte com o apoio de outros estudantes e professores experientes',
+                title: 'Feedback imediato',
                 gradient: 'from-purple-500 to-purple-600',
-                tooltip: 'Faça parte de uma comunidade engajada',
+                tooltip: 'Receba feedback instantâneo com IA',
               },
             ].map((feature, index) => (
               <motion.div
@@ -250,9 +245,6 @@ export default function Home() {
                   <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
                     {feature.title}
                   </h3>
-                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    {feature.description}
-                  </p>
                 </div>
               </motion.div>
             ))}
@@ -279,7 +271,7 @@ export default function Home() {
               className="text-xl text-slate-600 dark:text-slate-300 mb-8"
               whileHover={{ scale: 1.02 }}
             >
-              Junte-se a milhares de estudantes que já estão aprendendo
+              Junte-se aos outros estudantes que já estão aprendendo
               programação com o Senior Code AI
             </motion.p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -298,7 +290,7 @@ export default function Home() {
             className="text-slate-600 dark:text-slate-400"
             whileHover={{ scale: 1.02 }}
           >
-            🏛️ Senior Code AI - Aprenda programação de forma simples e eficaz
+            🏛️ Senior Code AI - Aprenda programação de forma simples
           </motion.p>
         </div>
       </footer>
