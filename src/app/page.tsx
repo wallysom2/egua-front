@@ -204,9 +204,9 @@ export default function Home() {
               },
               {
                 icon: '👥',
-                title: 'Feedback imediato',
+                title: 'Retorno imediato',
                 gradient: 'from-purple-500 to-purple-600',
-                tooltip: 'Receba feedback instantâneo com IA',
+                tooltip: 'Receba retorno instantâneo com IA',
               },
             ].map((feature, index) => (
               <motion.div

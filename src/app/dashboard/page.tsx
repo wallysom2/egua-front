@@ -293,7 +293,7 @@ export default function Dashboard() {
                   Lições Práticas
                 </h3>
                 <p className="text-slate-600 dark:text-slate-300 text-lg mb-8 leading-relaxed">
-                  Exercícios interativos com feedback imediato.
+                  Exercícios interativos com retorno imediato.
                 </p>
                 <Link
                   href="/dashboard/licoes"

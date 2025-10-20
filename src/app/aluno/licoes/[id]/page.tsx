@@ -133,7 +133,7 @@ export default function ExercicioAlunoDetalhes({
     acertos: number;
     total: number;
   } | null>(null);
-  const [mostrarFeedback, setMostrarFeedback] = useState(false);
+  const [mostrarRetorno, setMostrarRetorno] = useState(false);
   const [exercicioConcluido, setExercicioConcluido] = useState(false);
 
   useEffect(() => {
@@ -307,7 +307,7 @@ export default function ExercicioAlunoDetalhes({
 
     setResultados({ acertos, total: totalQuestoes });
     setExercicioFinalizado(true);
-    setMostrarFeedback(true);
+    setMostrarRetorno(true);
 
     const token = localStorage.getItem('token');
     try {
@@ -374,9 +374,9 @@ export default function ExercicioAlunoDetalhes({
         }
       }
 
-      // Mostrar feedback por 5 segundos e depois redirecionar
+      // Mostrar retorno por 5 segundos e depois redirecionar
       setTimeout(() => {
-        setMostrarFeedback(false);
+        setMostrarRetorno(false);
         router.push('/aluno');
       }, 5000);
     } catch (error) {
@@ -611,8 +611,8 @@ export default function ExercicioAlunoDetalhes({
         </div>
       </main>
 
-      {/* Feedback em Tela */}
-      {mostrarFeedback && resultados && (
+      {/* Retorno em Tela */}
+      {mostrarRetorno && resultados && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

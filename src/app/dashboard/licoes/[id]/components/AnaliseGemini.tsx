@@ -192,7 +192,7 @@ export function AnaliseGemini({
             </span>
             <div>
               <h4 className="font-semibold text-lg mb-2">
-                Feedback da IA Gemini
+                Retorno da IA Gemini
               </h4>
               <p className="text-sm leading-relaxed whitespace-pre-wrap">
                 {analise.mensagem_personalizada.mensagem}
