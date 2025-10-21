@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { motion } from 'framer-motion';
@@ -12,7 +12,7 @@ import { GradientButton } from '@/components/GradientButton';
 // API URL que pode ser substituída em produção
 import { API_BASE_URL } from '@/config/api';
 
-export default function RedefinirSenha() {
+function RedefinirSenhaContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
@@ -418,5 +418,24 @@ export default function RedefinirSenha() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+export default function RedefinirSenha() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center"
+        >
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 dark:text-slate-400">Carregando...</p>
+        </motion.div>
+      </div>
+    }>
+      <RedefinirSenhaContent />
+    </Suspense>
   );
 }

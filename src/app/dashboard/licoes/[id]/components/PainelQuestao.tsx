@@ -12,7 +12,6 @@ interface PainelQuestaoProps {
 }
 
 export function PainelQuestao({
-  exercicio,
   questao,
   questaoAtual,
   totalQuestoes,

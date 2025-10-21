@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { EguaCompiler } from '@/components/EguaCompiler';
-import { type Questao, type StatusExercicio, type IniciarExercicioResponse } from '@/types/exercicio';
+import { type Questao } from '@/types/exercicio';
 import { API_BASE_URL } from '@/config/api';
 
 interface ExercicioProgramacaoProps {
@@ -25,7 +25,6 @@ export function ExercicioProgramacao({
   const [codigoAtual, setCodigoAtual] = useState(
     codigoExemplo || questao?.exemplo_resposta || 'escreva("Olá, Mundo!");',
   );
-  const [respostaId, setRespostaId] = useState<string | null>(null);
   const [progressoId, setProgressoId] = useState<string | null>(null);
   const [submissaoCarregando, setSubmissaoCarregando] = useState(false);
   const [submissaoError, setSubmissaoError] = useState<string | null>(null);
@@ -156,7 +155,6 @@ export function ExercicioProgramacao({
       if (response.ok) {
         const resultado = await response.json();
         
-        setRespostaId(resultado.id);
         setSubmissaoSucesso(true);
 
         // Notificar o componente pai sobre a nova resposta

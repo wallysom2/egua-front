@@ -13,51 +13,12 @@ export function AnaliseGemini({
   questaoId,
   userId
 }: AnaliseGeminiProps) {
-  const [solicitandoAnalise, setSolicitandoAnalise] = useState(false);
-  const [erroSolicitacao, setErroSolicitacao] = useState<string | null>(null);
-  
   const { analise, loading, error, buscarAnalise, resetError } =
     useAnaliseGemini({
       respostaId,
       autoRefresh: true,
       refreshInterval: 5000,
     });
-
-  const solicitarAnaliseManual = async () => {
-    if (!respostaId || !questaoId || !userId) {
-      setErroSolicitacao('Dados insuficientes para solicitar análise');
-      return;
-    }
-
-    setSolicitandoAnalise(true);
-    setErroSolicitacao(null);
-
-    try {
-      const token = localStorage.getItem('token');
-      
-      // Como não há endpoint específico para solicitar análise, apenas forçar uma nova busca
-      // A análise é processada automaticamente pelo backend quando a resposta é submetida
-      console.log('🔍 Forçando nova busca de análise...');
-      
-      // Aguardar um pouco e então buscar a análise novamente
-      setTimeout(() => {
-        buscarAnalise();
-      }, 1000);
-      
-      // Simular sucesso para o usuário
-      setTimeout(() => {
-        setSolicitandoAnalise(false);
-        setErroSolicitacao(null);
-      }, 2000);
-    } catch (error) {
-      console.error('Erro ao solicitar análise manual:', error);
-      setErroSolicitacao(
-        error instanceof Error ? error.message : 'Erro ao solicitar análise'
-      );
-    } finally {
-      setSolicitandoAnalise(false);
-    }
-  };
 
   if (!respostaId) {
     return null;
