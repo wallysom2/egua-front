@@ -1,16 +1,18 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { executarCodigo as executarCodigoDelegua } from "@/lib/delegua";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { executarCodigo as executarCodigoDelegua } from '@/lib/delegua';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { oneDark } from '@codemirror/theme-one-dark';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 interface User {
   nome: string;
-  tipo: "aluno" | "professor" | "desenvolvedor";
+  tipo: 'aluno' | 'professor' | 'desenvolvedor';
   email?: string;
   cpf?: string;
   id?: string | number;
@@ -25,40 +27,41 @@ export default function Compilador() {
   const [executando, setExecutando] = useState(false);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
 
     if (!storedUser || !token) {
-      router.push("/login");
+      router.push('/login');
       return;
     }
 
     try {
       setUser(JSON.parse(storedUser));
     } catch (error) {
-      console.error("Erro ao processar dados do usuário:", error);
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-      router.push("/login");
+      console.error('Erro ao processar dados do usuário:', error);
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      router.push('/login');
     } finally {
       setLoading(false);
     }
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    router.push("/login");
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    router.push('/login');
   };
 
   const executarCodigo = async () => {
     try {
       setExecutando(true);
-      setSaida(["Executando código..."]);
+      setSaida(['Executando código...']);
       const resultado = await executarCodigoDelegua(codigo);
       setSaida(resultado);
     } catch (error: Error | unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Erro desconhecido';
       setSaida([`Erro ao executar código: ${errorMessage}`]);
     } finally {
       setExecutando(false);
@@ -75,33 +78,59 @@ export default function Compilador() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
-      {/* Cabeçalho */}
-      <header className="py-4 bg-white shadow-sm">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <Link href="/dashboard" className="text-3xl font-bold text-blue-600">
-            Égua
-          </Link>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center">
-              <p className="font-medium mr-4">Olá, {user?.nome?.split(' ')[0] || 'Aluno'}</p>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
+      {/* Navbar */}
+      <motion.div
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm"
+      >
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center">
+            {/* Logo */}
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/dashboard"
+                className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2"
+              >
+                <Image
+                  src="/hu.png"
+                  alt="Senior Code AI Logo"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8"
+                />
+                <span>Senior Code AI</span>
+              </Link>
+            </motion.div>
+
+            <div className="flex items-center gap-4">
+              <div className="flex items-center">
+                <p className="font-medium mr-4">
+                  Olá, {user?.nome?.split(' ')[0] || 'Aluno'}
+                </p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 transition-colors text-lg"
+              >
+                Sair
+              </button>
             </div>
-            <button 
-              onClick={handleLogout}
-              className="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 transition-colors text-lg"
-            >
-              Sair
-            </button>
           </div>
         </div>
-      </header>
+      </motion.div>
 
       {/* Conteúdo Principal */}
-      <main className="flex-1 py-8">
+      <main className="flex-1 py-16 pt-32">
         <div className="container mx-auto px-4">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Compilador Égua</h1>
-            <p className="text-slate-600 text-xl">Experimente seu código em um ambiente simples e amigável</p>
+            <h1 className="text-3xl font-bold mb-2">
+              Compilador Senior Code AI
+            </h1>
+            <p className="text-slate-600 text-xl">
+              Execute código em tempo real e veja os resultados instantaneamente
+            </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -113,8 +142,8 @@ export default function Compilador() {
                   onClick={executarCodigo}
                   disabled={executando}
                   className={`px-4 py-2 rounded-lg text-white transition-colors ${
-                    executando 
-                      ? 'bg-gray-400 cursor-not-allowed' 
+                    executando
+                      ? 'bg-gray-400 cursor-not-allowed'
                       : 'bg-green-600 hover:bg-green-700'
                   }`}
                 >
@@ -160,14 +189,14 @@ export default function Compilador() {
               <h2 className="text-xl font-bold mb-4">Saída</h2>
               <div className="w-full h-[400px] p-4 bg-slate-50 border border-slate-200 rounded-lg font-mono text-sm overflow-auto">
                 {saida.map((linha, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className={`mb-1 ${
-                      linha.startsWith('Erro') 
-                        ? 'text-red-600' 
-                        : linha === 'Executando código...' 
-                          ? 'text-blue-600' 
-                          : 'text-slate-800'
+                      linha.startsWith('Erro')
+                        ? 'text-red-600'
+                        : linha === 'Executando código...'
+                        ? 'text-blue-600'
+                        : 'text-slate-800'
                     }`}
                   >
                     {linha}
@@ -176,15 +205,28 @@ export default function Compilador() {
               </div>
             </div>
           </div>
+
+          <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+            <h3 className="font-semibold mb-2">Sobre a Linguagem</h3>
+            <p className="text-slate-600 text-lg">
+              Senior Code AI - Plataforma de Aprendizado de Programação
+            </p>
+            <p className="text-sm text-slate-500 mt-2">
+              Uma linguagem de programação educacional desenvolvida para
+              facilitar o aprendizado de conceitos fundamentais.
+            </p>
+          </div>
         </div>
       </main>
 
       {/* Rodapé */}
       <footer className="py-4 border-t border-slate-200 bg-white">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-slate-600 text-lg">Égua - Plataforma de Aprendizado de Programação</p>
+          <p className="text-slate-600 text-lg">
+            Senior Code AI - Plataforma de Aprendizado de Programação
+          </p>
         </div>
       </footer>
     </div>
   );
-} 
+}

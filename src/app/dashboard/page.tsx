@@ -1,15 +1,16 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import Link from 'next/link';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 // Define a proper interface for the user object
 interface User {
   nome: string;
-  tipo: "aluno" | "professor" | "desenvolvedor";
+  tipo: 'aluno' | 'professor' | 'desenvolvedor';
   email?: string;
   cpf?: string;
   id?: string | number;
@@ -23,69 +24,82 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Verificar se o usuário está logado
-    const storedUser = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
 
     if (!storedUser || !token) {
-      router.push("/login");
+      router.push('/login');
       return;
     }
 
     try {
-      setUser(JSON.parse(storedUser));
+      const userData = JSON.parse(storedUser);
+
+      // Removido o redirecionamento automático de alunos
+      // Alunos agora podem acessar o dashboard normalmente
+      setUser(userData);
     } catch (error) {
-      console.error("Erro ao processar dados do usuário:", error);
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-      router.push("/login");
+      console.error('Erro ao processar dados do usuário:', error);
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      router.push('/login');
     } finally {
       setLoading(false);
     }
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    router.push("/login");
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    router.push('/login');
   };
 
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
         <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">Carregando...</p>
+        <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">
+          Carregando...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white flex flex-col transition-colors">
-      {/* Header */}
-      <motion.div 
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
+      {/* Navbar */}
+      <motion.div
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed w-full z-40 py-3 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md"
+        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm"
       >
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
             {/* Logo */}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Link href="/dashboard" className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                🏛️ <span>Égua</span>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/dashboard"
+                className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2"
+              >
+                <Image
+                  src="/hu.png"
+                  alt="Senior Code AI Logo"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8"
+                />
+                <span>Senior Code AI</span>
               </Link>
             </motion.div>
-            
+
             {/* Área do Usuário */}
             <div className="flex items-center gap-3">
               {/* Theme Toggle */}
               <ThemeToggle />
-              
+
               {/* Separador */}
               <div className="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
-              
+
               {/* Menu do Usuário */}
               <div className="relative">
                 <motion.button
@@ -107,13 +121,20 @@ export default function Dashboard() {
                       {user?.tipo || 'Usuário'}
                     </p>
                   </div>
-                  <svg 
-                    className={`w-4 h-4 text-slate-500 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`}
-                    fill="none" 
-                    stroke="currentColor" 
+                  <svg
+                    className={`w-4 h-4 text-slate-500 transition-transform ${
+                      userMenuOpen ? 'rotate-180' : ''
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </motion.button>
 
@@ -153,22 +174,22 @@ export default function Dashboard() {
 
                       {/* Menu Mobile - Links */}
                       <div className="md:hidden border-b border-slate-200 dark:border-slate-700">
-                        <Link 
-                          href="/dashboard/conteudo" 
+                        <Link
+                          href="/dashboard/conteudo"
                           className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                           onClick={() => setUserMenuOpen(false)}
                         >
                           📚 <span>Conteúdo Teórico</span>
                         </Link>
-                        <Link 
-                          href="/dashboard/licoes" 
+                        <Link
+                          href="/dashboard/licoes"
                           className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                           onClick={() => setUserMenuOpen(false)}
                         >
                           🎯 <span>Lições Práticas</span>
                         </Link>
-                        <Link 
-                          href="/dashboard/compilador" 
+                        <Link
+                          href="/dashboard/compilador"
                           className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                           onClick={() => setUserMenuOpen(false)}
                         >
@@ -183,18 +204,18 @@ export default function Dashboard() {
                         onClick={handleLogout}
                         className="flex items-center gap-3 w-full px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                       >
-                        <svg 
-                          xmlns="http://www.w3.org/2000/svg" 
-                          fill="none" 
-                          viewBox="0 0 24 24" 
-                          strokeWidth={1.5} 
-                          stroke="currentColor" 
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
                           className="w-5 h-5"
                         >
-                          <path 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
-                            d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" 
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
                           />
                         </svg>
                         <span className="font-medium">Sair da conta</span>
@@ -210,8 +231,8 @@ export default function Dashboard() {
 
       {/* Overlay para fechar menu */}
       {userMenuOpen && (
-        <div 
-          className="fixed inset-0 z-30" 
+        <div
+          className="fixed inset-0 z-30"
           onClick={() => setUserMenuOpen(false)}
         />
       )}
@@ -219,7 +240,7 @@ export default function Dashboard() {
       {/* Módulos Principais */}
       <main className="flex-grow py-16 pt-32">
         <div className="container mx-auto px-6">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -232,7 +253,7 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Conteúdo */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -248,7 +269,7 @@ export default function Dashboard() {
                 <p className="text-slate-600 dark:text-slate-300 text-lg mb-8 leading-relaxed">
                   Materiais didáticos estruturados e conceitos fundamentais.
                 </p>
-                <Link 
+                <Link
                   href="/dashboard/conteudo"
                   className="block w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all font-medium text-lg transform hover:scale-105"
                 >
@@ -258,7 +279,7 @@ export default function Dashboard() {
             </motion.div>
 
             {/* Lições */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
@@ -272,9 +293,9 @@ export default function Dashboard() {
                   Lições Práticas
                 </h3>
                 <p className="text-slate-600 dark:text-slate-300 text-lg mb-8 leading-relaxed">
-                  Exercícios interativos com feedback imediato.
+                  Exercícios interativos com retorno imediato.
                 </p>
-                <Link 
+                <Link
                   href="/dashboard/licoes"
                   className="block w-full py-4 px-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all font-medium text-lg transform hover:scale-105"
                 >
@@ -284,7 +305,7 @@ export default function Dashboard() {
             </motion.div>
 
             {/* Compilador */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
@@ -300,7 +321,7 @@ export default function Dashboard() {
                 <p className="text-slate-600 dark:text-slate-300 text-lg mb-8 leading-relaxed">
                   Editor de código com execução em tempo real.
                 </p>
-                <Link 
+                <Link
                   href="/dashboard/compilador"
                   className="block w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg transition-all font-medium text-lg transform hover:scale-105"
                 >
@@ -315,14 +336,14 @@ export default function Dashboard() {
       {/* Footer */}
       <footer className="py-8 border-t border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30 mt-auto">
         <div className="container mx-auto px-6 text-center">
-          <motion.p 
+          <motion.p
             className="text-slate-600 dark:text-slate-400"
             whileHover={{ scale: 1.02 }}
           >
-            🏛️ Égua
+            Senior Code AI
           </motion.p>
         </div>
       </footer>
     </div>
   );
-} 
+}
