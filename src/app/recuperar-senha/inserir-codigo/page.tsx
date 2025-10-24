@@ -2,18 +2,22 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { GradientButton } from '@/components/GradientButton';
 
 // API URL que pode ser substituída em produção
 import { API_BASE_URL } from '@/config/api';
 
-export default function RecuperarSenha() {
+function InserirCodigoContent() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const searchParams = useSearchParams();
+  const email = searchParams.get('email');
+  
+  const [codigo, setCodigo] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,56 +26,62 @@ export default function RecuperarSenha() {
     e.preventDefault();
     setError('');
     setSuccess('');
+
+    if (codigo.length !== 6) {
+      setError('O código deve ter 6 dígitos');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/auth/solicitar-recuperacao`, {
-        email: email
-      });
+      const response = await axios.get(`${API_BASE_URL}/api/auth/validar-token/${codigo}`);
 
       if (response.data.success) {
-        setSuccess(response.data.message);
-        // Redirecionar para página de inserir código
+        setSuccess('Código válido! Redirecionando...');
+        // Redirecionar para redefinir senha com o token
         setTimeout(() => {
-          router.push(`/recuperar-senha/inserir-codigo?email=${encodeURIComponent(email)}`);
-        }, 2000);
+          router.push(`/redefinir-senha?token=${codigo}`);
+        }, 1500);
       } else {
-        setError(response.data.message || 'Erro ao solicitar recuperação');
+        setError(response.data.message || 'Código inválido ou expirado');
       }
     } catch (err) {
       setError(
         axios.isAxiosError(err) && err.response?.data?.message
           ? err.response.data.message
-          : 'Erro ao solicitar recuperação de senha',
+          : 'Erro ao validar código',
       );
     } finally {
       setLoading(false);
     }
   };
 
+  const handleCodigoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, ''); // Apenas números
+    if (value.length <= 6) {
+      setCodigo(value);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
-      {/* Navbar */}
-      <div className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <Link
-            href="/"
-            className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3"
-          >
-            <Image
-              src="/hu.png"
-              alt="Senior Code AI Logo"
-              width={40}
-              height={40}
-              className="w-10 h-10"
-            />
-            Senior Code AI
-          </Link>
-          <ThemeToggle />
-        </div>
+      {/* Header */}
+      <div className="flex justify-between items-center p-6">
+        <Link href="/" className="flex items-center gap-3 text-2xl font-bold">
+          <Image
+            src="/logo.svg"
+            alt="Senior Code AI"
+            width={40}
+            height={40}
+            className="w-10 h-10"
+          />
+          Senior Code AI
+        </Link>
+        <ThemeToggle />
       </div>
 
-      {/* Recuperação de Senha Form */}
+      {/* Inserir Código Form */}
       <div className="flex-1 flex items-center justify-center py-20">
         <div className="w-full max-w-md mx-4">
           <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800">
@@ -88,11 +98,19 @@ export default function RecuperarSenha() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z"
                   />
                 </svg>
               </div>
-              <h1 className="text-3xl font-bold mb-2">Recuperar Senha</h1>
+              <h1 className="text-3xl font-bold mb-2">Inserir Código</h1>
+              <p className="text-slate-600 dark:text-slate-400">
+                Digite o código de 6 dígitos que enviamos para seu email
+              </p>
+              {email && (
+                <p className="text-sm text-slate-500 dark:text-slate-500 mt-2">
+                  {email}
+                </p>
+              )}
             </div>
 
             {error && (
@@ -136,30 +154,34 @@ export default function RecuperarSenha() {
                 <div>
                   <label
                     className="block text-base font-medium mb-2 text-slate-700 dark:text-slate-300"
-                    htmlFor="email"
+                    htmlFor="codigo"
                   >
-                    Email
+                    Código de Recuperação
                   </label>
                   <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
-                    placeholder="Digite seu email"
+                    type="text"
+                    id="codigo"
+                    name="codigo"
+                    value={codigo}
+                    onChange={handleCodigoChange}
+                    className="w-full px-4 py-3 text-center text-2xl font-mono tracking-widest bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+                    placeholder="000000"
+                    maxLength={6}
                     required
                   />
+                  <p className="text-sm text-slate-500 dark:text-slate-500 mt-2 text-center">
+                    Digite o código de 6 dígitos que enviamos para seu email
+                  </p>
                 </div>
 
                 <div>
                   <GradientButton
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || codigo.length !== 6}
                     loading={loading}
                     className="w-full"
                   >
-                    Enviar Instruções
+                    Verificar Código
                   </GradientButton>
                 </div>
               </form>
@@ -167,12 +189,12 @@ export default function RecuperarSenha() {
 
             <div className="mt-8 text-center">
               <p className="text-slate-600 dark:text-slate-400">
-                Lembrou da senha?{' '}
+                Não recebeu o código?{' '}
                 <Link
-                  href="/login"
+                  href="/recuperar-senha"
                   className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
                 >
-                  Voltar ao login
+                  Solicitar novamente
                 </Link>
               </p>
             </div>
@@ -180,5 +202,20 @@ export default function RecuperarSenha() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function InserirCodigo() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 dark:text-slate-400">Carregando...</p>
+        </div>
+      </div>
+    }>
+      <InserirCodigoContent />
+    </Suspense>
   );
 }
