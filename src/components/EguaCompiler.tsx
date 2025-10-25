@@ -111,7 +111,7 @@ export function EguaCompiler({
         }}
         onKeyDown={handleKeyDown}
         className={`w-full ${altura} bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-lg p-4 text-slate-900 dark:text-white font-mono text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none`}
-        placeholder="escreva('Olá, Mundo!');"
+        placeholder="Escreva seu código aqui..."
         disabled={disabled || executando}
         spellCheck={false}
         autoComplete="off"

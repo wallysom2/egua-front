@@ -23,7 +23,7 @@ export function ExercicioProgramacao({
   onRespostaSubmitida,
 }: ExercicioProgramacaoProps) {
   const [codigoAtual, setCodigoAtual] = useState(
-    codigoExemplo || questao?.exemplo_resposta || 'escreva("Olá, Mundo!");',
+    codigoExemplo || '',
   );
   const [progressoId, setProgressoId] = useState<string | null>(null);
   const [submissaoCarregando, setSubmissaoCarregando] = useState(false);
