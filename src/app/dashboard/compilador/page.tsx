@@ -205,17 +205,6 @@ export default function Compilador() {
               </div>
             </div>
           </div>
-
-          <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-            <h3 className="font-semibold mb-2">Sobre a Linguagem</h3>
-            <p className="text-slate-600 text-lg">
-              Senior Code AI - Plataforma de Aprendizado de Programação
-            </p>
-            <p className="text-sm text-slate-500 mt-2">
-              Uma linguagem de programação educacional desenvolvida para
-              facilitar o aprendizado de conceitos fundamentais.
-            </p>
-          </div>
         </div>
       </main>
 
