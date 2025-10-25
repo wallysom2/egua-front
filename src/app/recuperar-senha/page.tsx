@@ -31,10 +31,10 @@ export default function RecuperarSenha() {
 
       if (response.data.success) {
         setSuccess(response.data.message);
-        // Redirecionar para página de inserir código
+        // Redirecionar para página de inserir código após um tempo
         setTimeout(() => {
           router.push(`/recuperar-senha/inserir-codigo?email=${encodeURIComponent(email)}`);
-        }, 2000);
+        }, 3000);
       } else {
         setError(response.data.message || 'Erro ao solicitar recuperação');
       }
@@ -131,39 +131,38 @@ export default function RecuperarSenha() {
               </div>
             )}
 
-            {!success && (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label
-                    className="block text-base font-medium mb-2 text-slate-700 dark:text-slate-300"
-                    htmlFor="email"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
-                    placeholder="Digite seu email"
-                    required
-                  />
-                </div>
 
-                <div>
-                  <GradientButton
-                    type="submit"
-                    disabled={loading}
-                    loading={loading}
-                    className="w-full"
-                  >
-                    Enviar Instruções
-                  </GradientButton>
-                </div>
-              </form>
-            )}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label
+                  className="block text-base font-medium mb-2 text-slate-700 dark:text-slate-300"
+                  htmlFor="email"
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+                  placeholder="Digite seu email"
+                  required
+                />
+              </div>
+
+              <div>
+                <GradientButton
+                  type="submit"
+                  disabled={loading}
+                  loading={loading}
+                  className="w-full"
+                >
+                  Enviar Instruções
+                </GradientButton>
+              </div>
+            </form>
 
             <div className="mt-8 text-center">
               <p className="text-slate-600 dark:text-slate-400">

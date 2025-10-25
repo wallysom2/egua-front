@@ -103,9 +103,7 @@ function InserirCodigoContent() {
                 </svg>
               </div>
               <h1 className="text-3xl font-bold mb-2">Inserir Código</h1>
-              <p className="text-slate-600 dark:text-slate-400">
-                Digite o código de 6 dígitos que enviamos para seu email
-              </p>
+
               {email && (
                 <p className="text-sm text-slate-500 dark:text-slate-500 mt-2">
                   {email}
