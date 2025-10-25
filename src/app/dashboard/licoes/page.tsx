@@ -319,7 +319,7 @@ export default function Licoes() {
               href="/dashboard"
               className="px-6 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors flex items-center gap-2"
             >
-              ← Voltar ao Dashboard
+              ← Voltar ao Painel
             </Link>
           </div>
         </div>

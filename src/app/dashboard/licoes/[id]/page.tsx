@@ -402,7 +402,7 @@ export default function ExercicioDetalhes({
               {/* Breadcrumb */}
               <nav className="hidden md:flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
                 <Link href="/dashboard" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
-                  Dashboard
+                  Painel
                 </Link>
                 <span>/</span>
                 <Link href="/dashboard/licoes" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
