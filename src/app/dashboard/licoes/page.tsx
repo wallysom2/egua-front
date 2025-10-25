@@ -6,8 +6,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
-
-import { API_BASE_URL } from '@/config/api';
+import { useAuth } from '@/contexts/AuthContext';
+import { apiClient } from '@/lib/api-client';
 
 interface Exercicio {
   id: number;
@@ -34,6 +34,7 @@ interface SortableValue {
 
 export default function Licoes() {
   const router = useRouter();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [exercicios, setExercicios] = useState<Exercicio[]>([]);
   const [filteredExercicios, setFilteredExercicios] = useState<Exercicio[]>([]);
   const [linguagensMap, setLinguagensMap] = useState<Map<number, string>>(
@@ -41,8 +42,6 @@ export default function Licoes() {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isProfessor, setIsProfessor] = useState(false);
-  const [isDesenvolvedor, setIsDesenvolvedor] = useState(false);
 
   // Estados para filtros e busca
   const [searchTerm, setSearchTerm] = useState('');
@@ -82,28 +81,22 @@ export default function Licoes() {
     }, 5000);
   };
 
+  // Verificar permissões do usuário
+  const isProfessor = user?.tipo === 'professor';
+  const isDesenvolvedor = user?.tipo === 'desenvolvedor';
+
   const handleDeleteExercicio = async (exercicioId: number) => {
     setExercicioToDelete(exercicioId);
-    const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch(`${API_BASE_URL}/exercicios/${exercicioId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      await apiClient.delete(`/exercicios/${exercicioId}`);
+      
+      setExercicios(exercicios.filter((ex) => ex.id !== exercicioId));
+      addToast({
+        type: 'success',
+        message: 'Exercício excluído com sucesso!',
+        description: 'O exercício foi removido permanentemente',
       });
-
-      if (response.ok) {
-        setExercicios(exercicios.filter((ex) => ex.id !== exercicioId));
-        addToast({
-          type: 'success',
-          message: 'Exercício excluído com sucesso!',
-          description: 'O exercício foi removido permanentemente',
-        });
-      } else {
-        throw new Error('Erro ao excluir exercício');
-      }
     } catch (error) {
       console.error('Erro ao excluir exercício:', error);
       addToast({
@@ -208,58 +201,30 @@ export default function Licoes() {
   ]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (!authLoading && !isAuthenticated) {
       router.push('/login');
       return;
     }
 
-    // Verificar tipo de usuário
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        setIsProfessor(userData.tipo === 'professor');
-        setIsDesenvolvedor(userData.tipo === 'desenvolvedor');
-      } catch (error) {
-        console.error('Erro ao processar dados do usuário:', error);
-      }
+    if (authLoading || !isAuthenticated) {
+      return;
     }
 
     const fetchData = async () => {
       try {
-        const [exerciciosResponse, linguagensResponse] =
-          await Promise.allSettled([
-            fetch(`${API_BASE_URL}/exercicios`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-            fetch(`${API_BASE_URL}/linguagens`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-          ]);
+        const [exerciciosData, linguagensData] = await Promise.all([
+          apiClient.get<Exercicio[]>('/exercicios'),
+          apiClient.get<{ id: number; nome: string }[]>('/linguagens'),
+        ]);
 
-        if (
-          exerciciosResponse.status === 'fulfilled' &&
-          exerciciosResponse.value.ok
-        ) {
-          const data = await exerciciosResponse.value.json();
-          if (Array.isArray(data)) {
-            setExercicios(data);
-          }
+        if (Array.isArray(exerciciosData)) {
+          setExercicios(exerciciosData);
         }
 
-        if (
-          linguagensResponse.status === 'fulfilled' &&
-          linguagensResponse.value.ok
-        ) {
-          const data = await linguagensResponse.value.json();
+        if (Array.isArray(linguagensData)) {
           const map = new Map<number, string>();
-          if (Array.isArray(data)) {
-            data.forEach((lang: { id: number; nome: string }) =>
-              map.set(lang.id, lang.nome),
-            );
-            setLinguagensMap(map);
-          }
+          linguagensData.forEach((lang) => map.set(lang.id, lang.nome));
+          setLinguagensMap(map);
         }
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
@@ -275,7 +240,7 @@ export default function Licoes() {
     };
 
     fetchData();
-  }, [router]);
+  }, [router, isAuthenticated, authLoading]);
 
   const totalExercicios = exercicios.length;
 
