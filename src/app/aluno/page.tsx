@@ -6,16 +6,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
-
-import { API_BASE_URL } from '@/config/api';
-
-interface User {
-  nome: string;
-  tipo: 'aluno' | 'professor' | 'desenvolvedor';
-  email?: string;
-  cpf?: string;
-  id?: string | number;
-}
+import { useAuth } from '@/contexts/AuthContext';
+import { apiClient } from '@/lib/api-client';
 
 interface Exercicio {
   id: number;
@@ -30,7 +22,7 @@ interface Exercicio {
 
 export default function DashboardAluno() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const { user, logout, isAuthenticated, isLoading: authLoading } = useAuth();
   const [exercicios, setExercicios] = useState<Exercicio[]>([]);
   const [linguagensMap, setLinguagensMap] = useState<Map<number, string>>(
     new Map(),
@@ -39,63 +31,36 @@ export default function DashboardAluno() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (!authLoading && !isAuthenticated) {
       router.push('/login');
       return;
     }
 
+    if (authLoading || !isAuthenticated) {
+      return;
+    }
+
     // Verificar se é aluno - se não for, redirecionar para dashboard normal
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        if (userData.tipo !== 'aluno') {
-          router.push('/dashboard');
-          return;
-        }
-        setUser(userData);
-      } catch (error) {
-        console.error('Erro ao processar dados do usuário:', error);
-        router.push('/login');
-        return;
-      }
+    if (user && user.tipo !== 'aluno') {
+      router.push('/dashboard');
+      return;
     }
 
     const fetchData = async () => {
       try {
-        const [exerciciosResponse, linguagensResponse] =
-          await Promise.allSettled([
-            fetch(`${API_BASE_URL}/exercicios`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-            fetch(`${API_BASE_URL}/linguagens`, {
-              headers: { Authorization: `Bearer ${token}` },
-            }),
-          ]);
+        const [exerciciosData, linguagensData] = await Promise.all([
+          apiClient.get<Exercicio[]>('/exercicios'),
+          apiClient.get<{ id: number; nome: string }[]>('/linguagens'),
+        ]);
 
-        if (
-          exerciciosResponse.status === 'fulfilled' &&
-          exerciciosResponse.value.ok
-        ) {
-          const data = await exerciciosResponse.value.json();
-          if (Array.isArray(data)) {
-            setExercicios(data);
-          }
+        if (Array.isArray(exerciciosData)) {
+          setExercicios(exerciciosData);
         }
 
-        if (
-          linguagensResponse.status === 'fulfilled' &&
-          linguagensResponse.value.ok
-        ) {
-          const data = await linguagensResponse.value.json();
+        if (Array.isArray(linguagensData)) {
           const map = new Map<number, string>();
-          if (Array.isArray(data)) {
-            data.forEach((lang: { id: number; nome: string }) =>
-              map.set(lang.id, lang.nome),
-            );
-            setLinguagensMap(map);
-          }
+          linguagensData.forEach((lang) => map.set(lang.id, lang.nome));
+          setLinguagensMap(map);
         }
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
@@ -106,13 +71,7 @@ export default function DashboardAluno() {
     };
 
     fetchData();
-  }, [router]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    router.push('/login');
-  };
+  }, [router, isAuthenticated, authLoading, user]);
 
   if (loading) {
     return (
@@ -187,7 +146,7 @@ export default function DashboardAluno() {
             <div className="flex items-center gap-4">
               <ThemeToggle />
               <button
-                onClick={handleLogout}
+                onClick={logout}
                 className="px-6 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors text-lg font-medium"
               >
                 Sair

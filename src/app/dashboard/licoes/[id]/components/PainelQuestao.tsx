@@ -8,7 +8,6 @@ interface PainelQuestaoProps {
   totalQuestoes: number;
   // Props para o retorno da IA Gemini
   respostaId?: string | null;
-  userId?: string | number;
 }
 
 export function PainelQuestao({
@@ -16,7 +15,6 @@ export function PainelQuestao({
   questaoAtual,
   totalQuestoes,
   respostaId,
-  userId,
 }: PainelQuestaoProps) {
   if (!questao) {
     return (
@@ -63,12 +61,10 @@ export function PainelQuestao({
       </div>
 
       {/* Retorno da IA Gemini - Só para questões de programação */}
-      {(questao.tipo === 'programacao' || questao.tipo === 'codigo') && respostaId && userId && (
+      {(questao.tipo === 'programacao' || questao.tipo === 'codigo') && respostaId && (
         <div className="mb-6">
           <AnaliseGemini
             respostaId={respostaId}
-            questaoId={questao.id}
-            userId={userId}
           />
         </div>
       )}

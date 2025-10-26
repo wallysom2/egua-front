@@ -4,22 +4,22 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { GradientButton } from '@/components/GradientButton';
-
-// API URL que pode ser substituída em produção
-import { API_BASE_URL } from '@/config/api';
+import { useAuth } from '@/contexts/AuthContext';
+import { apiClient } from '@/lib/api-client';
+import type { AuthResponse, CadastroData } from '@/types/user';
 
 export default function Cadastro() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const { login } = useAuth();
+  const [formData, setFormData] = useState<CadastroData>({
     nome: '',
     email: '',
     senha: '',
     confirmarSenha: '',
-    tipo: 'aluno' as 'professor' | 'aluno' | 'desenvolvedor',
+    tipo: 'aluno',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -59,29 +59,22 @@ export default function Cadastro() {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/auth/cadastro`,
-        formData,
-      );
+      const response = await apiClient.post<AuthResponse>('/api/auth/cadastro', formData);
 
-      if (response.data.success) {
-        // Armazena o token e dados do usuário no localStorage
-        localStorage.setItem('token', response.data.data.token);
-        localStorage.setItem(
-          'user',
-          JSON.stringify(response.data.data.usuario),
-        );
+      if (response.success && response.data) {
+        // Usa o método login do AuthContext para armazenar os dados
+        login(response.data.usuario, response.data.token);
 
         // Redireciona após cadastro bem-sucedido
         router.push('/dashboard');
       } else {
-        setError(response.data.message || 'Erro ao criar conta');
+        setError(response.message || 'Erro ao criar conta');
       }
     } catch (err) {
       setError(
-        axios.isAxiosError(err) && err.response?.data?.message
-          ? err.response.data.message
-          : 'Erro ao criar conta',
+        err instanceof Error 
+          ? err.message 
+          : 'Erro ao criar conta. Tente novamente.',
       );
     } finally {
       setLoading(false);

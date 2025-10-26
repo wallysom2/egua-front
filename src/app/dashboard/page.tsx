@@ -6,55 +6,21 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
-
-// Define a proper interface for the user object
-interface User {
-  nome: string;
-  tipo: 'aluno' | 'professor' | 'desenvolvedor';
-  email?: string;
-  cpf?: string;
-  id?: string | number;
-}
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Dashboard() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, logout, isAuthenticated, isLoading } = useAuth();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Verificar se o usuário está logado
-    const storedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-
-    if (!storedUser || !token) {
+    // Verificar se o usuário está autenticado
+    if (!isLoading && !isAuthenticated) {
       router.push('/login');
-      return;
     }
+  }, [isAuthenticated, isLoading, router]);
 
-    try {
-      const userData = JSON.parse(storedUser);
-
-      // Removido o redirecionamento automático de alunos
-      // Alunos agora podem acessar o dashboard normalmente
-      setUser(userData);
-    } catch (error) {
-      console.error('Erro ao processar dados do usuário:', error);
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-      router.push('/login');
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    router.push('/login');
-  };
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
         <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -201,7 +167,7 @@ export default function Dashboard() {
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={handleLogout}
+                        onClick={logout}
                         className="flex items-center gap-3 w-full px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                       >
                         <svg

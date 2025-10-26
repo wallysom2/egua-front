@@ -7,8 +7,8 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { CriarQuestao } from '@/components/CriarQuestao';
-
-import { API_BASE_URL } from '@/config/api';
+import { useAuth } from '@/contexts/AuthContext';
+import { apiClient } from '@/lib/api-client';
 
 interface Linguagem {
   id: number;
@@ -21,15 +21,9 @@ interface Conteudo {
   linguagem_id: number;
 }
 
-interface User {
-  nome: string;
-  tipo: 'aluno' | 'professor' | 'desenvolvedor';
-  email?: string;
-}
-
 export default function CriarQuestaoPage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [linguagens, setLinguagens] = useState<Linguagem[]>([]);
   const [conteudos, setConteudos] = useState<Conteudo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,60 +39,30 @@ export default function CriarQuestaoPage() {
   const temPermissao = isProfessor || isDesenvolvedor;
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-
-    if (!token || !storedUser) {
+    if (!authLoading && !isAuthenticated) {
       router.push('/login');
       return;
     }
 
-    try {
-      const userData = JSON.parse(storedUser);
-      setUser(userData);
+    if (authLoading || !isAuthenticated) {
+      return;
+    }
 
-      // Verificar se o usuário tem permissão
-      if (userData.tipo !== 'professor' && userData.tipo !== 'desenvolvedor') {
-        router.push('/dashboard');
-        return;
-      }
-    } catch (error) {
-      console.error('Erro ao processar dados do usuário:', error);
-      router.push('/login');
+    // Verificar se o usuário tem permissão
+    if (user && user.tipo !== 'professor' && user.tipo !== 'desenvolvedor') {
+      router.push('/dashboard');
       return;
     }
 
     const fetchData = async () => {
       try {
-        const [linguagensResponse, conteudosResponse] =
-          await Promise.allSettled([
-            fetch(`${API_BASE_URL}/linguagens`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }),
-            fetch(`${API_BASE_URL}/conteudos`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }),
-          ]);
+        const [linguagensData, conteudosData] = await Promise.all([
+          apiClient.get<Linguagem[]>('/linguagens'),
+          apiClient.get<Conteudo[]>('/conteudos'),
+        ]);
 
-        if (
-          linguagensResponse.status === 'fulfilled' &&
-          linguagensResponse.value.ok
-        ) {
-          const data = await linguagensResponse.value.json();
-          setLinguagens(data);
-        }
-
-        if (
-          conteudosResponse.status === 'fulfilled' &&
-          conteudosResponse.value.ok
-        ) {
-          const data = await conteudosResponse.value.json();
-          setConteudos(data);
-        }
+        setLinguagens(linguagensData);
+        setConteudos(conteudosData);
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
         setError('Não foi possível carregar os dados necessários.');
@@ -108,7 +72,7 @@ export default function CriarQuestaoPage() {
     };
 
     fetchData();
-  }, [router]);
+  }, [router, isAuthenticated, authLoading, user]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleQuestaoCriada = (_questaoId: number) => {
@@ -142,7 +106,7 @@ export default function CriarQuestaoPage() {
           href="/dashboard"
           className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
         >
-          Voltar ao Dashboard
+          Voltar ao Painel
         </Link>
       </div>
     );

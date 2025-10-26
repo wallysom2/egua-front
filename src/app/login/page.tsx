@@ -4,17 +4,17 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { GradientButton } from '@/components/GradientButton';
-
-// API URL que pode ser substituída em produção
-import { API_BASE_URL } from '@/config/api';
+import { useAuth } from '@/contexts/AuthContext';
+import { apiClient } from '@/lib/api-client';
+import type { AuthResponse, LoginData } from '@/types/user';
 
 export default function Login() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const { login } = useAuth();
+  const [formData, setFormData] = useState<LoginData>({
     email: '',
     senha: '',
   });
@@ -36,31 +36,26 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, formData);
+      const response = await apiClient.post<AuthResponse>('/api/auth/login', formData);
 
-      if (response.data.success) {
-        // Armazena o token e dados do usuário no localStorage
-        localStorage.setItem('token', response.data.data.token);
-        localStorage.setItem(
-          'user',
-          JSON.stringify(response.data.data.usuario),
-        );
+      if (response.success && response.data) {
+        // Usa o método login do AuthContext
+        login(response.data.usuario, response.data.token);
 
-        // Redireciona após login bem-sucedido baseado no tipo de usuário
-        const usuario = response.data.data.usuario;
-        if (usuario.tipo === 'aluno') {
-          router.push('/dashboard');
+        // Redireciona baseado no tipo de usuário
+        if (response.data.usuario.tipo === 'aluno') {
+          router.push('/aluno');
         } else {
           router.push('/dashboard');
         }
       } else {
-        setError(response.data.message || 'Erro ao fazer login');
+        setError(response.message || 'Erro ao fazer login');
       }
     } catch (err) {
       setError(
-        axios.isAxiosError(err) && err.response?.data?.message
-          ? err.response.data.message
-          : 'Erro ao fazer login',
+        err instanceof Error 
+          ? err.message 
+          : 'Erro ao fazer login. Tente novamente.',
       );
     } finally {
       setLoading(false);

@@ -7,6 +7,8 @@ import Image from 'next/image';
 import { use } from 'react';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { useAuth } from '@/contexts/AuthContext';
+import { apiClient } from '@/lib/api-client';
 import {
   processarExercicio,
   processarQuestoesDoEndpoint,
@@ -20,16 +22,6 @@ import {
   PainelQuestao,
 } from './components';
 
-import { API_BASE_URL } from '@/config/api';
-
-interface User {
-  nome: string;
-  tipo: 'aluno' | 'professor' | 'desenvolvedor';
-  email?: string;
-  cpf?: string;
-  id?: string | number;
-}
-
 export default function ExercicioDetalhes({
   params,
 }: {
@@ -37,8 +29,8 @@ export default function ExercicioDetalhes({
 }) {
   const router = useRouter();
   const resolvedParams = use(params);
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [exercicio, setExercicio] = useState<Exercicio | null>(null);
-  const [user, setUser] = useState<User | null>(null);
   const [questaoAtual, setQuestaoAtual] = useState(0);
   const [respostas, setRespostas] = useState<{ [key: number]: string }>({});
   const [loading, setLoading] = useState(true);
@@ -53,42 +45,19 @@ export default function ExercicioDetalhes({
   const [respostaId, setRespostaId] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (!authLoading && !isAuthenticated) {
       router.push('/login');
       return;
     }
 
-    // Carregar dados do usuário
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error('Erro ao processar dados do usuário:', error);
-      }
+    if (authLoading || !isAuthenticated) {
+      return;
     }
 
     const fetchExercicio = async () => {
       try {
         // Buscar exercício
-        const exercicioResponse = await fetch(
-          `${API_BASE_URL}/exercicios/${resolvedParams.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        );
-
-        if (!exercicioResponse.ok) {
-          throw new Error(
-            `Erro ao carregar exercício: ${exercicioResponse.status}`,
-          );
-        }
-
-        const exercicioData = await exercicioResponse.json();
+        const exercicioData = await apiClient.get(`/exercicios/${resolvedParams.id}`);
         console.log('Dados do exercício recebidos:', exercicioData);
 
         // Processar exercício usando o novo sistema
@@ -101,50 +70,31 @@ export default function ExercicioDetalhes({
           );
 
           // Buscar questões do exercício separadamente
-          const questoesResponse = await fetch(
-            `${API_BASE_URL}/exercicios/${resolvedParams.id}/questoes`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            },
-          );
-
-          if (questoesResponse.ok) {
-            const questoesData = await questoesResponse.json();
+          try {
+            const questoesData = await apiClient.get(`/exercicios/${resolvedParams.id}/questoes`);
             const questoesProcessadas = processarQuestoesDoEndpoint(
-              questoesData,
+              Array.isArray(questoesData) ? questoesData : [],
               parseInt(resolvedParams.id),
             );
             exercicioProcessado.questoes = questoesProcessadas;
-          } else {
-            console.warn('Erro ao buscar questões:', questoesResponse.status);
+          } catch (questoesError) {
+            console.warn('Erro ao buscar questões:', questoesError);
 
             // Última tentativa: buscar todas as questões e filtrar
             try {
-              const todasQuestoesResponse = await fetch(`${API_BASE_URL}/questoes`, {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  'Content-Type': 'application/json',
-                },
-              });
-
-              if (todasQuestoesResponse.ok) {
-                const todasQuestoes = await todasQuestoesResponse.json();
+              const todasQuestoes = await apiClient.get('/questoes');
                 console.log('Todas as questões:', todasQuestoes);
 
-                if (Array.isArray(todasQuestoes)) {
-                  const questoesFiltradas = todasQuestoes.filter(
-                    (q) =>
-                      q.conteudo_id === parseInt(resolvedParams.id) ||
-                      q.exercicio_id === parseInt(resolvedParams.id),
-                  );
-                  exercicioProcessado.questoes = processarQuestoesDoEndpoint(
-                    questoesFiltradas,
-                    parseInt(resolvedParams.id),
-                  );
-                }
+              if (Array.isArray(todasQuestoes)) {
+                const questoesFiltradas = todasQuestoes.filter(
+                  (q: any) =>
+                    q.conteudo_id === parseInt(resolvedParams.id) ||
+                    q.exercicio_id === parseInt(resolvedParams.id),
+                );
+                exercicioProcessado.questoes = processarQuestoesDoEndpoint(
+                  questoesFiltradas,
+                  parseInt(resolvedParams.id),
+                );
               }
             } catch (error) {
               console.error('Erro ao buscar todas as questões:', error);
@@ -158,21 +108,8 @@ export default function ExercicioDetalhes({
           !exercicioProcessado.nome_linguagem
         ) {
           try {
-            const langResponse = await fetch(
-              `${API_BASE_URL}/linguagens/${exercicioProcessado.linguagem_id}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  'Content-Type': 'application/json',
-                },
-              },
-            );
-            if (langResponse.ok) {
-              const langData = await langResponse.json();
-              exercicioProcessado.nome_linguagem = langData.nome;
-            } else {
-              exercicioProcessado.nome_linguagem = 'Senior Code AI';
-            }
+            const langData = await apiClient.get(`/linguagens/${exercicioProcessado.linguagem_id}`);
+            exercicioProcessado.nome_linguagem = (langData as any)?.nome || 'Senior Code AI';
           } catch {
             exercicioProcessado.nome_linguagem = 'Senior Code AI';
           }
@@ -191,7 +128,7 @@ export default function ExercicioDetalhes({
     };
 
     fetchExercicio();
-  }, [resolvedParams.id, router]);
+  }, [resolvedParams.id, router, isAuthenticated, authLoading]);
 
   const questaoAtualData = exercicio?.questoes[questaoAtual];
   const totalQuestoes = exercicio?.questoes.length || 0;
@@ -249,29 +186,16 @@ export default function ExercicioDetalhes({
     setExercicioFinalizado(true);
     setMostrarModalResultados(true);
 
-    const token = localStorage.getItem('token');
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/exercicios/${resolvedParams.id}/submit`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            respostas: exercicio?.tipo === 'pratico' ? {} : respostas,
-            pontuacao: (acertos / totalQuestoes) * 100,
-          }),
-        },
-      );
+      await apiClient.post(`/exercicios/${resolvedParams.id}/submit`, {
+        respostas: exercicio?.tipo === 'pratico' ? {} : respostas,
+        pontuacao: (acertos / totalQuestoes) * 100,
+      });
 
-      if (response.ok) {
-        // Exercício finalizado com sucesso
-        setTimeout(() => {
-          router.push('/dashboard/licoes');
-        }, 4000);
-      }
+      // Exercício finalizado com sucesso
+      setTimeout(() => {
+        router.push('/dashboard/licoes');
+      }, 4000);
     } catch (error) {
       console.error('Erro ao finalizar exercício:', error);
     }
@@ -402,7 +326,7 @@ export default function ExercicioDetalhes({
               {/* Breadcrumb */}
               <nav className="hidden md:flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
                 <Link href="/dashboard" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
-                  Dashboard
+                  Painel
                 </Link>
                 <span>/</span>
                 <Link href="/dashboard/licoes" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
@@ -489,7 +413,6 @@ export default function ExercicioDetalhes({
                 questaoAtual={questaoAtual}
                 totalQuestoes={totalQuestoes}
                 respostaId={respostaId}
-                userId={user?.id}
               />
             </motion.div>
           </div>
