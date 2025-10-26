@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
         setToken(storedToken);
-      } catch (error) {
+      } catch {
         // Se houver erro ao fazer parse, limpar dados
         localStorage.removeItem('user');
         localStorage.removeItem('token');

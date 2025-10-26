@@ -73,7 +73,7 @@ export default function ExercicioDetalhes({
           try {
             const questoesData = await apiClient.get(`/exercicios/${resolvedParams.id}/questoes`);
             const questoesProcessadas = processarQuestoesDoEndpoint(
-              questoesData,
+              Array.isArray(questoesData) ? questoesData : [],
               parseInt(resolvedParams.id),
             );
             exercicioProcessado.questoes = questoesProcessadas;
@@ -109,7 +109,7 @@ export default function ExercicioDetalhes({
         ) {
           try {
             const langData = await apiClient.get(`/linguagens/${exercicioProcessado.linguagem_id}`);
-            exercicioProcessado.nome_linguagem = langData.nome || 'Senior Code AI';
+            exercicioProcessado.nome_linguagem = (langData as any)?.nome || 'Senior Code AI';
           } catch {
             exercicioProcessado.nome_linguagem = 'Senior Code AI';
           }
@@ -413,7 +413,6 @@ export default function ExercicioDetalhes({
                 questaoAtual={questaoAtual}
                 totalQuestoes={totalQuestoes}
                 respostaId={respostaId}
-                userId={user?.id}
               />
             </motion.div>
           </div>

@@ -30,26 +30,24 @@ interface QuestaoFormData {
 // Schema alinhado com o backend - baseado no questaoSchema fornecido
 const questaoApiSchema = z.object({
   conteudo_id: z.number({ 
-    required_error: 'Conteúdo de referência é obrigatório' 
+    message: 'Conteúdo de referência é obrigatório' 
   }).int({ 
     message: 'ID do conteúdo deve ser um número inteiro' 
   }).positive({ 
     message: 'ID do conteúdo deve ser um número positivo' 
   }).optional().nullable(),
   enunciado: z.string({ 
-    required_error: 'Enunciado é obrigatório' 
+    message: 'Enunciado é obrigatório' 
   }).min(10, { 
     message: 'Enunciado da questão deve ter pelo menos 10 caracteres' 
   }).max(10000, { 
     message: 'Enunciado da questão é muito longo (máximo 10.000 caracteres)' 
   }),
   nivel: z.enum(['facil', 'medio', 'dificil'], { 
-    required_error: 'Nível da questão é obrigatório',
-    invalid_type_error: 'Nível da questão deve ser: facil, medio ou dificil' 
+    message: 'Nível da questão deve ser: facil, medio ou dificil' 
   }),
   tipo: z.enum(['quiz', 'programacao'], {
-    required_error: 'Tipo da questão é obrigatório',
-    invalid_type_error: 'Tipo da questão deve ser: quiz ou programacao'
+    message: 'Tipo da questão deve ser: quiz ou programacao'
   }),
   
   // Campos para questões de quiz - backend espera array de strings
@@ -247,7 +245,7 @@ export function CriarQuestao({
       console.log('🔍 DEBUG: Dados para envio:', dadosParaEnvio);
       console.log('🔍 DEBUG: Dados validados:', validatedData);
 
-      const novaQuestao = await apiClient.post('/questoes', validatedData);
+      const novaQuestao = await apiClient.post<{ id: number }>('/questoes', validatedData);
       onQuestaoCriada(novaQuestao.id);
       setQuestaoForm({
         conteudo_id: 0,
@@ -268,7 +266,7 @@ export function CriarQuestao({
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errors: Record<string, string> = {};
-        error.errors.forEach((err) => {
+        error.issues.forEach((err) => {
           if (err.path) {
             const path = err.path.join('.');
             errors[path] = err.message;
@@ -283,7 +281,7 @@ export function CriarQuestao({
           }
         });
         setValidationErrors(errors);
-        console.error('Erro de validação Zod (API):', error.errors);
+        console.error('Erro de validação Zod (API):', error.issues);
       } else {
         console.error('Erro ao criar questão:', error);
         setError(
