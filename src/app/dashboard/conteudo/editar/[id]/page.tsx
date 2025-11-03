@@ -8,7 +8,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
+import { useAuth } from '@/contexts/AuthContext';
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -568,8 +570,14 @@ export default function EditarConteudoPage({
   params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [id, setId] = useState<string>('');
   const [paramsLoaded, setParamsLoaded] = useState(false);
+
+  // Verificar permissões
+  const isProfessor = user?.tipo === 'professor';
+  const isDesenvolvedor = user?.tipo === 'desenvolvedor';
+  const temPermissao = isProfessor || isDesenvolvedor;
 
   // Resolver o params Promise
   useEffect(() => {
@@ -586,6 +594,24 @@ export default function EditarConteudoPage({
 
     resolveParams();
   }, [params, router]);
+
+  // Verificar autenticação e permissões
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+
+    if (authLoading || !isAuthenticated) {
+      return;
+    }
+
+    // Verificar se o usuário tem permissão
+    if (user && user.tipo !== 'professor' && user.tipo !== 'desenvolvedor') {
+      router.push('/dashboard');
+      return;
+    }
+  }, [router, user, isAuthenticated, authLoading]);
 
   const {
     loading,
@@ -617,6 +643,33 @@ export default function EditarConteudoPage({
   // Mostrar loading enquanto params não estão carregados ou dados estão sendo carregados
   if (!paramsLoaded || loading) {
     return <Loading text="Carregando conteúdo..." />;
+  }
+
+  if (!temPermissao) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <div className="text-6xl mb-4">🚫</div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">
+            Acesso Negado
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 mb-8 text-center max-w-md">
+            Você não tem permissão para editar conteúdos. Apenas professores e
+            desenvolvedores podem acessar esta área.
+          </p>
+          <Link
+            href="/dashboard"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            Voltar ao Painel
+          </Link>
+        </motion.div>
+      </div>
+    );
   }
 
   return (

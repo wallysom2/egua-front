@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Loading } from '@/components/Loading';
+import { useAuth } from '@/contexts/AuthContext';
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -27,12 +28,33 @@ type EditarExercicioProps = {
 
 export default function EditarExercicio({ params }: EditarExercicioProps) {
   const router = useRouter();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [exercicio, setExercicio] = useState<Exercicio | null>(null);
   const [linguagens, setLinguagens] = useState<Linguagem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Verificar permissões
+  const isProfessor = user?.tipo === 'professor';
+  const isDesenvolvedor = user?.tipo === 'desenvolvedor';
+  const temPermissao = isProfessor || isDesenvolvedor;
+
   useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+
+    if (authLoading || !isAuthenticated) {
+      return;
+    }
+
+    // Verificar se o usuário tem permissão
+    if (user && user.tipo !== 'professor' && user.tipo !== 'desenvolvedor') {
+      router.push('/dashboard');
+      return;
+    }
+
     const token = localStorage.getItem('token');
     if (!token) {
       router.push('/login');
@@ -75,7 +97,7 @@ export default function EditarExercicio({ params }: EditarExercicioProps) {
     };
 
     fetchData();
-  }, [params, router]);
+  }, [params, router, user, isAuthenticated, authLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,6 +131,33 @@ export default function EditarExercicio({ params }: EditarExercicioProps) {
 
   if (loading) {
     return <Loading text="Carregando..." />;
+  }
+
+  if (!temPermissao) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <div className="text-6xl mb-4">🚫</div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">
+            Acesso Negado
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 mb-8 text-center max-w-md">
+            Você não tem permissão para editar exercícios. Apenas professores e
+            desenvolvedores podem acessar esta área.
+          </p>
+          <Link
+            href="/dashboard"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            Voltar ao Painel
+          </Link>
+        </motion.div>
+      </div>
+    );
   }
 
   if (error || !exercicio) {

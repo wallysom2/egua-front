@@ -43,12 +43,8 @@ export default function Login() {
         // Usa o método login do AuthContext
         login(response.data.usuario, response.data.token);
 
-        // Redireciona baseado no tipo de usuário
-        if (response.data.usuario.tipo === 'aluno') {
-          router.push('/aluno');
-        } else {
-          router.push('/dashboard');
-        }
+        // Redireciona após login bem-sucedido
+        router.push('/dashboard');
       } else {
         setError(response.message || 'Erro ao fazer login');
       }
