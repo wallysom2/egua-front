@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { GradientButton } from '@/components/GradientButton';
+import { BackButton } from '@/components/BackButton';
 
 // API URL que pode ser substituída em produção
 import { API_BASE_URL } from '@/config/api';
@@ -70,6 +71,9 @@ export default function RecuperarSenha() {
           <ThemeToggle />
         </div>
       </div>
+
+      {/* Botão Voltar */}
+      <BackButton href="/login" />
 
       {/* Recuperação de Senha Form */}
       <div className="flex-1 flex items-center justify-center py-20">

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { GradientButton } from '@/components/GradientButton';
+import { BackButton } from '@/components/BackButton';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
 import type { AuthResponse, LoginData } from '@/types/user';
@@ -42,12 +43,8 @@ export default function Login() {
         // Usa o método login do AuthContext
         login(response.data.usuario, response.data.token);
 
-        // Redireciona baseado no tipo de usuário
-        if (response.data.usuario.tipo === 'aluno') {
-          router.push('/aluno');
-        } else {
-          router.push('/dashboard');
-        }
+        // Redireciona após login bem-sucedido
+        router.push('/dashboard');
       } else {
         setError(response.message || 'Erro ao fazer login');
       }
@@ -90,6 +87,9 @@ export default function Login() {
         </div>
       </motion.div>
 
+      {/* Botão Voltar */}
+      <BackButton href="/" />
+
       {/* Login Form */}
       <div className="flex-1 flex items-center justify-center py-20">
         <motion.div
@@ -103,9 +103,9 @@ export default function Login() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-center mb-8"
+              className="mb-8"
             >
-              <h1 className="text-3xl font-bold mb-2">Bem-vindo!</h1>
+              <h1 className="text-3xl font-bold mb-2 text-center">Bem-vindo!</h1>
             </motion.div>
 
             {error && (

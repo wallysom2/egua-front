@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { BackButton } from '@/components/BackButton';
+import { Loading } from '@/components/Loading';
 import Image from 'next/image';
 
 import { API_BASE_URL } from '@/config/api';
@@ -137,23 +139,7 @@ export default function ConteudoPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">
-            Carregando conteúdos...
-          </p>
-          <p className="text-slate-600 dark:text-slate-400 mt-2">
-            Aguarde enquanto buscamos o melhor conteúdo para você
-          </p>
-        </motion.div>
-      </div>
-    );
+    return <Loading text="Carregando conteúdos..." />;
   }
 
   return (
@@ -196,6 +182,9 @@ export default function ConteudoPage() {
           </div>
         </div>
       </motion.div>
+
+      {/* Botão Voltar */}
+      <BackButton href="/dashboard" />
 
       {/* Conteúdo Principal */}
       <main className="flex-1 py-16 pt-32">

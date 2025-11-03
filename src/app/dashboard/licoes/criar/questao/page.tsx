@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { Loading } from '@/components/Loading';
 import { CriarQuestao } from '@/components/CriarQuestao';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
@@ -81,14 +82,7 @@ export default function CriarQuestaoPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">
-          Carregando...
-        </p>
-      </div>
-    );
+    return <Loading text="Carregando..." />;
   }
 
   if (!temPermissao) {

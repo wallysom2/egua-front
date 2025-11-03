@@ -12,6 +12,7 @@ import {
 import { type Exercicio, type Questao } from '@/types/exercicio';
 import { ExercicioProgramacao } from '@/app/dashboard/licoes/[id]/components';
 import { motion } from 'framer-motion';
+import { Loading } from '@/components/Loading';
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -432,19 +433,7 @@ export default function ExercicioAlunoDetalhes({
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin mb-6"></div>
-          <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3">
-            Carregando sua lição...
-          </h3>
-          <p className="text-lg text-slate-600 dark:text-slate-400">
-            Aguarde um momento
-          </p>
-        </div>
-      </div>
-    );
+    return <Loading text="Carregando sua lição..." size="lg" />;
   }
 
   if (error || !exercicio) {

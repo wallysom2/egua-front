@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { GradientButton } from '@/components/GradientButton';
+import { BackButton } from '@/components/BackButton';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
 import type { AuthResponse, CadastroData } from '@/types/user';
@@ -108,6 +109,9 @@ export default function Cadastro() {
           <ThemeToggle />
         </div>
       </motion.div>
+
+      {/* Botão Voltar */}
+      <BackButton href="/login" />
 
       {/* Cadastro Form */}
       <div className="flex-1 flex items-center justify-center py-20">
