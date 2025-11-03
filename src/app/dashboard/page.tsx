@@ -42,7 +42,7 @@ export default function Dashboard() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
             {/* Logo */}
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <div>
               <Link
                 href="/dashboard"
                 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2"
@@ -56,7 +56,7 @@ export default function Dashboard() {
                 />
                 <span>Senior Code AI</span>
               </Link>
-            </motion.div>
+            </div>
 
             {/* Área do Usuário */}
             <div className="flex items-center gap-3">
@@ -68,9 +68,7 @@ export default function Dashboard() {
 
               {/* Menu do Usuário */}
               <div className="relative">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
@@ -102,7 +100,7 @@ export default function Dashboard() {
                       d="M19 9l-7 7-7-7"
                     />
                   </svg>
-                </motion.button>
+                </button>
 
                 {/* Dropdown Menu */}
                 <AnimatePresence>
@@ -164,9 +162,7 @@ export default function Dashboard() {
                       </div>
 
                       {/* Logout */}
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                      <button
                         onClick={logout}
                         className="flex items-center gap-3 w-full px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                       >
@@ -185,7 +181,7 @@ export default function Dashboard() {
                           />
                         </svg>
                         <span className="font-medium">Sair da conta</span>
-                      </motion.button>
+                      </button>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -223,10 +219,10 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="group bg-white dark:bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all hover:shadow-2xl hover:scale-105"
+              className="group bg-white dark:bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all hover:shadow-2xl"
             >
               <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <span className="text-3xl">📚</span>
                 </div>
                 <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
@@ -237,7 +233,7 @@ export default function Dashboard() {
                 </p>
                 <Link
                   href="/dashboard/conteudo"
-                  className="block w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all font-medium text-lg transform hover:scale-105"
+                  className="block w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all font-medium text-lg"
                 >
                   Estudar Conteúdo
                 </Link>
@@ -249,10 +245,10 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="group bg-white dark:bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all hover:shadow-2xl hover:scale-105"
+              className="group bg-white dark:bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all hover:shadow-2xl"
             >
               <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <span className="text-3xl">🎯</span>
                 </div>
                 <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
@@ -263,7 +259,7 @@ export default function Dashboard() {
                 </p>
                 <Link
                   href="/dashboard/licoes"
-                  className="block w-full py-4 px-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all font-medium text-lg transform hover:scale-105"
+                  className="block w-full py-4 px-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all font-medium text-lg"
                 >
                   Fazer Lições
                 </Link>
@@ -275,10 +271,10 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="group bg-white dark:bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all hover:shadow-2xl hover:scale-105"
+              className="group bg-white dark:bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all hover:shadow-2xl"
             >
               <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <span className="text-3xl">💻</span>
                 </div>
                 <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
@@ -289,7 +285,7 @@ export default function Dashboard() {
                 </p>
                 <Link
                   href="/dashboard/compilador"
-                  className="block w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg transition-all font-medium text-lg transform hover:scale-105"
+                  className="block w-full py-4 px-6 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg transition-all font-medium text-lg"
                 >
                   Abrir Compilador
                 </Link>
@@ -302,12 +298,9 @@ export default function Dashboard() {
       {/* Footer */}
       <footer className="py-8 border-t border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30 mt-auto">
         <div className="container mx-auto px-6 text-center">
-          <motion.p
-            className="text-slate-600 dark:text-slate-400"
-            whileHover={{ scale: 1.02 }}
-          >
+          <p className="text-slate-600 dark:text-slate-400">
             Senior Code AI
-          </motion.p>
+          </p>
         </div>
       </footer>
     </div>

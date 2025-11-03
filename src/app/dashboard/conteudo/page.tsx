@@ -148,9 +148,6 @@ export default function ConteudoPage() {
           <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">
             Carregando conteúdos...
           </p>
-          <p className="text-slate-600 dark:text-slate-400 mt-2">
-            Aguarde enquanto buscamos o melhor conteúdo para você
-          </p>
         </motion.div>
       </div>
     );
