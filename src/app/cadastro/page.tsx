@@ -106,12 +106,12 @@ export default function Cadastro() {
               Senior Code AI
             </Link>
           </motion.div>
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            <BackButton href="/login" />
+            <ThemeToggle />
+          </div>
         </div>
       </motion.div>
-
-      {/* Botão Voltar */}
-      <BackButton href="/login" />
 
       {/* Cadastro Form */}
       <div className="flex-1 flex items-center justify-center py-20">

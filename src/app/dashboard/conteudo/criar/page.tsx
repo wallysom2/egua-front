@@ -460,6 +460,7 @@ export default function NovoConteudoPage() {
               </Link>
             </motion.div>
             <div className="flex items-center gap-3">
+              <BackButton href="/dashboard/conteudo" />
               <ThemeToggle />
               <Link
                 href="/dashboard/conteudo"
@@ -471,9 +472,6 @@ export default function NovoConteudoPage() {
           </div>
         </div>
       </motion.div>
-
-      {/* Botão Voltar */}
-      <BackButton href="/dashboard/conteudo" />
 
       {/* Conteúdo Principal */}
       <main className="flex-1 py-16 pt-32">

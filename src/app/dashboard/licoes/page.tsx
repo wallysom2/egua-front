@@ -305,6 +305,7 @@ export default function Licoes() {
               </Link>
             </motion.div>
             <div className="flex items-center gap-3">
+              <BackButton href="/dashboard" />
               <ThemeToggle />
               {(isProfessor || isDesenvolvedor) && (
                 <Link
@@ -318,9 +319,6 @@ export default function Licoes() {
           </div>
         </div>
       </motion.div>
-
-      {/* Botão Voltar */}
-      <BackButton href="/dashboard" />
 
       {/* Conteúdo Principal */}
       <main className="flex-1 py-16 pt-32">
@@ -336,9 +334,7 @@ export default function Licoes() {
                 <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
                   Lições de Programação
                 </h1>
-                <p className="text-slate-600 dark:text-slate-400">
-                  Exercícios práticos para reforçar seu aprendizado
-                </p>
+
               </div>
             </div>
           </motion.div>

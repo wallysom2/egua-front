@@ -169,6 +169,7 @@ export default function ConteudoPage() {
               </Link>
             </motion.div>
             <div className="flex items-center gap-3">
+              <BackButton href="/dashboard" />
               <ThemeToggle />
               {(isProfessor || isDesenvolvedor) && (
                 <Link
@@ -182,9 +183,6 @@ export default function ConteudoPage() {
           </div>
         </div>
       </motion.div>
-
-      {/* Botão Voltar */}
-      <BackButton href="/dashboard" />
 
       {/* Conteúdo Principal */}
       <main className="flex-1 py-16 pt-32">

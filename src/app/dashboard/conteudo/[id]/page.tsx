@@ -190,14 +190,12 @@ function ConteudoView({
             </motion.div>
 
             <div className="flex items-center gap-3">
+              <BackButton href="/dashboard/conteudo" />
               <ThemeToggle />
             </div>
           </div>
         </div>
       </motion.div>
-
-      {/* Botão Voltar */}
-      <BackButton href="/dashboard/conteudo" />
 
       {/* Conteúdo Principal */}
       <main className="flex-1 pt-24 pb-16">
@@ -209,19 +207,6 @@ function ConteudoView({
             transition={{ duration: 0.5 }}
             className="mb-12"
           >
-            {/* Tags de Informação */}
-            <div className="flex flex-wrap items-center gap-2 mb-6">
-              <span
-                className={`px-3 py-1.5 rounded-full text-sm font-medium shadow-sm ${
-                  conteudo.nivel_leitura === 'basico'
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800'
-                    : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
-                }`}
-              >
-                {conteudo.nivel_leitura === 'basico' ? 'Básico' : 'Intermediário'}
-              </span>
-            </div>
-
             {/* Título Principal */}
             <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
               {conteudo.titulo}
@@ -272,34 +257,6 @@ function ConteudoView({
               dangerouslySetInnerHTML={{ __html: conteudo.corpo }}
             />
           </motion.article>
-
-          {/* Botão Voltar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="pt-8 border-t border-slate-200 dark:border-slate-700 flex justify-end"
-          >
-            <Link
-              href="/dashboard/conteudo"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200 font-medium group"
-            >
-              <svg
-                className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              Voltar
-            </Link>
-          </motion.div>
         </div>
       </main>
     </div>
