@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
+import { Loading } from '@/components/Loading';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
 
@@ -246,23 +247,7 @@ export default function Licoes() {
   const totalExercicios = exercicios.length;
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">
-            Carregando lições...
-          </p>
-          <p className="text-slate-600 dark:text-slate-400 mt-2">
-            Preparando seus exercícios
-          </p>
-        </motion.div>
-      </div>
-    );
+    return <Loading text="Carregando lições..." />;
   }
 
   if (error) {

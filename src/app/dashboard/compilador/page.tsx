@@ -9,6 +9,7 @@ import { oneDark } from '@codemirror/theme-one-dark';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { BackButton } from '@/components/BackButton';
+import { Loading } from '@/components/Loading';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Compilador() {
@@ -33,12 +34,7 @@ export default function Compilador() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-white">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-xl font-semibold">Carregando...</p>
-      </div>
-    );
+    return <Loading text="Carregando..." />;
   }
 
   return (

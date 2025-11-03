@@ -8,6 +8,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { Loading } from '@/components/Loading';
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -265,23 +266,6 @@ const useConteudo = (id: string) => {
   };
 };
 
-const LoadingSpinner = () => (
-  <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="text-center"
-    >
-      <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-      <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">
-        Carregando conteúdo...
-      </p>
-      <p className="text-slate-600 dark:text-slate-400 mt-2">
-        Preparando o editor para você
-      </p>
-    </motion.div>
-  </div>
-);
 
 const FormularioConteudo = ({
   formData,
@@ -632,7 +616,7 @@ export default function EditarConteudoPage({
 
   // Mostrar loading enquanto params não estão carregados ou dados estão sendo carregados
   if (!paramsLoaded || loading) {
-    return <LoadingSpinner />;
+    return <Loading text="Carregando conteúdo..." />;
   }
 
   return (

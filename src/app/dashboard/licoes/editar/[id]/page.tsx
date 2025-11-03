@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { Loading } from '@/components/Loading';
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -107,12 +108,7 @@ export default function EditarExercicio({ params }: EditarExercicioProps) {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-xl font-semibold text-white">Carregando...</p>
-      </div>
-    );
+    return <Loading text="Carregando..." />;
   }
 
   if (error || !exercicio) {

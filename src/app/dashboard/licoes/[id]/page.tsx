@@ -7,6 +7,8 @@ import Image from 'next/image';
 import { use } from 'react';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { BackButton } from '@/components/BackButton';
+import { Loading } from '@/components/Loading';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
 import {
@@ -251,19 +253,7 @@ export default function ExercicioDetalhes({
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin mb-4"></div>
-          <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">
-            Carregando exercício...
-          </h3>
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            Preparando sua experiência de aprendizado
-          </p>
-        </div>
-      </div>
-    );
+    return <Loading text="Carregando exercício..." />;
   }
 
   if (error || !exercicio) {
@@ -358,16 +348,13 @@ export default function ExercicioDetalhes({
                 </div>
               )}
               <ThemeToggle />
-              <Link
-                href="/dashboard/licoes"
-                className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-              >
-                Voltar
-              </Link>
             </div>
           </div>
         </div>
       </motion.header>
+
+      {/* Botão Voltar */}
+      <BackButton href="/dashboard/licoes" />
 
       {/* Conteúdo Principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

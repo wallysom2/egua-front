@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
+import { Loading } from '@/components/Loading';
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -118,22 +119,6 @@ function useConteudo(id: string) {
   };
 }
 
-function LoadingSpinner() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-900">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="text-center"
-      >
-        <div className="w-12 h-12 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-        <p className="mt-4 text-lg font-medium text-slate-900 dark:text-white">
-          Carregando...
-        </p>
-      </motion.div>
-    </div>
-  );
-}
 
 function ConteudoNaoEncontrado() {
   return (
@@ -331,7 +316,7 @@ export default function VisualizarConteudoPage({
     resolvedParams.id,
   );
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <Loading text="Carregando..." />;
   if (error || !conteudo) return <ConteudoNaoEncontrado />;
 
   return <ConteudoView conteudo={conteudo} onDelete={handleDelete} />;

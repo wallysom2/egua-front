@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
+import { Loading } from '@/components/Loading';
 import Image from 'next/image';
 
 import { API_BASE_URL } from '@/config/api';
@@ -138,20 +139,7 @@ export default function ConteudoPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">
-            Carregando conteúdos...
-          </p>
-        </motion.div>
-      </div>
-    );
+    return <Loading text="Carregando conteúdos..." />;
   }
 
   return (

@@ -6,6 +6,7 @@ import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { Loading } from '@/components/Loading';
 import { GradientButton } from '@/components/GradientButton';
 
 // API URL que pode ser substituída em produção
@@ -204,14 +205,7 @@ function InserirCodigoContent() {
 
 export default function InserirCodigo() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">Carregando...</p>
-        </div>
-      </div>
-    }>
+    <Suspense fallback={<Loading text="Carregando..." />}>
       <InserirCodigoContent />
     </Suspense>
   );
