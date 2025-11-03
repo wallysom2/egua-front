@@ -346,6 +346,9 @@ const FormularioConteudo = ({
       </div>
     </motion.div>
 
+    {/* Botão Voltar */}
+    <BackButton href="/dashboard/conteudo" />
+
     {/* Conteúdo Principal */}
     <main className="flex-1 py-16 pt-32">
       <div className="container mx-auto px-6">

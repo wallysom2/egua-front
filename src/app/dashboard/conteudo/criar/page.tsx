@@ -8,6 +8,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { BackButton } from '@/components/BackButton';
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -421,6 +422,9 @@ export default function NovoConteudoPage() {
           </div>
         </div>
       </motion.div>
+
+      {/* Botão Voltar */}
+      <BackButton href="/dashboard/conteudo" />
 
       {/* Conteúdo Principal */}
       <main className="flex-1 py-16 pt-32">

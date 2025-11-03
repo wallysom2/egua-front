@@ -8,6 +8,7 @@ import { javascript } from '@codemirror/lang-javascript';
 import { oneDark } from '@codemirror/theme-one-dark';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { BackButton } from '@/components/BackButton';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Compilador() {
@@ -83,6 +84,9 @@ export default function Compilador() {
           </div>
         </div>
       </motion.div>
+
+      {/* Botão Voltar */}
+      <BackButton href="/dashboard" />
 
       {/* Conteúdo Principal */}
       <main className="flex-1 py-16 pt-32">
