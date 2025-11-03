@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { type RespostaComAnalise } from '@/types/exercicio';
 import { API_BASE_URL } from '@/config/api';
 
@@ -24,10 +24,13 @@ export function useAnaliseGemini({
   const [analise, setAnalise] = useState<RespostaComAnalise | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isRequestingRef = useRef(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const buscarAnalise = useCallback(async () => {
-    if (!respostaId) return;
+    if (!respostaId || isRequestingRef.current) return;
 
+    isRequestingRef.current = true;
     setLoading(true);
     setError(null);
 
@@ -62,6 +65,7 @@ export function useAnaliseGemini({
       );
     } finally {
       setLoading(false);
+      isRequestingRef.current = false;
     }
   }, [respostaId]);
 
@@ -82,24 +86,39 @@ export function useAnaliseGemini({
 
   // Effect para auto-refresh se análise não estiver disponível
   useEffect(() => {
+    // Limpar interval anterior se existir
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    // Não iniciar polling se não tiver respostaId ou autoRefresh desabilitado
     if (!respostaId || !autoRefresh) return;
 
+    // Não iniciar polling se a análise já estiver disponível
+    if (analise?.analise_disponivel) return;
+
+    // Só iniciar polling se houver análise mas ainda não disponível
     const shouldPoll = analise && !analise.analise_disponivel;
-    if (!shouldPoll) return;
+    if (!shouldPoll && !loading) return;
 
     console.log('Configurando polling para análise da resposta:', respostaId);
-    const interval = setInterval(() => {
-      if (analise && !analise.analise_disponivel) {
+    intervalRef.current = setInterval(() => {
+      // Só fazer requisição se não houver uma em andamento
+      if (!isRequestingRef.current && (!analise || !analise.analise_disponivel)) {
         console.log('Polling: verificando análise...');
         buscarAnalise();
       }
     }, refreshInterval);
 
     return () => {
-      console.log('Limpando polling de análise');
-      clearInterval(interval);
+      if (intervalRef.current) {
+        console.log('Limpando polling de análise');
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     };
-  });
+  }, [respostaId, autoRefresh, analise, loading, refreshInterval, buscarAnalise]);
 
   return {
     analise,

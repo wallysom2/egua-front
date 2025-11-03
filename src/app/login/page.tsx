@@ -105,7 +105,7 @@ export default function Login() {
               transition={{ delay: 0.2 }}
               className="text-center mb-8"
             >
-              <h1 className="text-3xl font-bold mb-2">Bem-vindo de volta!</h1>
+              <h1 className="text-3xl font-bold mb-2">Bem-vindo!</h1>
             </motion.div>
 
             {error && (
