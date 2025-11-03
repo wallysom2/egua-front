@@ -415,9 +415,9 @@ export default function Licoes() {
                   className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 >
                   <option value="todos">Todos</option>
-                  <option value="nao_iniciado">🆕 Não Iniciado</option>
-                  <option value="em_andamento">⏳ Em Progresso</option>
-                  <option value="concluido">✅ Concluído</option>
+                  <option value="nao_iniciado">Não Iniciado</option>
+                  <option value="em_andamento">Em Progresso</option>
+                  <option value="concluido">Concluído</option>
                 </select>
               </div>
 
@@ -651,7 +651,7 @@ export default function Licoes() {
                       <>
                         {/* Header do Card */}
                         <div className="flex items-center justify-between mb-4">
-                          <span
+                          {/* <span
                             className={`px-2 py-1 rounded text-xs font-medium ${
                               exercicio.tipo === 'pratico'
                                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
@@ -659,7 +659,7 @@ export default function Licoes() {
                             }`}
                           >
                             {exercicio.tipo === 'pratico' ? 'Prático' : 'Quiz'}
-                          </span>
+                          </span> */}
 
                           {/* Status Badge */}
                           {status && (
