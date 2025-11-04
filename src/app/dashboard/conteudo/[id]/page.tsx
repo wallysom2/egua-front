@@ -168,7 +168,7 @@ function ConteudoView({
       <motion.div
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary/50 backdrop-blur-sm"
+        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary backdrop-blur-sm"
       >
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
