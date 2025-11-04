@@ -27,19 +27,22 @@
 .dark {
   /* Cores do tema escuro - ALTERE AQUI PARA MUDAR AS CORES GLOBALMENTE */
   --color-bg-primary: #0f172a;      /* Fundo principal escuro (slate-900) */
-  --color-bg-secondary: #1e293b;    /* Fundo secundário escuro (slate-800) */
-  --color-bg-tertiary: #334155;     /* Fundo terciário escuro (slate-700) */
-  --color-text-primary: #f1f5f9;    /* Texto principal claro (slate-100) */
-  --color-text-secondary: #cbd5e1;  /* Texto secundário claro (slate-300) */
-  --color-text-tertiary: #94a3b8;   /* Texto terciário claro (slate-400) */
-  --color-border: #475569;          /* Borda escura (slate-600) */
-  --color-border-hover: #64748b;    /* Borda hover escura (slate-500) */
+  --color-bg-secondary: #1e293b;    /* Fundo secundário escuro (slate-800) - melhor contraste para cards */
+  --color-bg-tertiary: #334155;     /* Fundo terciário escuro (slate-700) - inputs e elementos interativos */
+  --color-text-primary: #f8fafc;    /* Texto principal claro (slate-50) - melhor contraste */
+  --color-text-secondary: #e2e8f0;  /* Texto secundário claro (slate-200) - melhor legibilidade */
+  --color-text-tertiary: #cbd5e1;   /* Texto terciário claro (slate-300) - melhor visibilidade */
+  --color-border: #475569;          /* Borda escura (slate-600) - contraste adequado */
+  --color-border-hover: #64748b;    /* Borda hover escura (slate-500) - hover states */
   --color-header-bg: #0f172a;       /* Background do header (slate-900) */
-  --color-header-bg-opacity: rgba(15, 23, 42, 0.95); /* Header com opacidade - escuro para combinar com tema */
+  --color-header-bg-opacity: rgba(15, 23, 42, 0.95); /* Header com opacidade */
   --color-header-border: rgba(30, 41, 59, 0.8);   /* Borda do header (slate-800) com opacidade */
   --color-footer-bg: rgba(15, 23, 42, 0.95); /* Background do footer (slate-900 com opacidade) */
   --color-footer-bg-opacity: rgba(15, 23, 42, 0.95); /* Footer com opacidade */
   --color-footer-border: rgba(30, 41, 59, 0.8);   /* Borda do footer (slate-800) com opacidade */
+  
+  /* Variáveis adicionais para melhor contraste em cards com opacidade */
+  --color-card-bg: rgba(30, 41, 59, 0.9); /* Card background com maior opacidade para melhor contraste */
 }
 
 @theme inline {
@@ -227,6 +230,31 @@ body {
   
   .dark .footer-border-custom {
     border-color: var(--color-footer-border) !important;
+  }
+
+  /* Inputs e selects com melhor contraste */
+  .dark input[type="text"],
+  .dark input[type="search"],
+  .dark select,
+  .dark textarea {
+    background-color: var(--color-bg-tertiary) !important;
+    border-color: var(--color-border) !important;
+    color: var(--color-text-primary) !important;
+  }
+
+  .dark input[type="text"]:focus,
+  .dark input[type="search"]:focus,
+  .dark select:focus,
+  .dark textarea:focus {
+    border-color: var(--color-border-hover) !important;
+    outline-color: var(--color-border-hover) !important;
+  }
+
+  /* Placeholders mais visíveis */
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: var(--color-text-tertiary) !important;
+    opacity: 0.8;
   }
 }
 
