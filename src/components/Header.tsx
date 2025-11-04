@@ -217,7 +217,7 @@ export function Header({
       <motion.div
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed w-full z-40 py-4 border-b border-slate-200/50 dark:border-header-border/30 backdrop-blur-sm"
+        className="fixed w-full z-40 py-4 border-b border-slate-200/50 dark:border-slate-700/80 backdrop-blur-sm"
         style={{
           backgroundColor: variant === 'home' 
             ? 'var(--color-header-bg)' 

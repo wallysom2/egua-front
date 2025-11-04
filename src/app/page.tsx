@@ -234,7 +234,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-slate-200 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-800/60">
+      <footer className="py-8 border-t border-slate-200 dark:border-slate-700/80 bg-slate-50/30 dark:bg-slate-900/95">
         <div className="container mx-auto px-6 text-center">
           <motion.p
             className="text-slate-600 dark:text-slate-300"
