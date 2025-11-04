@@ -252,7 +252,7 @@ export default function Login() {
             </div>
 
             {/* Login Google */}
-            <div className="flex justify-center">
+            <div className="w-full google-login-wrapper mb-6">
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={() => {

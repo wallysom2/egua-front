@@ -18,6 +18,11 @@ module.exports = {
         'text-tertiary': 'var(--color-text-tertiary)',
         'border-custom': 'var(--color-border)',
         'border-hover': 'var(--color-border-hover)',
+        'header-bg': 'var(--color-header-bg)',
+        'header-border': 'var(--color-header-border)',
+        'footer-bg': 'var(--color-footer-bg)',
+        'footer-bg-opacity': 'var(--color-footer-bg-opacity)',
+        'footer-border': 'var(--color-footer-border)',
         
         // Cores específicas do projeto
         slate: {

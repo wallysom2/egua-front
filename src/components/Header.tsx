@@ -217,9 +217,12 @@ export function Header({
       <motion.div
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className={`fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary/50 backdrop-blur-sm ${
-          variant === 'home' ? 'bg-white dark:bg-bg-secondary' : ''
-        }`}
+        className="fixed w-full z-40 py-4 border-b border-slate-200/50 dark:header-border-custom backdrop-blur-sm"
+        style={{
+          backgroundColor: variant === 'home' 
+            ? 'var(--color-header-bg)' 
+            : 'var(--color-header-bg-opacity)',
+        }}
       >
         <div className="container mx-auto px-4 flex justify-between items-center">
           {/* Logo */}
