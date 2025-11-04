@@ -19,6 +19,9 @@
   --color-header-bg: #ffffff;
   --color-header-bg-opacity: rgba(255, 255, 255, 0.8);
   --color-header-border: #e2e8f0;
+  --color-footer-bg: rgba(248, 250, 252, 0.3);
+  --color-footer-bg-opacity: rgba(248, 250, 252, 0.3);
+  --color-footer-border: #e2e8f0;
 }
 
 .dark {
@@ -32,8 +35,11 @@
   --color-border: #475569;          /* Borda escura (slate-600) */
   --color-border-hover: #64748b;    /* Borda hover escura (slate-500) */
   --color-header-bg: #0f172a;       /* Background do header (slate-900) */
-  --color-header-bg-opacity: rgba(15, 23, 42, 0.98); /* Header com opacidade - quase opaco para evitar linha branca */
-  --color-header-border: #334155;   /* Borda do header (slate-700) */
+  --color-header-bg-opacity: rgba(15, 23, 42, 0.95); /* Header com opacidade - escuro para combinar com tema */
+  --color-header-border: rgba(30, 41, 59, 0.8);   /* Borda do header (slate-800) com opacidade */
+  --color-footer-bg: rgba(15, 23, 42, 0.95); /* Background do footer (slate-900 com opacidade) */
+  --color-footer-bg-opacity: rgba(15, 23, 42, 0.95); /* Footer com opacidade */
+  --color-footer-border: rgba(30, 41, 59, 0.8);   /* Borda do footer (slate-800) com opacidade */
 }
 
 @theme inline {
@@ -209,6 +215,18 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  
+  .footer-bg {
+    background-color: var(--color-footer-bg-opacity);
+  }
+  
+  .dark .header-border-custom {
+    border-color: var(--color-header-border) !important;
+  }
+  
+  .dark .footer-border-custom {
+    border-color: var(--color-footer-border) !important;
   }
 }
 
