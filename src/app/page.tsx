@@ -1,8 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { Header } from '@/components/Header';
 import { GradientButton } from '@/components/GradientButton';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
@@ -25,55 +23,7 @@ export default function Home() {
     >
       <ScrollProgress />
 
-      {/* Navbar */}
-      <motion.div
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
-      >
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              href="/"
-              className="text-3xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-3"
-            >
-              <Image
-                src="/hu.png"
-                alt="Senior Code AI Logo"
-                width={40}
-                height={40}
-                className="w-10 h-10"
-              />
-              Senior Code AI
-            </Link>
-          </motion.div>
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                href="/login"
-                className="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 transition-all flex items-center gap-2 shadow-lg text-white"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
-                  />
-                </svg>
-                Entrar
-              </Link>
-            </motion.div>
-          </div>
-        </div>
-      </motion.div>
+      <Header variant="home" logoHref="/" logoSize="lg" />
 
       {/* Hero Section */}
       <motion.div

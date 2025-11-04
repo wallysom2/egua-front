@@ -122,13 +122,13 @@ function useConteudo(id: string) {
 
 function ConteudoNaoEncontrado() {
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
-      <div className="sticky top-0 z-40 border-b border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm">
+    <div className="min-h-screen bg-white dark:bg-bg-secondary">
+      <div className="sticky top-0 z-40 border-b border-slate-200 dark:border-border-custom bg-white/95 dark:bg-bg-secondary/95 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <Link
               href="/dashboard"
-              className="text-xl font-bold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="text-xl font-bold text-slate-900 dark:text-text-primary hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               Senior Code AI
             </Link>
@@ -139,10 +139,10 @@ function ConteudoNaoEncontrado() {
 
       <div className="max-w-2xl mx-auto px-6 py-16 text-center">
         <div className="text-4xl mb-4">📄</div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-3">
           Conteúdo não encontrado
         </h1>
-        <p className="text-slate-600 dark:text-slate-400 mb-8">
+        <p className="text-slate-600 dark:text-text-secondary mb-8">
           O conteúdo que você está procurando não existe ou foi removido.
         </p>
         <Link
@@ -163,12 +163,12 @@ function ConteudoView({
   onDelete: () => void;
 }) {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
       {/* Navbar */}
       <motion.div
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm"
+        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary/50 backdrop-blur-sm"
       >
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
@@ -176,7 +176,7 @@ function ConteudoView({
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/dashboard"
-                className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2"
+                className="text-2xl font-bold text-slate-900 dark:text-text-primary flex items-center gap-2"
               >
                 <Image
                   src="/hu.png"
@@ -208,12 +208,12 @@ function ConteudoView({
             className="mb-12"
           >
             {/* Título Principal */}
-            <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
+            <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-text-primary mb-6 leading-tight">
               {conteudo.titulo}
             </h1>
 
             {/* Descrição */}
-            <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+            <p className="text-lg text-slate-600 dark:text-text-secondary leading-relaxed">
               {conteudo.corpo.replace(/<[^>]*>/g, '').substring(0, 150)}...
             </p>
           </motion.div>
