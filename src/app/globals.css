@@ -16,18 +16,24 @@
   --color-text-tertiary: #64748b;
   --color-border: #e2e8f0;
   --color-border-hover: #cbd5e1;
+  --color-header-bg: #ffffff;
+  --color-header-bg-opacity: rgba(255, 255, 255, 0.8);
+  --color-header-border: #e2e8f0;
 }
 
 .dark {
   /* Cores do tema escuro - ALTERE AQUI PARA MUDAR AS CORES GLOBALMENTE */
-  --color-bg-primary: #0f172a;      /* Fundo principal escuro */
-  --color-bg-secondary: #1e293b;    /* Fundo secundário escuro */
-  --color-bg-tertiary: #334155;     /* Fundo terciário escuro */
-  --color-text-primary: #f1f5f9;    /* Texto principal claro */
-  --color-text-secondary: #cbd5e1;  /* Texto secundário claro */
-  --color-text-tertiary: #94a3b8;   /* Texto terciário claro */
-  --color-border: #334155;          /* Borda escura */
-  --color-border-hover: #475569;    /* Borda hover escura */
+  --color-bg-primary: #0f172a;      /* Fundo principal escuro (slate-900) */
+  --color-bg-secondary: #1e293b;    /* Fundo secundário escuro (slate-800) */
+  --color-bg-tertiary: #334155;     /* Fundo terciário escuro (slate-700) */
+  --color-text-primary: #f1f5f9;    /* Texto principal claro (slate-100) */
+  --color-text-secondary: #cbd5e1;  /* Texto secundário claro (slate-300) */
+  --color-text-tertiary: #94a3b8;   /* Texto terciário claro (slate-400) */
+  --color-border: #475569;          /* Borda escura (slate-600) */
+  --color-border-hover: #64748b;    /* Borda hover escura (slate-500) */
+  --color-header-bg: #0f172a;       /* Background do header (slate-900) */
+  --color-header-bg-opacity: rgba(15, 23, 42, 0.98); /* Header com opacidade - quase opaco para evitar linha branca */
+  --color-header-border: #334155;   /* Borda do header (slate-700) */
 }
 
 @theme inline {
@@ -204,6 +210,30 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Estilos customizados para o botão do Google Login */
+.google-login-wrapper {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.google-login-wrapper > div {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.google-login-wrapper > div > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 3rem !important;
+  overflow: hidden !important;
+}
+
+.google-login-wrapper iframe {
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 /* Estilos para o MDEditor */
