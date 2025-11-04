@@ -13,7 +13,7 @@ interface BackButtonProps {
 export function BackButton({ 
   href, 
   label = 'Voltar',
-  fixed = true,
+  fixed = false,
   className = '' 
 }: BackButtonProps) {
   const router = useRouter();

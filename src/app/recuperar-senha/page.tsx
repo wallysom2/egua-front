@@ -68,12 +68,12 @@ export default function RecuperarSenha() {
             />
             Senior Code AI
           </Link>
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            <BackButton href="/login" />
+            <ThemeToggle />
+          </div>
         </div>
       </div>
-
-      {/* Botão Voltar */}
-      <BackButton href="/login" />
 
       {/* Recuperação de Senha Form */}
       <div className="flex-1 flex items-center justify-center py-20">

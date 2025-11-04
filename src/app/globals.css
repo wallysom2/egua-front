@@ -6,6 +6,28 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  
+  /* Cores do tema claro */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #fcf8fa;
+  --color-bg-tertiary: #f1f5f9;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #64748b;
+  --color-border: #e2e8f0;
+  --color-border-hover: #cbd5e1;
+}
+
+.dark {
+  /* Cores do tema escuro - ALTERE AQUI PARA MUDAR AS CORES GLOBALMENTE */
+  --color-bg-primary: #0f172a;      /* Fundo principal escuro */
+  --color-bg-secondary: #1e293b;    /* Fundo secundário escuro */
+  --color-bg-tertiary: #334155;     /* Fundo terciário escuro */
+  --color-text-primary: #f1f5f9;    /* Texto principal claro */
+  --color-text-secondary: #cbd5e1;  /* Texto secundário claro */
+  --color-text-tertiary: #94a3b8;   /* Texto terciário claro */
+  --color-border: #334155;          /* Borda escura */
+  --color-border-hover: #475569;    /* Borda hover escura */
 }
 
 @theme inline {

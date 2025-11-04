@@ -9,6 +9,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Cores customizadas do tema - podem ser referenciadas via CSS variables
+        'bg-primary': 'var(--color-bg-primary)',
+        'bg-secondary': 'var(--color-bg-secondary)',
+        'bg-tertiary': 'var(--color-bg-tertiary)',
+        'text-primary': 'var(--color-text-primary)',
+        'text-secondary': 'var(--color-text-secondary)',
+        'text-tertiary': 'var(--color-text-tertiary)',
+        'border-custom': 'var(--color-border)',
+        'border-hover': 'var(--color-border-hover)',
+        
+        // Cores específicas do projeto
         slate: {
           950: '#0a0e17',
           900: '#111827',

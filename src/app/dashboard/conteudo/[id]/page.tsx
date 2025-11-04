@@ -122,13 +122,13 @@ function useConteudo(id: string) {
 
 function ConteudoNaoEncontrado() {
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
-      <div className="sticky top-0 z-40 border-b border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm">
+    <div className="min-h-screen bg-white dark:bg-bg-secondary">
+      <div className="sticky top-0 z-40 border-b border-slate-200 dark:border-border-custom bg-white/95 dark:bg-bg-secondary/95 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <Link
               href="/dashboard"
-              className="text-xl font-bold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="text-xl font-bold text-slate-900 dark:text-text-primary hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               Senior Code AI
             </Link>
@@ -139,10 +139,10 @@ function ConteudoNaoEncontrado() {
 
       <div className="max-w-2xl mx-auto px-6 py-16 text-center">
         <div className="text-4xl mb-4">📄</div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-3">
           Conteúdo não encontrado
         </h1>
-        <p className="text-slate-600 dark:text-slate-400 mb-8">
+        <p className="text-slate-600 dark:text-text-secondary mb-8">
           O conteúdo que você está procurando não existe ou foi removido.
         </p>
         <Link
@@ -163,12 +163,12 @@ function ConteudoView({
   onDelete: () => void;
 }) {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
       {/* Navbar */}
       <motion.div
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm"
+        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary/50 backdrop-blur-sm"
       >
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
@@ -176,7 +176,7 @@ function ConteudoView({
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/dashboard"
-                className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2"
+                className="text-2xl font-bold text-slate-900 dark:text-text-primary flex items-center gap-2"
               >
                 <Image
                   src="/hu.png"
@@ -190,14 +190,12 @@ function ConteudoView({
             </motion.div>
 
             <div className="flex items-center gap-3">
+              <BackButton href="/dashboard/conteudo" />
               <ThemeToggle />
             </div>
           </div>
         </div>
       </motion.div>
-
-      {/* Botão Voltar */}
-      <BackButton href="/dashboard/conteudo" />
 
       {/* Conteúdo Principal */}
       <main className="flex-1 pt-24 pb-16">
@@ -209,26 +207,13 @@ function ConteudoView({
             transition={{ duration: 0.5 }}
             className="mb-12"
           >
-            {/* Tags de Informação */}
-            <div className="flex flex-wrap items-center gap-2 mb-6">
-              <span
-                className={`px-3 py-1.5 rounded-full text-sm font-medium shadow-sm ${
-                  conteudo.nivel_leitura === 'basico'
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800'
-                    : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
-                }`}
-              >
-                {conteudo.nivel_leitura === 'basico' ? 'Básico' : 'Intermediário'}
-              </span>
-            </div>
-
             {/* Título Principal */}
-            <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
+            <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-text-primary mb-6 leading-tight">
               {conteudo.titulo}
             </h1>
 
             {/* Descrição */}
-            <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+            <p className="text-lg text-slate-600 dark:text-text-secondary leading-relaxed">
               {conteudo.corpo.replace(/<[^>]*>/g, '').substring(0, 150)}...
             </p>
           </motion.div>
@@ -272,34 +257,6 @@ function ConteudoView({
               dangerouslySetInnerHTML={{ __html: conteudo.corpo }}
             />
           </motion.article>
-
-          {/* Botão Voltar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="pt-8 border-t border-slate-200 dark:border-slate-700 flex justify-end"
-          >
-            <Link
-              href="/dashboard/conteudo"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200 font-medium group"
-            >
-              <svg
-                className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              Voltar
-            </Link>
-          </motion.div>
         </div>
       </main>
     </div>

@@ -347,14 +347,12 @@ export default function ExercicioDetalhes({
                   </button>
                 </div>
               )}
+              <BackButton href="/dashboard/licoes" />
               <ThemeToggle />
             </div>
           </div>
         </div>
       </motion.header>
-
-      {/* Botão Voltar */}
-      <BackButton href="/dashboard/licoes" />
 
       {/* Conteúdo Principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

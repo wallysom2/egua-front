@@ -127,7 +127,7 @@ const useConteudo = (id: string) => {
     editorProps: {
       attributes: {
         class:
-          'prose prose-slate dark:prose-invert max-w-none p-6 min-h-[400px] focus:outline-none text-slate-900 dark:text-white',
+          'prose prose-slate dark:prose-invert max-w-none p-6 min-h-[400px] focus:outline-none text-slate-900 dark:text-text-primary',
       },
     },
   });
@@ -299,20 +299,20 @@ const FormularioConteudo = ({
   handleEmojiSelect: (emoji: EmojiObject) => void;
   toolbarButtons: ToolbarButton[];
 }) => (
-  <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
-    {/* Navbar */}
-    <motion.div
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm"
-    >
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
+      {/* Navbar */}
+      <motion.div
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary/50 backdrop-blur-sm"
+      >
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link
               href="/dashboard"
-              className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2"
+              className="text-2xl font-bold text-slate-900 dark:text-text-primary flex items-center gap-2"
             >
               <Image
                 src="/hu.png"
@@ -326,14 +326,12 @@ const FormularioConteudo = ({
           </motion.div>
 
           <div className="flex items-center gap-3">
+            <BackButton href="/dashboard/conteudo" />
             <ThemeToggle />
           </div>
         </div>
       </div>
     </motion.div>
-
-    {/* Botão Voltar */}
-    <BackButton href="/dashboard/conteudo" />
 
     {/* Conteúdo Principal */}
     <main className="flex-1 py-16 pt-32">
@@ -344,10 +342,10 @@ const FormularioConteudo = ({
           transition={{ duration: 0.8 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
             Editar Conteúdo
           </h1>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-slate-600 dark:text-text-secondary">
             Atualize as informações do conteúdo
           </p>
         </motion.div>
@@ -380,15 +378,15 @@ const FormularioConteudo = ({
         >
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Basic Information */}
-            <div className="bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            <div className="bg-white dark:bg-bg-secondary/50 backdrop-blur rounded-xl border border-slate-200 dark:border-border-custom shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-text-primary mb-4 flex items-center gap-2">
                 Informações Básicas
               </h2>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Título */}
                 <div className="lg:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
                     Título do Conteúdo
                   </label>
                   <input
@@ -404,7 +402,7 @@ const FormularioConteudo = ({
 
                 {/* Nível */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
                     Nível de Dificuldade
                   </label>
                   <select
@@ -420,7 +418,7 @@ const FormularioConteudo = ({
 
                 {/* Linguagem */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
                     Linguagem de Programação
                   </label>
                   <select
