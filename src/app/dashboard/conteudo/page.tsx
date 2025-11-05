@@ -181,7 +181,7 @@ export default function ConteudoPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-bg-secondary/50 backdrop-blur rounded-xl p-6 border border-slate-200 dark:border-border-custom mb-8 shadow-sm"
+            className="bg-white dark:bg-bg-secondary backdrop-blur rounded-xl p-6 border border-slate-200 dark:border-border-custom mb-8 shadow-sm"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Search */}
@@ -367,7 +367,7 @@ export default function ConteudoPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 * index }}
-                  className={`group bg-white dark:bg-bg-secondary/50 backdrop-blur rounded-xl shadow-sm border border-slate-200 dark:border-border-custom hover:border-slate-300 dark:hover:border-border-hover transition-all hover:shadow-md ${
+                  className={`group bg-white dark:bg-bg-secondary backdrop-blur rounded-xl shadow-sm border border-slate-200 dark:border-border-custom hover:border-slate-300 dark:hover:border-border-hover transition-all hover:shadow-md ${
                     viewMode === 'grid'
                       ? 'p-6 hover:scale-105'
                       : 'p-4 flex items-center gap-6'
@@ -534,7 +534,7 @@ export default function ConteudoPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-center py-16 bg-white dark:bg-bg-secondary/50 backdrop-blur rounded-xl border border-slate-200 dark:border-border-custom"
+              className="text-center py-16 bg-white dark:bg-bg-secondary backdrop-blur rounded-xl border border-slate-200 dark:border-border-custom"
             >
               <div className="text-6xl mb-6">
                 {searchTerm || selectedLevel !== 'todos' ? '🔍' : '📚'}

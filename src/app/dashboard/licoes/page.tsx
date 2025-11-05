@@ -253,7 +253,7 @@ export default function Licoes() {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-bg-primary transition-colors">
-        <div className="text-center py-16 bg-white dark:bg-bg-secondary/50 backdrop-blur rounded-xl border border-slate-200 dark:border-border-custom/50 max-w-md mx-auto shadow-lg">
+        <div className="text-center py-16 bg-white dark:bg-bg-secondary backdrop-blur rounded-xl border border-slate-200 dark:border-border-custom/50 max-w-md mx-auto shadow-lg">
           <div className="text-6xl mb-6">⚠️</div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-4">
             Erro ao carregar
@@ -284,7 +284,7 @@ export default function Licoes() {
       <motion.div
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary/50 backdrop-blur-sm"
+        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary backdrop-blur-sm"
       >
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
@@ -344,7 +344,7 @@ export default function Licoes() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-bg-secondary/50 backdrop-blur rounded-xl p-6 border border-slate-200 dark:border-border-custom mb-8 shadow-sm"
+            className="bg-white dark:bg-bg-secondary backdrop-blur rounded-xl p-6 border border-slate-200 dark:border-border-custom mb-8 shadow-sm"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Busca */}
@@ -556,7 +556,7 @@ export default function Licoes() {
 
           {/* Exercícios */}
           {filteredExercicios.length === 0 ? (
-            <div className="text-center py-16 bg-white dark:bg-bg-secondary/50 backdrop-blur rounded-xl border border-slate-200 dark:border-border-custom/50 shadow-sm">
+            <div className="text-center py-16 bg-white dark:bg-bg-secondary backdrop-blur rounded-xl border border-slate-200 dark:border-border-custom/50 shadow-sm">
               <div className="text-6xl mb-6">
                 {searchTerm ||
                 selectedTipo !== 'todos' ||
@@ -626,7 +626,7 @@ export default function Licoes() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`group bg-white dark:bg-bg-secondary/50 backdrop-blur rounded-xl shadow-lg border border-slate-200 dark:border-border-custom/50 hover:border-slate-300 dark:hover:border-border-hover/50 transition-all hover:shadow-2xl ${
+                    className={`group bg-white dark:bg-bg-secondary backdrop-blur rounded-xl shadow-lg border border-slate-200 dark:border-border-custom/50 hover:border-slate-300 dark:hover:border-border-hover/50 transition-all hover:shadow-2xl ${
                       viewMode === 'grid'
                         ? 'p-6 hover:scale-105'
                         : 'p-4 flex items-center gap-6'

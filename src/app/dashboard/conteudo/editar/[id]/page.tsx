@@ -304,7 +304,7 @@ const FormularioConteudo = ({
       <motion.div
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary/50 backdrop-blur-sm"
+        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary backdrop-blur-sm"
       >
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
@@ -378,7 +378,7 @@ const FormularioConteudo = ({
         >
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Basic Information */}
-            <div className="bg-white dark:bg-bg-secondary/50 backdrop-blur rounded-xl border border-slate-200 dark:border-border-custom shadow-sm p-6">
+            <div className="bg-white dark:bg-bg-secondary backdrop-blur rounded-xl border border-slate-200 dark:border-border-custom shadow-sm p-6">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-text-primary mb-4 flex items-center gap-2">
                 Informações Básicas
               </h2>
