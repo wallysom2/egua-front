@@ -8,6 +8,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { BackButton } from '@/components/BackButton';
+import { Loading } from '@/components/Loading';
+import { useAuth } from '@/contexts/AuthContext';
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -124,7 +127,7 @@ const useConteudo = (id: string) => {
     editorProps: {
       attributes: {
         class:
-          'prose prose-slate dark:prose-invert max-w-none p-6 min-h-[400px] focus:outline-none text-slate-900 dark:text-white',
+          'prose prose-slate dark:prose-invert max-w-none p-6 min-h-[400px] focus:outline-none text-slate-900 dark:text-text-primary',
       },
     },
   });
@@ -265,23 +268,6 @@ const useConteudo = (id: string) => {
   };
 };
 
-const LoadingSpinner = () => (
-  <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="text-center"
-    >
-      <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-      <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">
-        Carregando conteúdo...
-      </p>
-      <p className="text-slate-600 dark:text-slate-400 mt-2">
-        Preparando o editor para você
-      </p>
-    </motion.div>
-  </div>
-);
 
 const FormularioConteudo = ({
   formData,
@@ -313,20 +299,20 @@ const FormularioConteudo = ({
   handleEmojiSelect: (emoji: EmojiObject) => void;
   toolbarButtons: ToolbarButton[];
 }) => (
-  <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
-    {/* Navbar */}
-    <motion.div
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm"
-    >
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
+      {/* Navbar */}
+      <motion.div
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary backdrop-blur-sm"
+      >
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link
               href="/dashboard"
-              className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2"
+              className="text-2xl font-bold text-slate-900 dark:text-text-primary flex items-center gap-2"
             >
               <Image
                 src="/hu.png"
@@ -340,6 +326,7 @@ const FormularioConteudo = ({
           </motion.div>
 
           <div className="flex items-center gap-3">
+            <BackButton href="/dashboard/conteudo" />
             <ThemeToggle />
           </div>
         </div>
@@ -355,10 +342,10 @@ const FormularioConteudo = ({
           transition={{ duration: 0.8 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
             Editar Conteúdo
           </h1>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-slate-600 dark:text-text-secondary">
             Atualize as informações do conteúdo
           </p>
         </motion.div>
@@ -391,15 +378,15 @@ const FormularioConteudo = ({
         >
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Basic Information */}
-            <div className="bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            <div className="bg-white dark:bg-bg-secondary backdrop-blur rounded-xl border border-slate-200 dark:border-border-custom shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-text-primary mb-4 flex items-center gap-2">
                 Informações Básicas
               </h2>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Título */}
                 <div className="lg:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
                     Título do Conteúdo
                   </label>
                   <input
@@ -415,7 +402,7 @@ const FormularioConteudo = ({
 
                 {/* Nível */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
                     Nível de Dificuldade
                   </label>
                   <select
@@ -431,7 +418,7 @@ const FormularioConteudo = ({
 
                 {/* Linguagem */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
                     Linguagem de Programação
                   </label>
                   <select
@@ -581,8 +568,14 @@ export default function EditarConteudoPage({
   params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [id, setId] = useState<string>('');
   const [paramsLoaded, setParamsLoaded] = useState(false);
+
+  // Verificar permissões
+  const isProfessor = user?.tipo === 'professor';
+  const isDesenvolvedor = user?.tipo === 'desenvolvedor';
+  const temPermissao = isProfessor || isDesenvolvedor;
 
   // Resolver o params Promise
   useEffect(() => {
@@ -599,6 +592,24 @@ export default function EditarConteudoPage({
 
     resolveParams();
   }, [params, router]);
+
+  // Verificar autenticação e permissões
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+
+    if (authLoading || !isAuthenticated) {
+      return;
+    }
+
+    // Verificar se o usuário tem permissão
+    if (user && user.tipo !== 'professor' && user.tipo !== 'desenvolvedor') {
+      router.push('/dashboard');
+      return;
+    }
+  }, [router, user, isAuthenticated, authLoading]);
 
   const {
     loading,
@@ -629,7 +640,34 @@ export default function EditarConteudoPage({
 
   // Mostrar loading enquanto params não estão carregados ou dados estão sendo carregados
   if (!paramsLoaded || loading) {
-    return <LoadingSpinner />;
+    return <Loading text="Carregando conteúdo..." />;
+  }
+
+  if (!temPermissao) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <div className="text-6xl mb-4">🚫</div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">
+            Acesso Negado
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 mb-8 text-center max-w-md">
+            Você não tem permissão para editar conteúdos. Apenas professores e
+            desenvolvedores podem acessar esta área.
+          </p>
+          <Link
+            href="/dashboard"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            Voltar ao Painel
+          </Link>
+        </motion.div>
+      </div>
+    );
   }
 
   return (

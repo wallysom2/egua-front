@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { BackButton } from '@/components/BackButton';
+import { Loading } from '@/components/Loading';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
 
@@ -245,34 +247,18 @@ export default function Licoes() {
   const totalExercicios = exercicios.length;
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">
-            Carregando lições...
-          </p>
-          <p className="text-slate-600 dark:text-slate-400 mt-2">
-            Preparando seus exercícios
-          </p>
-        </motion.div>
-      </div>
-    );
+    return <Loading text="Carregando lições..." />;
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
-        <div className="text-center py-16 bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl border border-slate-200 dark:border-slate-800/50 max-w-md mx-auto shadow-lg">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-bg-primary transition-colors">
+        <div className="text-center py-16 bg-white dark:bg-bg-secondary backdrop-blur rounded-xl border border-slate-200 dark:border-border-custom/50 max-w-md mx-auto shadow-lg">
           <div className="text-6xl mb-6">⚠️</div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-4">
             Erro ao carregar
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">{error}</p>
+          <p className="text-slate-600 dark:text-text-secondary mb-6">{error}</p>
           <div className="flex gap-3 justify-center">
             <button
               onClick={() => window.location.reload()}
@@ -282,7 +268,7 @@ export default function Licoes() {
             </button>
             <Link
               href="/dashboard"
-              className="px-6 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors flex items-center gap-2"
+              className="px-6 py-3 bg-slate-200 dark:bg-bg-tertiary text-slate-900 dark:text-text-primary rounded-lg hover:bg-slate-300 dark:hover:bg-border-hover transition-colors flex items-center gap-2"
             >
               ← Voltar ao Painel
             </Link>
@@ -293,12 +279,12 @@ export default function Licoes() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
       {/* Navbar */}
       <motion.div
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm"
+        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary backdrop-blur-sm"
       >
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
@@ -306,7 +292,7 @@ export default function Licoes() {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/dashboard"
-                className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2"
+                className="text-2xl font-bold text-slate-900 dark:text-text-primary flex items-center gap-2"
               >
                 <Image
                   src="/hu.png"
@@ -319,6 +305,7 @@ export default function Licoes() {
               </Link>
             </motion.div>
             <div className="flex items-center gap-3">
+              <BackButton href="/dashboard" />
               <ThemeToggle />
               {(isProfessor || isDesenvolvedor) && (
                 <Link
@@ -344,12 +331,10 @@ export default function Licoes() {
           >
             <div className="flex justify-between items-center mb-8">
               <div>
-                <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
                   Lições de Programação
                 </h1>
-                <p className="text-slate-600 dark:text-slate-400">
-                  Exercícios práticos para reforçar seu aprendizado
-                </p>
+
               </div>
             </div>
           </motion.div>
@@ -359,12 +344,12 @@ export default function Licoes() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-200 dark:border-slate-800 mb-8 shadow-sm"
+            className="bg-white dark:bg-bg-secondary backdrop-blur rounded-xl p-6 border border-slate-200 dark:border-border-custom mb-8 shadow-sm"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Busca */}
               <div className="lg:col-span-4">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
                   Buscar exercício
                 </label>
                 <input
@@ -372,13 +357,13 @@ export default function Licoes() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Digite o título do exercício..."
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
               </div>
 
               {/* Filtro por Tipo */}
               <div className="lg:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
                   Tipo
                 </label>
                 <select
@@ -388,7 +373,7 @@ export default function Licoes() {
                       e.target.value as 'todos' | 'pratico' | 'quiz',
                     )
                   }
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 >
                   <option value="todos">Todos</option>
                   <option value="pratico">Prático</option>
@@ -398,7 +383,7 @@ export default function Licoes() {
 
               {/* Filtro por Status */}
               <div className="lg:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
                   Status
                 </label>
                 <select
@@ -412,18 +397,18 @@ export default function Licoes() {
                         | 'concluido',
                     )
                   }
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 >
                   <option value="todos">Todos</option>
-                  <option value="nao_iniciado">🆕 Não Iniciado</option>
-                  <option value="em_andamento">⏳ Em Progresso</option>
-                  <option value="concluido">✅ Concluído</option>
+                  <option value="nao_iniciado">Não Iniciado</option>
+                  <option value="em_andamento">Em Progresso</option>
+                  <option value="concluido">Concluído</option>
                 </select>
               </div>
 
               {/* Filtro por Linguagem */}
               <div className="lg:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
                   Linguagem
                 </label>
                 <select
@@ -435,7 +420,7 @@ export default function Licoes() {
                         : Number(e.target.value),
                     )
                   }
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 >
                   <option value="todas">Todas</option>
                   {Array.from(linguagensMap.entries()).map(([id, nome]) => (
@@ -448,7 +433,7 @@ export default function Licoes() {
 
               {/* Ordenação */}
               <div className="lg:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
                   Ordenar por
                 </label>
                 <div className="flex gap-2">
@@ -463,7 +448,7 @@ export default function Licoes() {
                           | 'criado',
                       )
                     }
-                    className="flex-1 px-3 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
+                    className="flex-1 px-3 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                   >
                     <option value="titulo">Título</option>
                     <option value="tipo">Tipo</option>
@@ -474,7 +459,7 @@ export default function Licoes() {
                     onClick={() =>
                       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
                     }
-                    className="px-3 py-3 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    className="px-3 py-3 bg-slate-200 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary rounded-lg hover:bg-slate-300 dark:hover:bg-border-hover hover:text-slate-900 dark:hover:text-text-primary transition-colors"
                     title={`Ordenar ${
                       sortOrder === 'asc' ? 'decrescente' : 'crescente'
                     }`}
@@ -486,10 +471,10 @@ export default function Licoes() {
             </div>
 
             {/* Filtros Ativos e Ações */}
-            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-border-custom">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+                  <span className="text-sm text-slate-600 dark:text-text-secondary font-medium">
                     Filtros ativos:
                   </span>
                   {searchTerm && (
@@ -518,7 +503,7 @@ export default function Licoes() {
                     selectedLinguagem !== 'todas') && (
                     <button
                       onClick={clearFilters}
-                      className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-full text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors flex items-center gap-1"
+                      className="px-3 py-1 bg-slate-100 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary rounded-full text-sm hover:bg-slate-200 dark:hover:bg-border-hover transition-colors flex items-center gap-1"
                     >
                       <svg
                         className="w-3 h-3"
@@ -539,16 +524,16 @@ export default function Licoes() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                  <span className="text-sm text-slate-600 dark:text-text-secondary">
                     {filteredExercicios.length} de {totalExercicios} exercícios
                   </span>
-                  <div className="flex rounded-lg border border-slate-300 dark:border-slate-700 overflow-hidden">
+                  <div className="flex rounded-lg border border-slate-300 dark:border-border-custom overflow-hidden">
                     <button
                       onClick={() => setViewMode('grid')}
                       className={`px-3 py-2 text-sm font-medium transition-colors ${
                         viewMode === 'grid'
                           ? 'bg-blue-600 text-white'
-                          : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                          : 'bg-slate-50 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary hover:bg-slate-100 dark:hover:bg-bg-tertiary'
                       }`}
                     >
                       ⊞ Grid
@@ -558,7 +543,7 @@ export default function Licoes() {
                       className={`px-3 py-2 text-sm font-medium transition-colors ${
                         viewMode === 'list'
                           ? 'bg-blue-600 text-white'
-                          : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                          : 'bg-slate-50 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary hover:bg-slate-100 dark:hover:bg-bg-tertiary'
                       }`}
                     >
                       ☰ Lista
@@ -571,7 +556,7 @@ export default function Licoes() {
 
           {/* Exercícios */}
           {filteredExercicios.length === 0 ? (
-            <div className="text-center py-16 bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl border border-slate-200 dark:border-slate-800/50 shadow-sm">
+            <div className="text-center py-16 bg-white dark:bg-bg-secondary backdrop-blur rounded-xl border border-slate-200 dark:border-border-custom/50 shadow-sm">
               <div className="text-6xl mb-6">
                 {searchTerm ||
                 selectedTipo !== 'todos' ||
@@ -580,7 +565,7 @@ export default function Licoes() {
                   ? '🔍'
                   : '📚'}
               </div>
-              <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
+              <h3 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-4">
                 {searchTerm ||
                 selectedTipo !== 'todos' ||
                 selectedStatus !== 'todos' ||
@@ -588,7 +573,7 @@ export default function Licoes() {
                   ? 'Nenhum exercício encontrado'
                   : 'Nenhum exercício criado ainda'}
               </h3>
-              <p className="text-slate-600 dark:text-slate-400 text-lg mb-8 max-w-md mx-auto leading-relaxed">
+              <p className="text-slate-600 dark:text-text-secondary text-lg mb-8 max-w-md mx-auto leading-relaxed">
                 {searchTerm ||
                 selectedTipo !== 'todos' ||
                 selectedStatus !== 'todos' ||
@@ -604,7 +589,7 @@ export default function Licoes() {
               selectedLinguagem !== 'todas' ? (
                 <button
                   onClick={clearFilters}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-slate-200 dark:bg-bg-tertiary text-slate-900 dark:text-text-primary rounded-lg hover:bg-slate-300 dark:hover:bg-border-hover transition-colors"
                 >
                   🔄 Limpar filtros
                 </button>
@@ -641,7 +626,7 @@ export default function Licoes() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`group bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl shadow-lg border border-slate-200 dark:border-slate-800/50 hover:border-slate-300 dark:hover:border-slate-700/50 transition-all hover:shadow-2xl ${
+                    className={`group bg-white dark:bg-bg-secondary backdrop-blur rounded-xl shadow-lg border border-slate-200 dark:border-border-custom/50 hover:border-slate-300 dark:hover:border-border-hover/50 transition-all hover:shadow-2xl ${
                       viewMode === 'grid'
                         ? 'p-6 hover:scale-105'
                         : 'p-4 flex items-center gap-6'
@@ -651,7 +636,7 @@ export default function Licoes() {
                       <>
                         {/* Header do Card */}
                         <div className="flex items-center justify-between mb-4">
-                          <span
+                          {/* <span
                             className={`px-2 py-1 rounded text-xs font-medium ${
                               exercicio.tipo === 'pratico'
                                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
@@ -659,7 +644,7 @@ export default function Licoes() {
                             }`}
                           >
                             {exercicio.tipo === 'pratico' ? 'Prático' : 'Quiz'}
-                          </span>
+                          </span> */}
 
                           {/* Status Badge */}
                           {status && (
@@ -677,11 +662,11 @@ export default function Licoes() {
                         </div>
 
                         {/* Título e Descrição */}
-                        <h2 className="text-xl font-bold mb-3 text-slate-900 dark:text-white leading-tight line-clamp-2">
+                        <h2 className="text-xl font-bold mb-3 text-slate-900 dark:text-text-primary leading-tight line-clamp-2">
                           {exercicio.titulo}
                         </h2>
                         <div className="mb-6">
-                          <span className="text-xs text-slate-500 dark:text-slate-400">
+                          <span className="text-xs text-slate-500 dark:text-text-tertiary">
                             {linguagensMap.get(exercicio.linguagem_id) ||
                               'Carregando...'}
                           </span>
@@ -707,14 +692,14 @@ export default function Licoes() {
                                 onClick={() =>
                                   handleEditExercicio(exercicio.id)
                                 }
-                                className="p-3 bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                className="p-3 bg-slate-100 dark:bg-bg-tertiary/50 text-slate-600 dark:text-text-secondary rounded-lg hover:bg-slate-200 dark:hover:bg-border-hover hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                                 title="Editar exercício"
                               >
                                 ✏️
                               </button>
                               <button
                                 onClick={() => setShowDeleteModal(exercicio.id)}
-                                className="p-3 bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-600 hover:text-red-600 dark:hover:text-white transition-colors"
+                                className="p-3 bg-slate-100 dark:bg-bg-tertiary/50 text-slate-600 dark:text-text-secondary rounded-lg hover:bg-red-100 dark:hover:bg-red-600 hover:text-red-600 dark:hover:text-text-primary transition-colors"
                                 title="Excluir exercício"
                               >
                                 🗑️
@@ -728,7 +713,7 @@ export default function Licoes() {
                         {/* List View */}
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h2 className="text-lg font-bold text-slate-900 dark:text-white flex-1">
+                            <h2 className="text-lg font-bold text-slate-900 dark:text-text-primary flex-1">
                               {exercicio.titulo}
                             </h2>
                             <span
@@ -756,7 +741,7 @@ export default function Licoes() {
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-slate-500 dark:text-slate-400">
+                          <div className="text-xs text-slate-500 dark:text-text-tertiary">
                             {linguagensMap.get(exercicio.linguagem_id) ||
                               'Carregando...'}
                           </div>
@@ -780,14 +765,14 @@ export default function Licoes() {
                                 onClick={() =>
                                   handleEditExercicio(exercicio.id)
                                 }
-                                className="p-2 bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                className="p-2 bg-slate-100 dark:bg-bg-tertiary/50 text-slate-600 dark:text-text-secondary rounded-lg hover:bg-slate-200 dark:hover:bg-border-hover hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                                 title="Editar"
                               >
                                 ✏️
                               </button>
                               <button
                                 onClick={() => setShowDeleteModal(exercicio.id)}
-                                className="p-2 bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-600 hover:text-red-600 dark:hover:text-white transition-colors"
+                                className="p-2 bg-slate-100 dark:bg-bg-tertiary/50 text-slate-600 dark:text-text-secondary rounded-lg hover:bg-red-100 dark:hover:bg-red-600 hover:text-red-600 dark:hover:text-text-primary transition-colors"
                                 title="Excluir"
                               >
                                 🗑️
@@ -818,14 +803,14 @@ export default function Licoes() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 max-w-md w-full shadow-2xl"
+              className="bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom p-6 max-w-md w-full shadow-2xl"
             >
               <div className="text-center">
                 <div className="text-6xl mb-4">⚠️</div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-2">
                   Confirmar Exclusão
                 </h3>
-                <p className="text-slate-600 dark:text-slate-400 mb-6">
+                <p className="text-slate-600 dark:text-text-secondary mb-6">
                   Tem certeza que deseja excluir este exercício? Esta ação não
                   pode ser desfeita.
                 </p>
@@ -833,7 +818,7 @@ export default function Licoes() {
                   <button
                     onClick={() => setShowDeleteModal(null)}
                     disabled={exercicioToDelete === showDeleteModal}
-                    className="flex-1 px-4 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
+                    className="flex-1 px-4 py-3 bg-slate-200 dark:bg-bg-tertiary text-slate-900 dark:text-text-primary rounded-lg hover:bg-slate-300 dark:hover:bg-border-hover transition-colors disabled:opacity-50"
                   >
                     Cancelar
                   </button>

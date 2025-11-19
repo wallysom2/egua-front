@@ -402,7 +402,7 @@ export function CriarQuestao({
               : 'border-slate-300 dark:border-slate-700'
           }`}
         >
-          <option value="facil">🟢 Fácil</option>
+          <option value="facil">🟢 Simples</option>
           <option value="medio">🟡 Médio</option>
           <option value="dificil">🔴 Difícil</option>
         </select>

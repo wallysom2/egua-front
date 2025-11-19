@@ -1,11 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { Header } from '@/components/Header';
 import { GradientButton } from '@/components/GradientButton';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
@@ -82,32 +81,8 @@ export default function Cadastro() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
-      {/* Navbar */}
-      <motion.div
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm"
-      >
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              href="/"
-              className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3"
-            >
-              <Image
-                src="/hu.png"
-                alt="Senior Code AI Logo"
-                width={40}
-                height={40}
-                className="w-10 h-10"
-              />
-              Senior Code AI
-            </Link>
-          </motion.div>
-          <ThemeToggle />
-        </div>
-      </motion.div>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
+      <Header variant="simple" showBackButton backButtonHref="/login" logoHref="/" logoSize="lg" />
 
       {/* Cadastro Form */}
       <div className="flex-1 flex items-center justify-center py-20">
@@ -117,7 +92,7 @@ export default function Cadastro() {
           transition={{ duration: 0.5 }}
           className="w-full max-w-md mx-4"
         >
-          <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800">
+          <div className="bg-white dark:bg-bg-secondary p-8 rounded-2xl shadow-xl border border-slate-200 dark:border-border-custom">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -152,7 +127,7 @@ export default function Cadastro() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label
-                  className="block text-base font-medium mb-2 text-slate-700 dark:text-slate-300"
+                  className="block text-base font-medium mb-2 text-slate-700 dark:text-text-secondary"
                   htmlFor="nome"
                 >
                   Nome Completo
@@ -163,7 +138,7 @@ export default function Cadastro() {
                   name="nome"
                   value={formData.nome}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
                   required
                   minLength={3}
                 />
@@ -171,7 +146,7 @@ export default function Cadastro() {
 
               <div>
                 <label
-                  className="block text-base font-medium mb-2 text-slate-700 dark:text-slate-300"
+                  className="block text-base font-medium mb-2 text-slate-700 dark:text-text-secondary"
                   htmlFor="email"
                 >
                   Email
@@ -182,14 +157,14 @@ export default function Cadastro() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
                   required
                 />
               </div>
 
               <div>
                 <label
-                  className="block text-base font-medium mb-2 text-slate-700 dark:text-slate-300"
+                  className="block text-base font-medium mb-2 text-slate-700 dark:text-text-secondary"
                   htmlFor="senha"
                 >
                   Senha
@@ -245,7 +220,7 @@ export default function Cadastro() {
 
               <div>
                 <label
-                  className="block text-base font-medium mb-2 text-slate-700 dark:text-slate-300"
+                  className="block text-base font-medium mb-2 text-slate-700 dark:text-text-secondary"
                   htmlFor="confirmarSenha"
                 >
                   Confirmar Senha
@@ -300,7 +275,7 @@ export default function Cadastro() {
 
               <div>
                 <label
-                  className="block text-base font-medium mb-2 text-slate-700 dark:text-slate-300"
+                  className="block text-base font-medium mb-2 text-slate-700 dark:text-text-secondary"
                   htmlFor="tipo"
                 >
                   Tipo de Usuário
@@ -310,7 +285,7 @@ export default function Cadastro() {
                   name="tipo"
                   value={formData.tipo}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
                   required
                 >
                   <option value="aluno">Aluno</option>

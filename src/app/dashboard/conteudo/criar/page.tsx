@@ -8,6 +8,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { BackButton } from '@/components/BackButton';
+import { useAuth } from '@/contexts/AuthContext';
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -244,6 +246,7 @@ const criarConteudo = async (formData: FormData, token: string) => {
 
 export default function NovoConteudoPage() {
   const router = useRouter();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [linguagens, setLinguagens] = useState<Linguagem[]>([]);
@@ -254,6 +257,11 @@ export default function NovoConteudoPage() {
     nivel_leitura: 'basico',
     linguagem_id: '',
   });
+
+  // Verificar permissões
+  const isProfessor = user?.tipo === 'professor';
+  const isDesenvolvedor = user?.tipo === 'desenvolvedor';
+  const temPermissao = isProfessor || isDesenvolvedor;
 
   const editor = useEditor({
     extensions: [StarterKit],
@@ -274,6 +282,21 @@ export default function NovoConteudoPage() {
   });
 
   useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+
+    if (authLoading || !isAuthenticated) {
+      return;
+    }
+
+    // Verificar se o usuário tem permissão
+    if (user && user.tipo !== 'professor' && user.tipo !== 'desenvolvedor') {
+      router.push('/dashboard');
+      return;
+    }
+
     const carregarLinguagens = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -291,7 +314,7 @@ export default function NovoConteudoPage() {
     };
 
     carregarLinguagens();
-  }, [router]);
+  }, [router, user, isAuthenticated, authLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -383,6 +406,33 @@ export default function NovoConteudoPage() {
     },
   ];
 
+  if (!temPermissao) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center"
+        >
+          <div className="text-6xl mb-4">🚫</div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">
+            Acesso Negado
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 mb-8 text-center max-w-md">
+            Você não tem permissão para criar conteúdos. Apenas professores e
+            desenvolvedores podem acessar esta área.
+          </p>
+          <Link
+            href="/dashboard"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            Voltar ao Painel
+          </Link>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
       {/* Navbar */}
@@ -410,6 +460,7 @@ export default function NovoConteudoPage() {
               </Link>
             </motion.div>
             <div className="flex items-center gap-3">
+              <BackButton href="/dashboard/conteudo" />
               <ThemeToggle />
               <Link
                 href="/dashboard/conteudo"

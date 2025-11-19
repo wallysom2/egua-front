@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import Image from 'next/image';
+import { Header } from '@/components/Header';
+import { Loading } from '@/components/Loading';
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -137,65 +137,26 @@ export default function ConteudoPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
-        >
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">
-            Carregando conteúdos...
-          </p>
-          <p className="text-slate-600 dark:text-slate-400 mt-2">
-            Aguarde enquanto buscamos o melhor conteúdo para você
-          </p>
-        </motion.div>
-      </div>
-    );
+    return <Loading text="Carregando conteúdos..." />;
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
-      {/* Navbar */}
-      <motion.div
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm"
-      >
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center">
-            {/* Logo */}
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Link
-                href="/dashboard"
-                className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2"
-              >
-                <Image
-                  src="/hu.png"
-                  alt="Senior Code AI Logo"
-                  width={32}
-                  height={32}
-                  className="w-8 h-8"
-                />
-                <span>Senior Code AI</span>
-              </Link>
-            </motion.div>
-            <div className="flex items-center gap-3">
-              <ThemeToggle />
-              {(isProfessor || isDesenvolvedor) && (
-                <Link
-                  href="/dashboard/conteudo/criar"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
-                >
-                  <span className="text-lg"></span> Novo Conteúdo
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </motion.div>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
+      <Header
+        variant="simple"
+        showBackButton
+        backButtonHref="/dashboard"
+        extraActions={
+          (isProfessor || isDesenvolvedor) && (
+            <Link
+              href="/dashboard/conteudo/criar"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
+            >
+              <span className="text-lg"></span> Novo Conteúdo
+            </Link>
+          )
+        }
+      />
 
       {/* Conteúdo Principal */}
       <main className="flex-1 py-16 pt-32">
@@ -208,7 +169,7 @@ export default function ConteudoPage() {
           >
             <div className="flex justify-between items-center mb-8">
               <div>
-                <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
                   Conteúdo Teórico
                 </h1>
               </div>
@@ -220,12 +181,12 @@ export default function ConteudoPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl p-6 border border-slate-200 dark:border-slate-800 mb-8 shadow-sm"
+            className="bg-white dark:bg-bg-secondary backdrop-blur rounded-xl p-6 border border-slate-200 dark:border-border-custom mb-8 shadow-sm"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Search */}
               <div className="lg:col-span-6">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
                   Buscar conteúdo
                 </label>
                 <input
@@ -233,13 +194,13 @@ export default function ConteudoPage() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Digite o título ou palavras-chave..."
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
               </div>
 
               {/* Level Filter */}
               <div className="lg:col-span-3">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
                   Nível
                 </label>
                 <select
@@ -249,7 +210,7 @@ export default function ConteudoPage() {
                       e.target.value as 'todos' | 'basico' | 'intermediario',
                     )
                   }
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 >
                   <option value="todos">Todos os níveis</option>
                   <option value="basico">Básico</option>
@@ -259,16 +220,16 @@ export default function ConteudoPage() {
 
               {/* View Mode */}
               <div className="lg:col-span-3">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
                   Visualização
                 </label>
-                <div className="flex rounded-lg border border-slate-300 dark:border-slate-700 overflow-hidden bg-slate-50 dark:bg-slate-800">
+                <div className="flex rounded-lg border border-slate-300 dark:border-border-custom overflow-hidden bg-slate-50 dark:bg-bg-tertiary">
                   <button
                     onClick={() => setViewMode('grid')}
                     className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
                       viewMode === 'grid'
                         ? 'bg-blue-600 text-white shadow-sm'
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
+                        : 'text-slate-600 dark:text-text-secondary hover:bg-slate-100 dark:hover:bg-bg-tertiary'
                     }`}
                   >
                     <svg
@@ -291,7 +252,7 @@ export default function ConteudoPage() {
                     className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
                       viewMode === 'list'
                         ? 'bg-blue-600 text-white shadow-sm'
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
+                        : 'text-slate-600 dark:text-text-secondary hover:bg-slate-100 dark:hover:bg-bg-tertiary'
                     }`}
                   >
                     <svg
@@ -315,9 +276,9 @@ export default function ConteudoPage() {
 
             {/* Active Filters */}
             {(searchTerm || selectedLevel !== 'todos') && (
-              <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
+              <div className="mt-6 pt-4 border-t border-slate-200 dark:border-border-custom">
                 <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+                  <span className="text-sm text-slate-600 dark:text-text-secondary font-medium">
                     Filtros ativos:
                   </span>
                   {searchTerm && (
@@ -333,7 +294,7 @@ export default function ConteudoPage() {
                   )}
                   <button
                     onClick={clearFilters}
-                    className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-full text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors flex items-center gap-1"
+                    className="px-3 py-1 bg-slate-100 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary rounded-full text-sm hover:bg-slate-200 dark:hover:bg-border-hover transition-colors flex items-center gap-1"
                   >
                     <svg
                       className="w-3 h-3"
@@ -381,7 +342,7 @@ export default function ConteudoPage() {
             transition={{ delay: 0.2 }}
             className="flex items-center justify-between mb-6"
           >
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-slate-600 dark:text-text-secondary">
               {filteredConteudos.length === conteudos.length
                 ? `Mostrando todos os ${filteredConteudos.length} conteúdos`
                 : `Mostrando ${filteredConteudos.length} de ${conteudos.length} conteúdos`}
@@ -406,7 +367,7 @@ export default function ConteudoPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 * index }}
-                  className={`group bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all hover:shadow-md ${
+                  className={`group bg-white dark:bg-bg-secondary backdrop-blur rounded-xl shadow-sm border border-slate-200 dark:border-border-custom hover:border-slate-300 dark:hover:border-border-hover transition-all hover:shadow-md ${
                     viewMode === 'grid'
                       ? 'p-6 hover:scale-105'
                       : 'p-4 flex items-center gap-6'
@@ -419,8 +380,8 @@ export default function ConteudoPage() {
                         <span
                           className={`px-2 py-1 rounded text-xs font-medium ${
                             conteudo.nivel_leitura === 'basico'
-                              ? 'bg-slate-100 dark:bg-slate-800 text-green-600 dark:text-green-400'
-                              : 'bg-slate-100 dark:bg-slate-800 text-purple-600 dark:text-purple-400'
+                              ? 'bg-slate-100 dark:bg-bg-tertiary text-green-600 dark:text-green-400'
+                              : 'bg-slate-100 dark:bg-bg-tertiary text-purple-600 dark:text-purple-400'
                           }`}
                         >
                           {conteudo.nivel_leitura === 'basico'
@@ -446,7 +407,7 @@ export default function ConteudoPage() {
                           <div className="flex gap-2">
                             <Link
                               href={`/dashboard/conteudo/editar/${conteudo.id}`}
-                              className="p-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                              className="p-3 bg-slate-100 dark:bg-bg-tertiary text-slate-600 dark:text-text-secondary rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                               title="Editar conteúdo"
                             >
                               <svg
@@ -465,7 +426,7 @@ export default function ConteudoPage() {
                             </Link>
                             <button
                               onClick={() => handleDelete(conteudo.id)}
-                              className="p-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                              className="p-3 bg-slate-100 dark:bg-bg-tertiary text-slate-600 dark:text-text-secondary rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                               title="Excluir conteúdo"
                             >
                               <svg
@@ -523,7 +484,7 @@ export default function ConteudoPage() {
                           <>
                             <Link
                               href={`/dashboard/conteudo/editar/${conteudo.id}`}
-                              className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                              className="p-2 bg-slate-100 dark:bg-bg-tertiary text-slate-600 dark:text-text-secondary rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                               title="Editar"
                             >
                               <svg
@@ -542,7 +503,7 @@ export default function ConteudoPage() {
                             </Link>
                             <button
                               onClick={() => handleDelete(conteudo.id)}
-                              className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                              className="p-2 bg-slate-100 dark:bg-bg-tertiary text-slate-600 dark:text-text-secondary rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                               title="Excluir"
                             >
                               <svg
@@ -573,17 +534,17 @@ export default function ConteudoPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-center py-16 bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl border border-slate-200 dark:border-slate-800"
+              className="text-center py-16 bg-white dark:bg-bg-secondary backdrop-blur rounded-xl border border-slate-200 dark:border-border-custom"
             >
               <div className="text-6xl mb-6">
                 {searchTerm || selectedLevel !== 'todos' ? '🔍' : '📚'}
               </div>
-              <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
+              <h2 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-4">
                 {searchTerm || selectedLevel !== 'todos'
                   ? 'Nenhum conteúdo encontrado'
                   : 'Nenhum conteúdo disponível'}
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 text-lg mb-8 max-w-md mx-auto leading-relaxed">
+              <p className="text-slate-600 dark:text-text-secondary text-lg mb-8 max-w-md mx-auto leading-relaxed">
                 {searchTerm || selectedLevel !== 'todos'
                   ? 'Tente ajustar os filtros ou fazer uma nova busca'
                   : isProfessor || isDesenvolvedor

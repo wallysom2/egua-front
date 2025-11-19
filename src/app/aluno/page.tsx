@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { Loading } from '@/components/Loading';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
 
@@ -74,19 +75,7 @@ export default function DashboardAluno() {
   }, [router, isAuthenticated, authLoading, user]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-200 dark:border-blue-800 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin mb-6"></div>
-          <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3">
-            Carregando suas lições...
-          </h3>
-          <p className="text-lg text-slate-600 dark:text-slate-400">
-            Preparando sua experiência de aprendizado
-          </p>
-        </div>
-      </div>
-    );
+    return <Loading text="Carregando suas lições..." size="lg" />;
   }
 
   if (error) {

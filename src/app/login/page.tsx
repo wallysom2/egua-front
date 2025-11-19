@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { GoogleLogin } from '@react-oauth/google';
+import { Header } from '@/components/Header';
 import { GradientButton } from '@/components/GradientButton';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
@@ -42,12 +42,8 @@ export default function Login() {
         // Usa o método login do AuthContext
         login(response.data.usuario, response.data.token);
 
-        // Redireciona baseado no tipo de usuário
-        if (response.data.usuario.tipo === 'aluno') {
-          router.push('/aluno');
-        } else {
-          router.push('/dashboard');
-        }
+        // Redireciona após login bem-sucedido
+        router.push('/dashboard');
       } else {
         setError(response.message || 'Erro ao fazer login');
       }
@@ -62,33 +58,38 @@ export default function Login() {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    setError('');
+    setLoading(true);
+
+    try {
+      const response = await apiClient.post<AuthResponse>('/api/auth/login-google', {
+        token: credentialResponse.credential,
+      });
+
+      if (response.success && response.data) {
+        // Usa o método login do AuthContext
+        login(response.data.usuario, response.data.token);
+
+        // Redireciona após login bem-sucedido
+        router.push('/dashboard');
+      } else {
+        setError(response.message || 'Erro ao fazer login com Google');
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error 
+          ? err.message 
+          : 'Erro ao fazer login com Google. Tente novamente.',
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
-      {/* Navbar */}
-      <motion.div
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm"
-      >
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              href="/"
-              className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3"
-            >
-              <Image
-                src="/hu.png"
-                alt="Senior Code AI Logo"
-                width={40}
-                height={40}
-                className="w-10 h-10"
-              />
-              Senior Code AI
-            </Link>
-          </motion.div>
-          <ThemeToggle />
-        </div>
-      </motion.div>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
+      <Header variant="simple" showBackButton backButtonHref="/" logoHref="/" logoSize="lg" />
 
       {/* Login Form */}
       <div className="flex-1 flex items-center justify-center py-20">
@@ -98,14 +99,14 @@ export default function Login() {
           transition={{ duration: 0.5 }}
           className="w-full max-w-md mx-4"
         >
-          <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800">
+          <div className="bg-white dark:bg-bg-secondary p-8 rounded-2xl shadow-xl border border-slate-200 dark:border-border-custom">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-center mb-8"
+              className="mb-8"
             >
-              <h1 className="text-3xl font-bold mb-2">Bem-vindo de volta!</h1>
+              <h1 className="text-3xl font-bold mb-2 text-center">Bem-vindo!</h1>
             </motion.div>
 
             {error && (
@@ -133,7 +134,7 @@ export default function Login() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label
-                  className="block text-base font-medium mb-2 text-slate-700 dark:text-slate-300"
+                  className="block text-base font-medium mb-2 text-slate-700 dark:text-text-secondary"
                   htmlFor="email"
                 >
                   Email
@@ -144,14 +145,14 @@ export default function Login() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
                   required
                 />
               </div>
 
               <div>
                 <label
-                  className="block text-base font-medium mb-2 text-slate-700 dark:text-slate-300"
+                  className="block text-base font-medium mb-2 text-slate-700 dark:text-text-secondary"
                   htmlFor="senha"
                 >
                   Senha
@@ -163,13 +164,13 @@ export default function Login() {
                     name="senha"
                     value={formData.senha}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 pr-12 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+                    className="w-full px-4 py-3 pr-12 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 dark:text-text-tertiary hover:text-slate-700 dark:hover:text-text-secondary transition-colors"
                   >
                     {showPassword ? (
                       <svg
@@ -213,7 +214,7 @@ export default function Login() {
                   />
                   <label
                     htmlFor="lembrar"
-                    className="ml-2 text-slate-600 dark:text-slate-400"
+                    className="ml-2 text-slate-600 dark:text-text-secondary"
                   >
                     Lembrar-me
                   </label>
@@ -238,8 +239,31 @@ export default function Login() {
               </div>
             </form>
 
+            {/* Divisor */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200 dark:border-border-custom"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-white dark:bg-bg-secondary text-slate-500 dark:text-text-secondary">
+                  ou
+                </span>
+              </div>
+            </div>
+
+            {/* Login Google */}
+            <div className="w-full google-login-wrapper mb-6">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  setError('Erro ao fazer login com Google');
+                  setLoading(false);
+                }}
+              />
+            </div>
+
             <div className="mt-8 text-center">
-              <p className="text-slate-600 dark:text-slate-400">
+              <p className="text-slate-600 dark:text-text-secondary">
                 Não tem uma conta?{' '}
                 <Link
                   href="/cadastro"

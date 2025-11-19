@@ -8,10 +8,13 @@ import { javascript } from '@codemirror/lang-javascript';
 import { oneDark } from '@codemirror/theme-one-dark';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { BackButton } from '@/components/BackButton';
+import { Loading } from '@/components/Loading';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Compilador() {
-  const { user, logout, isLoading } = useAuth();
+  const { isLoading } = useAuth();
   const [codigo, setCodigo] = useState(`escreva("Olá, mundo!");`);
   const [saida, setSaida] = useState<string[]>([]);
   const [executando, setExecutando] = useState(false);
@@ -32,12 +35,7 @@ export default function Compilador() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-white">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-xl font-semibold">Carregando...</p>
-      </div>
-    );
+    return <Loading text="Carregando..." />;
   }
 
   return (
@@ -67,18 +65,9 @@ export default function Compilador() {
               </Link>
             </motion.div>
 
-            <div className="flex items-center gap-4">
-              <div className="flex items-center">
-                <p className="font-medium mr-4">
-                  Olá, {user?.nome?.split(' ')[0] || 'Aluno'}
-                </p>
-              </div>
-              <button
-                onClick={logout}
-                className="px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors text-lg"
-              >
-                Sair
-              </button>
+            <div className="flex items-center gap-3">
+              <BackButton href="/dashboard" />
+              <ThemeToggle />
             </div>
           </div>
         </div>
@@ -91,16 +80,14 @@ export default function Compilador() {
             <h1 className="text-3xl font-bold mb-2">
               Compilador Senior Code AI
             </h1>
-            <p className="text-slate-600 text-xl">
-              Execute código em tempo real e veja os resultados instantaneamente
-            </p>
+
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Editor de Código */}
-            <div className="bg-white rounded-xl p-6 shadow-md">
+            <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-md">
               <div className="mb-4 flex justify-between items-center">
-                <h2 className="text-xl font-bold">Editor de Código</h2>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Editor de Código</h2>
                 <button
                   onClick={executarCodigo}
                   disabled={executando}
@@ -113,7 +100,7 @@ export default function Compilador() {
                   {executando ? 'Executando...' : 'Executar'}
                 </button>
               </div>
-              <div className="w-full h-[400px] border border-slate-200 rounded-lg overflow-hidden">
+              <div className="w-full h-[400px] border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
                 <CodeMirror
                   value={codigo}
                   height="400px"
@@ -148,18 +135,18 @@ export default function Compilador() {
             </div>
 
             {/* Área de Saída */}
-            <div className="bg-white rounded-xl p-6 shadow-md">
-              <h2 className="text-xl font-bold mb-4">Saída</h2>
-              <div className="w-full h-[400px] p-4 bg-slate-50 border border-slate-200 rounded-lg font-mono text-sm overflow-auto">
+            <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-md">
+              <h2 className="text-xl font-bold mb-4 text-slate-900 dark:text-white">Saída</h2>
+              <div className="w-full h-[400px] p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg font-mono text-sm overflow-auto">
                 {saida.map((linha, index) => (
                   <div
                     key={index}
                     className={`mb-1 ${
                       linha.startsWith('Erro')
-                        ? 'text-red-600'
+                        ? 'text-red-600 dark:text-red-400'
                         : linha === 'Executando código...'
-                        ? 'text-blue-600'
-                        : 'text-slate-800'
+                        ? 'text-blue-600 dark:text-blue-400'
+                        : 'text-slate-800 dark:text-slate-200'
                     }`}
                   >
                     {linha}
@@ -170,15 +157,6 @@ export default function Compilador() {
           </div>
         </div>
       </main>
-
-      {/* Rodapé */}
-      <footer className="py-4 border-t border-slate-200 bg-white">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-slate-600 text-lg">
-            Senior Code AI - Plataforma de Aprendizado de Programação
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }

@@ -1,8 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { Header } from '@/components/Header';
 import { GradientButton } from '@/components/GradientButton';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
@@ -21,59 +19,11 @@ export default function Home() {
   return (
     <div
       ref={containerRef}
-      className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors"
+      className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-800 dark:to-slate-900 text-slate-900 dark:text-slate-100 transition-colors"
     >
       <ScrollProgress />
 
-      {/* Navbar */}
-      <motion.div
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
-      >
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              href="/"
-              className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3"
-            >
-              <Image
-                src="/hu.png"
-                alt="Senior Code AI Logo"
-                width={40}
-                height={40}
-                className="w-10 h-10"
-              />
-              Senior Code AI
-            </Link>
-          </motion.div>
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                href="/login"
-                className="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 transition-all flex items-center gap-2 shadow-lg text-white"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
-                  />
-                </svg>
-                Entrar
-              </Link>
-            </motion.div>
-          </div>
-        </div>
-      </motion.div>
+      <Header variant="home" logoHref="/" logoSize="lg" />
 
       {/* Hero Section */}
       <motion.div
@@ -88,7 +38,7 @@ export default function Home() {
             className="max-w-4xl mx-auto"
           >
             <motion.h1
-              className="text-5xl md:text-7xl font-bold mb-6 text-slate-900 dark:text-white"
+              className="text-5xl md:text-7xl font-bold mb-6 text-slate-900 dark:text-slate-100"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -112,7 +62,7 @@ export default function Home() {
               </motion.span>
             </motion.h1>
             <motion.p
-              className="text-lg md:text-xl max-w-2xl mx-auto mb-12 text-slate-600 dark:text-slate-300 leading-relaxed"
+              className="text-lg md:text-xl max-w-2xl mx-auto mb-12 text-slate-600 dark:text-slate-200 leading-relaxed"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
@@ -122,7 +72,7 @@ export default function Home() {
             </motion.p>
 
             {/* Indicadores de progresso visual */}
-            <div className="flex items-center justify-center gap-8 mb-12 text-slate-500 dark:text-slate-400">
+            <div className="flex items-center justify-center gap-8 mb-12 text-slate-500 dark:text-slate-300">
               {[
                 {
                   icon: '📚',
@@ -149,7 +99,7 @@ export default function Home() {
                   </span>
                   <span>{item.text}</span>
                   {index < 2 && (
-                    <div className="w-2 h-2 bg-slate-400 dark:bg-slate-600 rounded-full" />
+                    <div className="w-2 h-2 bg-slate-400 dark:bg-slate-500 rounded-full" />
                   )}
                 </div>
               ))}
@@ -161,8 +111,8 @@ export default function Home() {
               transition={{ delay: 0.8 }}
               className="flex justify-center"
             >
-              <GradientButton href="/cadastro">
-                🚀 Começar Agora →
+              <GradientButton href="/login">
+                Começar Agora →
               </GradientButton>
             </motion.div>
           </motion.div>
@@ -170,7 +120,7 @@ export default function Home() {
       </motion.div>
 
       {/* Features Section */}
-      <div className="py-20 bg-slate-50/50 dark:bg-slate-900/50">
+      <div className="py-20 bg-slate-50/50 dark:bg-slate-800/80">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -178,10 +128,10 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">
               Por que escolher o Senior Code AI?
             </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+            <p className="text-xl text-slate-600 dark:text-slate-200 max-w-2xl mx-auto">
               Uma plataforma completa pensada para o seu desenvolvimento
             </p>
           </motion.div>
@@ -190,7 +140,7 @@ export default function Home() {
             {[
               {
                 icon: '👋',
-                title: 'Fácil de Começar',
+                title: 'Comece aos Poucos',
                 description:
                   'Interface intuitiva e conteúdo didático para iniciantes',
                 gradient: 'from-green-500 to-green-600',
@@ -219,7 +169,7 @@ export default function Home() {
                   scale: 1.05,
                   transition: { duration: 0.2 },
                 }}
-                className="group bg-white dark:bg-slate-900 p-8 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-lg border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-2xl"
+                className="group bg-white dark:bg-slate-800 p-8 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-lg border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-2xl"
               >
                 <div className="text-center">
                   <motion.div
@@ -242,7 +192,7 @@ export default function Home() {
                       {feature.icon}
                     </motion.span>
                   </motion.div>
-                  <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-white">
+                  <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-slate-100">
                     {feature.title}
                   </h3>
                 </div>
@@ -253,7 +203,7 @@ export default function Home() {
       </div>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
+      <section className="py-20 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/40 dark:to-purple-900/40">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -262,13 +212,13 @@ export default function Home() {
         >
           <div className="max-w-3xl mx-auto">
             <motion.h2
-              className="text-4xl font-bold mb-6 text-slate-900 dark:text-white"
+              className="text-4xl font-bold mb-6 text-slate-900 dark:text-slate-100"
               whileHover={{ scale: 1.02 }}
             >
               Pronto para começar sua jornada?
             </motion.h2>
             <motion.p
-              className="text-xl text-slate-600 dark:text-slate-300 mb-8"
+              className="text-xl text-slate-600 dark:text-slate-200 mb-8"
               whileHover={{ scale: 1.02 }}
             >
               Junte-se aos outros estudantes que já estão aprendendo
@@ -284,13 +234,13 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30">
+      <footer className="py-8 border-t border-slate-200 dark:footer-border-custom bg-slate-50/30 footer-bg">
         <div className="container mx-auto px-6 text-center">
           <motion.p
-            className="text-slate-600 dark:text-slate-400"
+            className="text-slate-600 dark:text-slate-300"
             whileHover={{ scale: 1.02 }}
           >
-            🏛️ Senior Code AI - Aprenda programação de forma simples
+            🏛️ Senior Code AI - Aprenda programação passo a passo
           </motion.p>
         </div>
       </footer>
