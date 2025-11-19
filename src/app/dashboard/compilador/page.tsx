@@ -1,57 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { executarCodigo as executarCodigoDelegua } from '@/lib/delegua';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { oneDark } from '@codemirror/theme-one-dark';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-
-interface User {
-  nome: string;
-  tipo: 'aluno' | 'professor' | 'desenvolvedor';
-  email?: string;
-  cpf?: string;
-  id?: string | number;
-}
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Compilador() {
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, logout, isLoading } = useAuth();
   const [codigo, setCodigo] = useState(`escreva("Olá, mundo!");`);
   const [saida, setSaida] = useState<string[]>([]);
   const [executando, setExecutando] = useState(false);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-
-    if (!storedUser || !token) {
-      router.push('/login');
-      return;
-    }
-
-    try {
-      setUser(JSON.parse(storedUser));
-    } catch (error) {
-      console.error('Erro ao processar dados do usuário:', error);
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-      router.push('/login');
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    router.push('/login');
-  };
 
   const executarCodigo = async () => {
     try {
@@ -68,9 +31,9 @@ export default function Compilador() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 text-slate-800">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-white">
         <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         <p className="mt-4 text-xl font-semibold">Carregando...</p>
       </div>
@@ -111,8 +74,8 @@ export default function Compilador() {
                 </p>
               </div>
               <button
-                onClick={handleLogout}
-                className="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 transition-colors text-lg"
+                onClick={logout}
+                className="px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors text-lg"
               >
                 Sair
               </button>
@@ -204,17 +167,6 @@ export default function Compilador() {
                 ))}
               </div>
             </div>
-          </div>
-
-          <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-            <h3 className="font-semibold mb-2">Sobre a Linguagem</h3>
-            <p className="text-slate-600 text-lg">
-              Senior Code AI - Plataforma de Aprendizado de Programação
-            </p>
-            <p className="text-sm text-slate-500 mt-2">
-              Uma linguagem de programação educacional desenvolvida para
-              facilitar o aprendizado de conceitos fundamentais.
-            </p>
           </div>
         </div>
       </main>

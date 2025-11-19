@@ -2,10 +2,9 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
-import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { GradientButton } from '@/components/GradientButton';
 
@@ -102,7 +101,13 @@ function InserirCodigoContent() {
                   />
                 </svg>
               </div>
-           //   <h1 className="text-3xl font-bold mb-2">Inserir Código</h1>
+              <h1 className="text-3xl font-bold mb-2">Inserir Código</h1>
+
+              {email && (
+                <p className="text-sm text-slate-500 dark:text-slate-500 mt-2">
+                  {email}
+                </p>
+              )}
             </div>
 
             {error && (

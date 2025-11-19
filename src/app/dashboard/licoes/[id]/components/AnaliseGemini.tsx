@@ -1,17 +1,12 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
 import { useAnaliseGemini } from '@/hooks/useAnaliseGemini';
 
 interface AnaliseGeminiProps {
   respostaId: string | null;
-  questaoId: number;
-  userId: string | number;
 }
 
 export function AnaliseGemini({
-  respostaId,
-  questaoId,
-  userId
+  respostaId
 }: AnaliseGeminiProps) {
   const { analise, loading, error, buscarAnalise, resetError } =
     useAnaliseGemini({
