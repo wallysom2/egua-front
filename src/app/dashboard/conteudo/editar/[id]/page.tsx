@@ -150,6 +150,16 @@ const useConteudo = (id: string) => {
       ]);
 
       setLinguagens(linguagensData);
+
+      // Forçar Egua como padrão
+      const eguaLang = linguagensData.find(
+        (l) =>
+          l.nome.toLowerCase() === 'egua' || l.nome.toLowerCase() === 'égua',
+      );
+      if (eguaLang) {
+        conteudoData.linguagem_id = eguaLang.id;
+      }
+
       setFormData(conteudoData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
@@ -299,13 +309,13 @@ const FormularioConteudo = ({
   handleEmojiSelect: (emoji: EmojiObject) => void;
   toolbarButtons: ToolbarButton[];
 }) => (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
-      {/* Navbar */}
-      <motion.div
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary backdrop-blur-sm"
-      >
+  <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
+    {/* Navbar */}
+    <motion.div
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary backdrop-blur-sm"
+    >
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
@@ -345,9 +355,6 @@ const FormularioConteudo = ({
           <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
             Editar Conteúdo
           </h1>
-          <p className="text-slate-600 dark:text-text-secondary">
-            Atualize as informações do conteúdo
-          </p>
         </motion.div>
 
         {/* Error Message */}
@@ -400,51 +407,15 @@ const FormularioConteudo = ({
                   />
                 </div>
 
-                {/* Nível */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
-                    Nível de Dificuldade
-                  </label>
-                  <select
-                    name="nivel_leitura"
-                    value={formData.nivel_leitura || 'basico'}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  >
-                    <option value="basico">Básico</option>
-                    <option value="intermediario">Intermediário</option>
-                  </select>
-                </div>
 
-                {/* Linguagem */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
-                    Linguagem de Programação
-                  </label>
-                  <select
-                    name="linguagem_id"
-                    value={formData.linguagem_id || ''}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  >
-                    <option value="">Selecione uma linguagem...</option>
-                    {linguagens.map((linguagem) => (
-                      <option key={linguagem.id} value={linguagem.id}>
-                        {linguagem.nome}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+
+
               </div>
             </div>
 
             {/* Content Editor */}
             <div className="bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
               <div className="p-6 border-b border-slate-200 dark:border-slate-700">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                  Conteúdo do Material
-                </h2>
 
                 {/* Toolbar */}
                 <div className="flex flex-wrap items-center gap-1 p-2 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
@@ -453,13 +424,11 @@ const FormularioConteudo = ({
                       key={index}
                       type="button"
                       onClick={button.action}
-                      className={`px-3 py-2 text-sm rounded-md transition-all duration-150 ${
-                        button.isActive?.()
-                          ? 'bg-blue-600 text-white shadow-sm'
-                          : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 hover:shadow-sm'
-                      } ${button.bold ? 'font-bold' : ''} ${
-                        button.italic ? 'italic' : ''
-                      }`}
+                      className={`px-3 py-2 text-sm rounded-md transition-all duration-150 ${button.isActive?.()
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 hover:shadow-sm'
+                        } ${button.bold ? 'font-bold' : ''} ${button.italic ? 'italic' : ''
+                        }`}
                       title={button.label}
                     >
                       {button.icon}

@@ -63,7 +63,9 @@ export default function Dashboard() {
                   href="/dashboard/conteudo"
                   className="block w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all font-medium text-lg"
                 >
-                  Estudar Conteúdo
+                  {user?.tipo === 'professor' || user?.tipo === 'desenvolvedor'
+                    ? 'Adicionar Conteúdo'
+                    : 'Estudar Conteúdo'}
                 </Link>
               </div>
             </motion.div>
@@ -89,7 +91,9 @@ export default function Dashboard() {
                   href="/dashboard/licoes"
                   className="block w-full py-4 px-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all font-medium text-lg"
                 >
-                  Fazer Lições
+                  {user?.tipo === 'professor' || user?.tipo === 'desenvolvedor'
+                    ? 'Adicionar Lições'
+                    : 'Fazer Lições'}
                 </Link>
               </div>
             </motion.div>
