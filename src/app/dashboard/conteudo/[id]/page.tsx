@@ -212,10 +212,7 @@ function ConteudoView({
               {conteudo.titulo}
             </h1>
 
-            {/* Descrição */}
-            <p className="text-lg text-slate-600 dark:text-text-secondary leading-relaxed">
-              {conteudo.corpo.replace(/<[^>]*>/g, '').substring(0, 150)}...
-            </p>
+
           </motion.div>
 
           {/* Conteúdo do Artigo */}
