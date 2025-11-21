@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Header } from '@/components/Header';
 import { Loading } from '@/components/Loading';
-
+import { ContentCard } from '@/components/ContentCard';
 import { API_BASE_URL } from '@/config/api';
 
 interface Conteudo {
@@ -61,7 +61,7 @@ export default function ConteudoPage() {
           const errorData = await response.json().catch(() => null);
           throw new Error(
             errorData?.message ||
-              `Erro ao carregar conteúdos: ${response.status}`,
+            `Erro ao carregar conteúdos: ${response.status}`,
           );
         }
 
@@ -226,11 +226,10 @@ export default function ConteudoPage() {
                 <div className="flex rounded-lg border border-slate-300 dark:border-border-custom overflow-hidden bg-slate-50 dark:bg-bg-tertiary">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-                      viewMode === 'grid'
-                        ? 'bg-blue-600 text-white shadow-sm'
-                        : 'text-slate-600 dark:text-text-secondary hover:bg-slate-100 dark:hover:bg-bg-tertiary'
-                    }`}
+                    className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${viewMode === 'grid'
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'text-slate-600 dark:text-text-secondary hover:bg-slate-100 dark:hover:bg-bg-tertiary'
+                      }`}
                   >
                     <svg
                       className="w-4 h-4"
@@ -249,11 +248,10 @@ export default function ConteudoPage() {
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-                      viewMode === 'list'
-                        ? 'bg-blue-600 text-white shadow-sm'
-                        : 'text-slate-600 dark:text-text-secondary hover:bg-slate-100 dark:hover:bg-bg-tertiary'
-                    }`}
+                    className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${viewMode === 'list'
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'text-slate-600 dark:text-text-secondary hover:bg-slate-100 dark:hover:bg-bg-tertiary'
+                      }`}
                   >
                     <svg
                       className="w-4 h-4"
@@ -362,170 +360,33 @@ export default function ConteudoPage() {
               }
             >
               {filteredConteudos.map((conteudo, index) => (
-                <motion.div
+                <ContentCard
                   key={conteudo.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index }}
-                  className={`group bg-white dark:bg-bg-secondary backdrop-blur rounded-xl shadow-sm border border-slate-200 dark:border-border-custom hover:border-slate-300 dark:hover:border-border-hover transition-all hover:shadow-md ${
-                    viewMode === 'grid'
-                      ? 'p-6 hover:scale-105'
-                      : 'p-4 flex items-center gap-6'
-                  }`}
-                >
-                  {viewMode === 'grid' ? (
-                    <>
-                      {/* Grid View */}
-                      <div className="flex items-start justify-end mb-4">
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-medium ${
-                            conteudo.nivel_leitura === 'basico'
-                              ? 'bg-slate-100 dark:bg-bg-tertiary text-green-600 dark:text-green-400'
-                              : 'bg-slate-100 dark:bg-bg-tertiary text-purple-600 dark:text-purple-400'
-                          }`}
-                        >
-                          {conteudo.nivel_leitura === 'basico'
-                            ? 'Básico'
-                            : 'Intermediário'}
-                        </span>
-                      </div>
-
-                      <h2
-                        className="text-xl font-bold mb-3 text-slate-900 dark:text-white leading-tight line-clamp-2"
-                        dangerouslySetInnerHTML={{ __html: conteudo.titulo }}
-                      />
-
-                      <div className="flex gap-3">
-                        <Link
-                          href={`/dashboard/conteudo/${conteudo.id}`}
-                          className="flex-1 text-center py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all font-medium transform hover:scale-105"
-                        >
-                          Ler Conteúdo
-                        </Link>
-
-                        {(isProfessor || isDesenvolvedor) && (
-                          <div className="flex gap-2">
-                            <Link
-                              href={`/dashboard/conteudo/editar/${conteudo.id}`}
-                              className="p-3 bg-slate-100 dark:bg-bg-tertiary text-slate-600 dark:text-text-secondary rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                              title="Editar conteúdo"
-                            >
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                                />
-                              </svg>
-                            </Link>
-                            <button
-                              onClick={() => handleDelete(conteudo.id)}
-                              className="p-3 bg-slate-100 dark:bg-bg-tertiary text-slate-600 dark:text-text-secondary rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                              title="Excluir conteúdo"
-                            >
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                />
-                              </svg>
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      {/* List View */}
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h2
-                            className="text-lg font-bold text-slate-900 dark:text-white flex-1"
-                            dangerouslySetInnerHTML={{
-                              __html: conteudo.titulo,
-                            }}
-                          />
-                          <span
-                            className={`px-2 py-1 rounded text-xs font-medium ${
-                              conteudo.nivel_leitura === 'basico'
-                                ? 'bg-slate-100 dark:bg-slate-800 text-green-600 dark:text-green-400'
-                                : 'bg-slate-100 dark:bg-slate-800 text-purple-600 dark:text-purple-400'
-                            }`}
-                          >
-                            {conteudo.nivel_leitura === 'basico'
-                              ? 'Básico'
-                              : 'Intermediário'}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2 flex-shrink-0">
-                        <Link
-                          href={`/dashboard/conteudo/${conteudo.id}`}
-                          className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all font-medium text-sm"
-                        >
-                          📖 Ler
-                        </Link>
-
-                        {(isProfessor || isDesenvolvedor) && (
-                          <>
-                            <Link
-                              href={`/dashboard/conteudo/editar/${conteudo.id}`}
-                              className="p-2 bg-slate-100 dark:bg-bg-tertiary text-slate-600 dark:text-text-secondary rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                              title="Editar"
-                            >
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                                />
-                              </svg>
-                            </Link>
-                            <button
-                              onClick={() => handleDelete(conteudo.id)}
-                              className="p-2 bg-slate-100 dark:bg-bg-tertiary text-slate-600 dark:text-text-secondary rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                              title="Excluir"
-                            >
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                />
-                              </svg>
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </motion.div>
+                  index={index}
+                  title={conteudo.titulo}
+                  badges={[
+                    {
+                      text:
+                        conteudo.nivel_leitura === 'basico'
+                          ? 'Básico'
+                          : 'Intermediário',
+                      variant:
+                        conteudo.nivel_leitura === 'basico' ? 'green' : 'purple',
+                    },
+                  ]}
+                  mainAction={{
+                    label: viewMode === 'grid' ? 'Ler Conteúdo' : '📖 Ler',
+                    href: `/dashboard/conteudo/${conteudo.id}`,
+                  }}
+                  editAction={{
+                    href: `/dashboard/conteudo/editar/${conteudo.id}`,
+                  }}
+                  deleteAction={{
+                    onClick: () => handleDelete(conteudo.id),
+                  }}
+                  viewMode={viewMode}
+                  showActions={isProfessor || isDesenvolvedor}
+                />
               ))}
             </motion.div>
           ) : (
@@ -548,8 +409,8 @@ export default function ConteudoPage() {
                 {searchTerm || selectedLevel !== 'todos'
                   ? 'Tente ajustar os filtros ou fazer uma nova busca'
                   : isProfessor || isDesenvolvedor
-                  ? 'Comece criando seu primeiro conteúdo educacional'
-                  : 'Entre em contato com um professor ou desenvolvedor para ter acesso aos conteúdos'}
+                    ? 'Comece criando seu primeiro conteúdo educacional'
+                    : 'Entre em contato com um professor ou desenvolvedor para ter acesso aos conteúdos'}
               </p>
               {searchTerm || selectedLevel !== 'todos' ? (
                 <button

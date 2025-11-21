@@ -314,39 +314,12 @@ export default function ExercicioDetalhes({
               </Link>
 
               {/* Breadcrumb */}
-              <nav className="hidden md:flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
-                <Link href="/dashboard" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
-                  Painel
-                </Link>
-                <span>/</span>
-                <Link href="/dashboard/licoes" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
-                  Lições
-                </Link>
-                <span>/</span>
-                <span className="text-slate-900 dark:text-white font-medium truncate max-w-xs">
-                  {exercicio.titulo}
-                </span>
-              </nav>
+
             </div>
 
             {/* Ações */}
             <div className="flex items-center space-x-3">
-              {user?.tipo === 'professor' && (
-                <div className="hidden sm:flex items-center space-x-2">
-                  <Link
-                    href={`/dashboard/licoes/editar/${resolvedParams.id}`}
-                    className="px-3 py-1.5 text-sm bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-                  >
-                    Editar
-                  </Link>
-                  <button
-                    onClick={() => setShowDeleteModal(true)}
-                    className="px-3 py-1.5 text-sm bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-md hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                  >
-                    Excluir
-                  </button>
-                </div>
-              )}
+
               <BackButton href="/dashboard/licoes" />
               <ThemeToggle />
             </div>
@@ -522,10 +495,10 @@ export default function ExercicioDetalhes({
                         }}
                         transition={{ duration: 1, delay: 0.3 }}
                         className={`h-2 rounded-full ${resultados.acertos === resultados.total
-                            ? 'bg-gradient-to-r from-green-500 to-green-600'
-                            : resultados.acertos >= resultados.total * 0.7
-                              ? 'bg-gradient-to-r from-blue-500 to-blue-600'
-                              : 'bg-gradient-to-r from-slate-400 to-slate-500'
+                          ? 'bg-gradient-to-r from-green-500 to-green-600'
+                          : resultados.acertos >= resultados.total * 0.7
+                            ? 'bg-gradient-to-r from-blue-500 to-blue-600'
+                            : 'bg-gradient-to-r from-slate-400 to-slate-500'
                           }`}
                       />
                     </div>
