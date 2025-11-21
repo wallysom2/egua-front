@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useEditor, EditorContent, type Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import ImageExtension from '@tiptap/extension-image';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -231,7 +232,9 @@ const criarConteudo = async (formData: FormData, token: string) => {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
-      ...formData,
+      titulo: formData.titulo,
+      corpo: formData.corpo,
+      nivel_leitura: formData.nivel_leitura || 'basico',
       linguagem_id: Number(formData.linguagem_id),
     }),
   });
@@ -264,7 +267,13 @@ export default function NovoConteudoPage() {
   const temPermissao = isProfessor || isDesenvolvedor;
 
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [
+      StarterKit,
+      ImageExtension.configure({
+        inline: true,
+        allowBase64: true,
+      }),
+    ],
     content: formData.corpo || '',
     immediatelyRender: false,
     onUpdate: ({ editor }: { editor: Editor }) => {
@@ -413,6 +422,17 @@ export default function NovoConteudoPage() {
       action: () => editor?.chain().focus().toggleBlockquote().run(),
       isActive: () => editor?.isActive('blockquote'),
     },
+    {
+      icon: '🖼️',
+      label: 'Imagem',
+      action: () => {
+        const url = window.prompt('URL da imagem:');
+        if (url) {
+          editor?.chain().focus().setImage({ src: url }).run();
+        }
+      },
+      isActive: () => editor?.isActive('image'),
+    },
   ];
 
   if (!temPermissao) {
@@ -546,9 +566,42 @@ export default function NovoConteudoPage() {
                     />
                   </div>
 
+                  {/* Nível de Leitura */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Nível de Leitura
+                    </label>
+                    <select
+                      name="nivel_leitura"
+                      value={formData.nivel_leitura}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    >
+                      <option value="basico">Básico</option>
+                      <option value="intermediario">Intermediário</option>
+                    </select>
+                  </div>
 
-
-
+                  {/* Linguagem */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Linguagem
+                    </label>
+                    <select
+                      name="linguagem_id"
+                      value={formData.linguagem_id}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    >
+                      <option value="">Selecione uma linguagem</option>
+                      {linguagens.map((lang) => (
+                        <option key={lang.id} value={lang.id}>
+                          {lang.nome}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
