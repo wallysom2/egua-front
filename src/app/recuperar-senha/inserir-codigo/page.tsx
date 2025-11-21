@@ -167,9 +167,6 @@ function InserirCodigoContent() {
                     maxLength={6}
                     required
                   />
-                  <p className="text-sm text-slate-500 dark:text-slate-500 mt-2 text-center">
-                    Digite o código de 6 dígitos que enviamos para seu email
-                  </p>
                 </div>
 
                 <div>
