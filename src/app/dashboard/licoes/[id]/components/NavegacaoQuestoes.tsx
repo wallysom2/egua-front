@@ -7,9 +7,9 @@ interface NavegacaoQuestoesProps {
   onQuestaoAnterior: () => void;
 }
 
-export function NavegacaoQuestoes({ 
-  questaoAtual, 
-  totalQuestoes, 
+export function NavegacaoQuestoes({
+  questaoAtual,
+  totalQuestoes,
   respostasPreenchidas,
   onMudarQuestao,
   onProximaQuestao,
@@ -35,27 +35,19 @@ export function NavegacaoQuestoes({
             </svg>
             <span className="font-medium">Anterior</span>
           </button>
-          
+
           {/* Indicadores de Questões */}
           <div className="flex items-center space-x-2">
             {Array.from({ length: totalQuestoes }, (_, i) => (
               <button
                 key={i}
                 onClick={() => onMudarQuestao(i)}
-                className={`relative w-10 h-10 text-sm font-semibold transition-all duration-200 rounded-lg flex items-center justify-center ${
-                  i === questaoAtual
+                className={`relative w-10 h-10 text-sm font-semibold transition-all duration-200 rounded-lg flex items-center justify-center ${i === questaoAtual
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110"
-                    : respostasPreenchidas.has(i)
-                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-700 hover:bg-green-200 dark:hover:bg-green-900/50"
                     : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600 hover:text-slate-800 dark:hover:text-slate-200 border border-slate-200 dark:border-slate-600"
-                }`}
+                  }`}
                 title={`Questão ${i + 1}${i === questaoAtual ? ' (atual)' : ''}${respostasPreenchidas.has(i) ? ' (respondida)' : ''}`}
               >
-                {respostasPreenchidas.has(i) && i !== questaoAtual && (
-                  <svg className="absolute -top-1 -right-1 w-4 h-4 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                )}
                 <span>{i + 1}</span>
               </button>
             ))}
@@ -73,14 +65,7 @@ export function NavegacaoQuestoes({
             </svg>
           </button>
         </div>
-        
-        {/* Indicador de Progresso */}
-        <div className="mt-4 text-center">
-          <div className="text-xs text-slate-500 dark:text-slate-400">
-            {respostasPreenchidas.size} de {totalQuestoes} questões respondidas
-          </div>
-        </div>
       </div>
     </div>
   );
-} 
+}

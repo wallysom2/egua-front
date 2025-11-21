@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
+import { ContentCard } from '@/components/ContentCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
 
@@ -92,7 +93,7 @@ export default function Licoes() {
 
     try {
       await apiClient.delete(`/exercicios/${exercicioId}`);
-      
+
       setExercicios(exercicios.filter((ex) => ex.id !== exercicioId));
       addToast({
         type: 'success',
@@ -391,10 +392,10 @@ export default function Licoes() {
                   onChange={(e) =>
                     setSelectedStatus(
                       e.target.value as
-                        | 'todos'
-                        | 'nao_iniciado'
-                        | 'em_andamento'
-                        | 'concluido',
+                      | 'todos'
+                      | 'nao_iniciado'
+                      | 'em_andamento'
+                      | 'concluido',
                     )
                   }
                   className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -442,10 +443,10 @@ export default function Licoes() {
                     onChange={(e) =>
                       setSortBy(
                         e.target.value as
-                          | 'titulo'
-                          | 'tipo'
-                          | 'status'
-                          | 'criado',
+                        | 'titulo'
+                        | 'tipo'
+                        | 'status'
+                        | 'criado',
                       )
                     }
                     className="flex-1 px-3 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
@@ -460,9 +461,8 @@ export default function Licoes() {
                       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
                     }
                     className="px-3 py-3 bg-slate-200 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary rounded-lg hover:bg-slate-300 dark:hover:bg-border-hover hover:text-slate-900 dark:hover:text-text-primary transition-colors"
-                    title={`Ordenar ${
-                      sortOrder === 'asc' ? 'decrescente' : 'crescente'
-                    }`}
+                    title={`Ordenar ${sortOrder === 'asc' ? 'decrescente' : 'crescente'
+                      }`}
                   >
                     {sortOrder === 'asc' ? '↑' : '↓'}
                   </button>
@@ -501,26 +501,26 @@ export default function Licoes() {
                     selectedTipo !== 'todos' ||
                     selectedStatus !== 'todos' ||
                     selectedLinguagem !== 'todas') && (
-                    <button
-                      onClick={clearFilters}
-                      className="px-3 py-1 bg-slate-100 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary rounded-full text-sm hover:bg-slate-200 dark:hover:bg-border-hover transition-colors flex items-center gap-1"
-                    >
-                      <svg
-                        className="w-3 h-3"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                      <button
+                        onClick={clearFilters}
+                        className="px-3 py-1 bg-slate-100 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary rounded-full text-sm hover:bg-slate-200 dark:hover:bg-border-hover transition-colors flex items-center gap-1"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                      Limpar filtros
-                    </button>
-                  )}
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                        Limpar filtros
+                      </button>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -530,21 +530,19 @@ export default function Licoes() {
                   <div className="flex rounded-lg border border-slate-300 dark:border-border-custom overflow-hidden">
                     <button
                       onClick={() => setViewMode('grid')}
-                      className={`px-3 py-2 text-sm font-medium transition-colors ${
-                        viewMode === 'grid'
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-50 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary hover:bg-slate-100 dark:hover:bg-bg-tertiary'
-                      }`}
+                      className={`px-3 py-2 text-sm font-medium transition-colors ${viewMode === 'grid'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-50 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary hover:bg-slate-100 dark:hover:bg-bg-tertiary'
+                        }`}
                     >
                       ⊞ Grid
                     </button>
                     <button
                       onClick={() => setViewMode('list')}
-                      className={`px-3 py-2 text-sm font-medium transition-colors ${
-                        viewMode === 'list'
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-50 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary hover:bg-slate-100 dark:hover:bg-bg-tertiary'
-                      }`}
+                      className={`px-3 py-2 text-sm font-medium transition-colors ${viewMode === 'list'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-50 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary hover:bg-slate-100 dark:hover:bg-bg-tertiary'
+                        }`}
                     >
                       ☰ Lista
                     </button>
@@ -559,34 +557,34 @@ export default function Licoes() {
             <div className="text-center py-16 bg-white dark:bg-bg-secondary backdrop-blur rounded-xl border border-slate-200 dark:border-border-custom/50 shadow-sm">
               <div className="text-6xl mb-6">
                 {searchTerm ||
-                selectedTipo !== 'todos' ||
-                selectedStatus !== 'todos' ||
-                selectedLinguagem !== 'todas'
+                  selectedTipo !== 'todos' ||
+                  selectedStatus !== 'todos' ||
+                  selectedLinguagem !== 'todas'
                   ? '🔍'
                   : '📚'}
               </div>
               <h3 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-4">
                 {searchTerm ||
-                selectedTipo !== 'todos' ||
-                selectedStatus !== 'todos' ||
-                selectedLinguagem !== 'todas'
+                  selectedTipo !== 'todos' ||
+                  selectedStatus !== 'todos' ||
+                  selectedLinguagem !== 'todas'
                   ? 'Nenhum exercício encontrado'
                   : 'Nenhum exercício criado ainda'}
               </h3>
               <p className="text-slate-600 dark:text-text-secondary text-lg mb-8 max-w-md mx-auto leading-relaxed">
                 {searchTerm ||
-                selectedTipo !== 'todos' ||
-                selectedStatus !== 'todos' ||
-                selectedLinguagem !== 'todas'
+                  selectedTipo !== 'todos' ||
+                  selectedStatus !== 'todos' ||
+                  selectedLinguagem !== 'todas'
                   ? 'Tente ajustar os filtros ou fazer uma nova busca'
                   : isProfessor || isDesenvolvedor
-                  ? 'Comece criando seu primeiro exercício de programação!'
-                  : 'Entre em contato com um professor ou desenvolvedor para ter acesso aos exercícios'}
+                    ? 'Comece criando seu primeiro exercício de programação!'
+                    : 'Entre em contato com um professor ou desenvolvedor para ter acesso aos exercícios'}
               </p>
               {searchTerm ||
-              selectedTipo !== 'todos' ||
-              selectedStatus !== 'todos' ||
-              selectedLinguagem !== 'todas' ? (
+                selectedTipo !== 'todos' ||
+                selectedStatus !== 'todos' ||
+                selectedLinguagem !== 'todas' ? (
                 <button
                   onClick={clearFilters}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-slate-200 dark:bg-bg-tertiary text-slate-900 dark:text-text-primary rounded-lg hover:bg-slate-300 dark:hover:bg-border-hover transition-colors"
@@ -620,169 +618,46 @@ export default function Licoes() {
                 const isCompleted = status === 'concluido';
                 const isInProgress = status === 'em_andamento';
 
+                const badges = [];
+
+                // Type Badge
+                badges.push({
+                  text: exercicio.tipo === 'pratico' ? 'Prático' : 'Quiz',
+                  variant: exercicio.tipo === 'pratico' ? 'blue' : 'purple'
+                });
+
+                // Status Badge
+                if (status) {
+                  badges.push({
+                    text: isCompleted ? 'Concluído' : 'Em andamento',
+                    variant: isCompleted ? 'green' : 'yellow'
+                  });
+                }
+
                 return (
-                  <motion.div
+                  <ContentCard
                     key={exercicio.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className={`group bg-white dark:bg-bg-secondary backdrop-blur rounded-xl shadow-lg border border-slate-200 dark:border-border-custom/50 hover:border-slate-300 dark:hover:border-border-hover/50 transition-all hover:shadow-2xl ${
-                      viewMode === 'grid'
-                        ? 'p-6 hover:scale-105'
-                        : 'p-4 flex items-center gap-6'
-                    }`}
-                  >
-                    {viewMode === 'grid' ? (
-                      <>
-                        {/* Header do Card */}
-                        <div className="flex items-center justify-between mb-4">
-                          {/* <span
-                            className={`px-2 py-1 rounded text-xs font-medium ${
-                              exercicio.tipo === 'pratico'
-                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                                : 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
-                            }`}
-                          >
-                            {exercicio.tipo === 'pratico' ? 'Prático' : 'Quiz'}
-                          </span> */}
-
-                          {/* Status Badge */}
-                          {status && (
-                            <div
-                              className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
-                                isCompleted
-                                  ? 'bg-green-900/50 text-green-300 border border-green-700/50'
-                                  : 'bg-yellow-900/50 text-yellow-300 border border-yellow-700/50'
-                              }`}
-                            >
-                              {isCompleted ? '✅' : '⏳'}
-                              {isCompleted ? 'Concluído' : 'Em andamento'}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Título e Descrição */}
-                        <h2 className="text-xl font-bold mb-3 text-slate-900 dark:text-text-primary leading-tight line-clamp-2">
-                          {exercicio.titulo}
-                        </h2>
-                        <div className="mb-6">
-                          <span className="text-xs text-slate-500 dark:text-text-tertiary">
-                            {linguagensMap.get(exercicio.linguagem_id) ||
-                              'Carregando...'}
-                          </span>
-                        </div>
-
-                        {/* Actions */}
-                        <div className="flex gap-3">
-                          <Link
-                            href={`/dashboard/licoes/${exercicio.id}`}
-                            className="flex-1 text-center py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg transition-all font-medium transform hover:scale-105"
-                          >
-                            {isCompleted
-                              ? '📖 Revisar'
-                              : isInProgress
-                              ? '▶️ Continuar'
-                              : 'Iniciar'}
-                          </Link>
-
-                          {/* Menu de Ações */}
-                          {(isProfessor || isDesenvolvedor) && (
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() =>
-                                  handleEditExercicio(exercicio.id)
-                                }
-                                className="p-3 bg-slate-100 dark:bg-bg-tertiary/50 text-slate-600 dark:text-text-secondary rounded-lg hover:bg-slate-200 dark:hover:bg-border-hover hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                title="Editar exercício"
-                              >
-                                ✏️
-                              </button>
-                              <button
-                                onClick={() => setShowDeleteModal(exercicio.id)}
-                                className="p-3 bg-slate-100 dark:bg-bg-tertiary/50 text-slate-600 dark:text-text-secondary rounded-lg hover:bg-red-100 dark:hover:bg-red-600 hover:text-red-600 dark:hover:text-text-primary transition-colors"
-                                title="Excluir exercício"
-                              >
-                                🗑️
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        {/* List View */}
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h2 className="text-lg font-bold text-slate-900 dark:text-text-primary flex-1">
-                              {exercicio.titulo}
-                            </h2>
-                            <span
-                              className={`px-2 py-1 rounded text-xs font-medium ${
-                                exercicio.tipo === 'pratico'
-                                  ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                                  : 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300'
-                              }`}
-                            >
-                              {exercicio.tipo === 'pratico'
-                                ? 'Prático'
-                                : 'Quiz'}
-                            </span>
-                            {status && (
-                              <span
-                                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                  isCompleted
-                                    ? 'bg-green-900/50 text-green-300 border border-green-700/50'
-                                    : 'bg-yellow-900/50 text-yellow-300 border border-yellow-700/50'
-                                }`}
-                              >
-                                {isCompleted
-                                  ? '✅ Concluído'
-                                  : '⏳ Em andamento'}
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-xs text-slate-500 dark:text-text-tertiary">
-                            {linguagensMap.get(exercicio.linguagem_id) ||
-                              'Carregando...'}
-                          </div>
-                        </div>
-
-                        <div className="flex gap-2 flex-shrink-0">
-                          <Link
-                            href={`/dashboard/licoes/${exercicio.id}`}
-                            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg transition-all font-medium text-sm"
-                          >
-                            {isCompleted
-                              ? '📖 Revisar'
-                              : isInProgress
-                              ? '▶️ Continuar'
-                              : 'Iniciar'}
-                          </Link>
-
-                          {(isProfessor || isDesenvolvedor) && (
-                            <>
-                              <button
-                                onClick={() =>
-                                  handleEditExercicio(exercicio.id)
-                                }
-                                className="p-2 bg-slate-100 dark:bg-bg-tertiary/50 text-slate-600 dark:text-text-secondary rounded-lg hover:bg-slate-200 dark:hover:bg-border-hover hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                title="Editar"
-                              >
-                                ✏️
-                              </button>
-                              <button
-                                onClick={() => setShowDeleteModal(exercicio.id)}
-                                className="p-2 bg-slate-100 dark:bg-bg-tertiary/50 text-slate-600 dark:text-text-secondary rounded-lg hover:bg-red-100 dark:hover:bg-red-600 hover:text-red-600 dark:hover:text-text-primary transition-colors"
-                                title="Excluir"
-                              >
-                                🗑️
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </>
-                    )}
-                  </motion.div>
+                    index={index}
+                    title={exercicio.titulo}
+                    subtitle={linguagensMap.get(exercicio.linguagem_id) || 'Carregando...'}
+                    badges={badges as any}
+                    mainAction={{
+                      label: isCompleted
+                        ? '📖 Revisar'
+                        : isInProgress
+                          ? '▶️ Continuar'
+                          : 'Iniciar',
+                      href: `/dashboard/licoes/${exercicio.id}`,
+                    }}
+                    editAction={{
+                      onClick: () => handleEditExercicio(exercicio.id),
+                    }}
+                    deleteAction={{
+                      onClick: () => setShowDeleteModal(exercicio.id),
+                    }}
+                    viewMode={viewMode}
+                    showActions={isProfessor || isDesenvolvedor}
+                  />
                 );
               })}
             </motion.div>
@@ -852,25 +727,24 @@ export default function Licoes() {
               initial={{ opacity: 0, x: 100, scale: 0.95 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 100, scale: 0.95 }}
-              className={`p-4 rounded-lg border backdrop-blur shadow-2xl max-w-sm ${
-                toast.type === 'success'
-                  ? 'bg-green-50 dark:bg-green-900/90 border-green-200 dark:border-green-700 text-green-800 dark:text-green-200'
-                  : toast.type === 'error'
+              className={`p-4 rounded-lg border backdrop-blur shadow-2xl max-w-sm ${toast.type === 'success'
+                ? 'bg-green-50 dark:bg-green-900/90 border-green-200 dark:border-green-700 text-green-800 dark:text-green-200'
+                : toast.type === 'error'
                   ? 'bg-red-50 dark:bg-red-900/90 border-red-200 dark:border-red-700 text-red-800 dark:text-red-200'
                   : toast.type === 'warning'
-                  ? 'bg-yellow-50 dark:bg-yellow-900/90 border-yellow-200 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200'
-                  : 'bg-blue-50 dark:bg-blue-900/90 border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200'
-              }`}
+                    ? 'bg-yellow-50 dark:bg-yellow-900/90 border-yellow-200 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200'
+                    : 'bg-blue-50 dark:bg-blue-900/90 border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200'
+                }`}
             >
               <div className="flex items-start gap-3">
                 <span className="text-xl">
                   {toast.type === 'success'
                     ? '✅'
                     : toast.type === 'error'
-                    ? '❌'
-                    : toast.type === 'warning'
-                    ? '⚠️'
-                    : 'ℹ️'}
+                      ? '❌'
+                      : toast.type === 'warning'
+                        ? '⚠️'
+                        : 'ℹ️'}
                 </span>
                 <div className="flex-1">
                   <p className="font-medium">{toast.message}</p>

@@ -3,7 +3,58 @@ import {
   type Questao,
   type ExercicioComQuestoes,
   type ExercicioComConteudo,
+  type Opcao,
 } from '@/types/exercicio';
+
+// Função auxiliar para normalizar as opções
+function normalizarOpcoes(opcoes: any): Opcao[] {
+  if (!opcoes) return [];
+
+  // Se for array
+  if (Array.isArray(opcoes)) {
+    // Se for array vazio, retorna vazio
+    if (opcoes.length === 0) return [];
+
+    // Se já for array de objetos com id e texto (formato correto)
+    if (typeof opcoes[0] === 'object' && 'id' in opcoes[0] && 'texto' in opcoes[0]) {
+      return opcoes as Opcao[];
+    }
+
+    // Se for array de strings (formato simples)
+    if (typeof opcoes[0] === 'string') {
+      return opcoes.map((texto, index) => ({
+        id: String(index),
+        texto: String(texto),
+      }));
+    }
+  }
+
+  // Se for objeto (formato dicionário/mapa)
+  if (typeof opcoes === 'object') {
+    return Object.entries(opcoes).map(([key, value]) => ({
+      id: key,
+      texto: String(value),
+    }));
+  }
+
+  return [];
+}
+
+// Função auxiliar para normalizar a resposta correta
+function normalizarRespostaCorreta(resposta: any, opcoes: Opcao[]): string | undefined {
+  if (resposta === undefined || resposta === null) return undefined;
+  const respostaStr = String(resposta);
+
+  // 1. Tenta encontrar pelo texto exato
+  const porTexto = opcoes.find(op => op.texto === respostaStr);
+  if (porTexto) return porTexto.id;
+
+  // 2. Tenta encontrar pelo ID
+  const porId = opcoes.find(op => op.id === respostaStr);
+  if (porId) return porId.id;
+
+  return respostaStr;
+}
 
 // Processador para formato com exercicio_questao
 export function processarExercicioComQuestoes(
@@ -12,17 +63,20 @@ export function processarExercicioComQuestoes(
   console.log('Processando exercício com questões:', data);
 
   const questoes: Questao[] = data.exercicio_questao
-    .map((eq) => ({
-      id: eq.questao.id,
-      conteudo_id: eq.questao.conteudo_id,
-      enunciado: eq.questao.enunciado,
-      nivel: eq.questao.nivel,
-      tipo: eq.questao.tipo as Questao['tipo'],
-      opcoes: eq.questao.opcoes || [],
-      resposta_correta: eq.questao.resposta_correta,
-      exemplo_resposta: eq.questao.exemplo_resposta,
-      ordem: eq.ordem,
-    }))
+    .map((eq) => {
+      const opcoes = normalizarOpcoes(eq.questao.opcoes);
+      return {
+        id: eq.questao.id,
+        conteudo_id: eq.questao.conteudo_id,
+        enunciado: eq.questao.enunciado,
+        nivel: eq.questao.nivel,
+        tipo: eq.questao.tipo as Questao['tipo'],
+        opcoes,
+        resposta_correta: normalizarRespostaCorreta(eq.questao.resposta_correta, opcoes),
+        exemplo_resposta: eq.questao.exemplo_resposta,
+        ordem: eq.ordem,
+      };
+    })
     .sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
 
   console.log('Questões processadas:', questoes);
@@ -43,17 +97,20 @@ export function processarExercicioComConteudo(
   console.log('Processando exercício com conteúdo:', data);
 
   const questoes: Questao[] = data.conteudo.questoes
-    .map((questao, index) => ({
-      id: questao.id,
-      conteudo_id: data.conteudo.id,
-      enunciado: questao.enunciado,
-      nivel: questao.nivel,
-      tipo: questao.tipo as Questao['tipo'],
-      opcoes: questao.opcoes || [],
-      resposta_correta: questao.resposta_correta,
-      exemplo_resposta: questao.exemplo_resposta,
-      ordem: questao.ordem !== undefined ? questao.ordem : index,
-    }))
+    .map((questao, index) => {
+      const opcoes = normalizarOpcoes(questao.opcoes);
+      return {
+        id: questao.id,
+        conteudo_id: data.conteudo.id,
+        enunciado: questao.enunciado,
+        nivel: questao.nivel,
+        tipo: questao.tipo as Questao['tipo'],
+        opcoes,
+        resposta_correta: normalizarRespostaCorreta(questao.resposta_correta, opcoes),
+        exemplo_resposta: questao.exemplo_resposta,
+        ordem: questao.ordem !== undefined ? questao.ordem : index,
+      };
+    })
     .sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
 
   console.log('Questões processadas:', questoes);
@@ -72,14 +129,15 @@ export function processarQuestoesSimples(questoes: any[]): Questao[] {
   console.log('Processando questões simples:', questoes);
 
   return questoes.map((questao, index) => {
+    const opcoes = normalizarOpcoes(questao.opcoes);
     const questaoProcessada = {
       id: questao.id,
       conteudo_id: questao.conteudo_id,
       enunciado: questao.enunciado,
       nivel: questao.nivel || 'facil',
       tipo: questao.tipo,
-      opcoes: questao.opcoes || [],
-      resposta_correta: questao.resposta_correta,
+      opcoes,
+      resposta_correta: normalizarRespostaCorreta(questao.resposta_correta, opcoes),
       exemplo_resposta: questao.exemplo_resposta,
       ordem: questao.ordem !== undefined ? questao.ordem : index,
     };
@@ -125,16 +183,19 @@ export function processarQuestoesDoEndpoint(
 ): Questao[] {
   return questoesData
     .filter((questao) => questao.exercicio_id === exercicioId)
-    .map((questao) => ({
-      id: questao.id,
-      conteudo_id: questao.conteudo_id,
-      enunciado: questao.enunciado,
-      nivel: questao.nivel,
-      tipo: questao.tipo,
-      opcoes: questao.opcoes || [],
-      resposta_correta: questao.resposta_correta,
-      exemplo_resposta: questao.exemplo_resposta,
-      ordem: questao.ordem,
-    }))
+    .map((questao) => {
+      const opcoes = normalizarOpcoes(questao.opcoes);
+      return {
+        id: questao.id,
+        conteudo_id: questao.conteudo_id,
+        enunciado: questao.enunciado,
+        nivel: questao.nivel,
+        tipo: questao.tipo,
+        opcoes,
+        resposta_correta: normalizarRespostaCorreta(questao.resposta_correta, opcoes),
+        exemplo_resposta: questao.exemplo_resposta,
+        ordem: questao.ordem,
+      };
+    })
     .sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
 }

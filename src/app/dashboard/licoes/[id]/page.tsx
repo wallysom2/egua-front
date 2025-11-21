@@ -85,7 +85,7 @@ export default function ExercicioDetalhes({
             // Última tentativa: buscar todas as questões e filtrar
             try {
               const todasQuestoes = await apiClient.get('/questoes');
-                console.log('Todas as questões:', todasQuestoes);
+              console.log('Todas as questões:', todasQuestoes);
 
               if (Array.isArray(todasQuestoes)) {
                 const questoesFiltradas = todasQuestoes.filter(
@@ -235,8 +235,8 @@ export default function ExercicioDetalhes({
           questao={questaoAtualData}
           respostaSelecionada={respostas[questaoAtualData.id]}
           onRespostaChange={handleRespostaChange}
-          exercicioFinalizado={exercicioFinalizado}
-          mostrarResultado={exercicioFinalizado}
+          exercicioFinalizado={exercicioFinalizado || !!respostas[questaoAtualData.id]}
+          mostrarResultado={exercicioFinalizado || !!respostas[questaoAtualData.id]}
         />
       );
     }
@@ -312,41 +312,14 @@ export default function ExercicioDetalhes({
                 />
                 <span className="font-semibold text-lg">Senior Code AI</span>
               </Link>
-              
+
               {/* Breadcrumb */}
-              <nav className="hidden md:flex items-center space-x-2 text-sm text-slate-500 dark:text-slate-400">
-                <Link href="/dashboard" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
-                  Painel
-                </Link>
-                <span>/</span>
-                <Link href="/dashboard/licoes" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
-                  Lições
-                </Link>
-                <span>/</span>
-                <span className="text-slate-900 dark:text-white font-medium truncate max-w-xs">
-                  {exercicio.titulo}
-                </span>
-              </nav>
+
             </div>
 
             {/* Ações */}
             <div className="flex items-center space-x-3">
-              {user?.tipo === 'professor' && (
-                <div className="hidden sm:flex items-center space-x-2">
-                  <Link
-                    href={`/dashboard/licoes/editar/${resolvedParams.id}`}
-                    className="px-3 py-1.5 text-sm bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-                  >
-                    Editar
-                  </Link>
-                  <button
-                    onClick={() => setShowDeleteModal(true)}
-                    className="px-3 py-1.5 text-sm bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-md hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                  >
-                    Excluir
-                  </button>
-                </div>
-              )}
+
               <BackButton href="/dashboard/licoes" />
               <ThemeToggle />
             </div>
@@ -465,21 +438,21 @@ export default function ExercicioDetalhes({
                   {resultados.acertos === resultados.total
                     ? '🏆'
                     : resultados.acertos >= resultados.total * 0.7
-                    ? '🎉'
-                    : '💪'}
+                      ? '🎉'
+                      : '💪'}
                 </div>
               </div>
 
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
                 Exercício Concluído!
               </h2>
-              
+
               <p className="text-slate-600 dark:text-slate-400 mb-6">
                 {resultados.acertos === resultados.total
                   ? 'Perfeito! Você dominou o conteúdo!'
                   : resultados.acertos >= resultados.total * 0.7
-                  ? 'Muito bem! Bom aproveitamento!'
-                  : 'Continue praticando, você está no caminho certo!'}
+                    ? 'Muito bem! Bom aproveitamento!'
+                    : 'Continue praticando, você está no caminho certo!'}
               </p>
 
               {exercicio?.tipo === 'quiz' && (
@@ -521,13 +494,12 @@ export default function ExercicioDetalhes({
                           width: `${(resultados.acertos / resultados.total) * 100}%`,
                         }}
                         transition={{ duration: 1, delay: 0.3 }}
-                        className={`h-2 rounded-full ${
-                          resultados.acertos === resultados.total
-                            ? 'bg-gradient-to-r from-green-500 to-green-600'
-                            : resultados.acertos >= resultados.total * 0.7
+                        className={`h-2 rounded-full ${resultados.acertos === resultados.total
+                          ? 'bg-gradient-to-r from-green-500 to-green-600'
+                          : resultados.acertos >= resultados.total * 0.7
                             ? 'bg-gradient-to-r from-blue-500 to-blue-600'
                             : 'bg-gradient-to-r from-slate-400 to-slate-500'
-                        }`}
+                          }`}
                       />
                     </div>
                   </div>
@@ -583,7 +555,7 @@ export default function ExercicioDetalhes({
               <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
                 Excluir Exercício
               </h2>
-              
+
               <p className="text-slate-600 dark:text-slate-400 mb-6 text-sm leading-relaxed">
                 Esta ação não pode ser desfeita. O exercício e todas as questões relacionadas serão removidos permanentemente.
               </p>
