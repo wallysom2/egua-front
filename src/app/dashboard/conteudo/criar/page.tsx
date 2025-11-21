@@ -307,6 +307,15 @@ export default function NovoConteudoPage() {
 
         const data = await fetchLinguagens(token);
         setLinguagens(data);
+
+        // Definir Egua como padrão
+        const eguaLang = data.find(
+          (l: Linguagem) =>
+            l.nome.toLowerCase() === 'egua' || l.nome.toLowerCase() === 'égua',
+        );
+        if (eguaLang) {
+          setFormData((prev) => ({ ...prev, linguagem_id: String(eguaLang.id) }));
+        }
       } catch (err) {
         setError('Erro ao carregar linguagens. Tente novamente mais tarde.');
         console.error(err);
@@ -485,9 +494,6 @@ export default function NovoConteudoPage() {
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
               Criar Novo Conteúdo
             </h1>
-            <p className="text-slate-600 dark:text-slate-400">
-              Crie materiais didáticos para os estudantes
-            </p>
           </motion.div>
 
           {/* Error Message */}
@@ -540,51 +546,15 @@ export default function NovoConteudoPage() {
                     />
                   </div>
 
-                  {/* Nível */}
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      Nível de Dificuldade
-                    </label>
-                    <select
-                      name="nivel_leitura"
-                      value={formData.nivel_leitura || 'basico'}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    >
-                      <option value="basico">Básico</option>
-                      <option value="intermediario">Intermediário</option>
-                    </select>
-                  </div>
 
-                  {/* Linguagem */}
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      Linguagem de Programação
-                    </label>
-                    <select
-                      name="linguagem_id"
-                      value={formData.linguagem_id || ''}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    >
-                      <option value="">Selecione uma linguagem...</option>
-                      {linguagens.map((linguagem) => (
-                        <option key={linguagem.id} value={linguagem.id}>
-                          {linguagem.nome}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+
+
                 </div>
               </div>
 
               {/* Content Editor */}
               <div className="bg-white dark:bg-slate-900/50 backdrop-blur rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
                 <div className="p-6 border-b border-slate-200 dark:border-slate-700">
-                  <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
-                    Conteúdo do Material
-                  </h2>
 
                   {/* Toolbar */}
                   <div className="flex flex-wrap items-center gap-2 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
@@ -593,13 +563,11 @@ export default function NovoConteudoPage() {
                         key={index}
                         type="button"
                         onClick={button.action}
-                        className={`px-3 py-2 text-sm rounded transition-colors ${
-                          button.isActive?.()
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600'
-                        } ${button.bold ? 'font-bold' : ''} ${
-                          button.italic ? 'italic' : ''
-                        }`}
+                        className={`px-3 py-2 text-sm rounded transition-colors ${button.isActive?.()
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600'
+                          } ${button.bold ? 'font-bold' : ''} ${button.italic ? 'italic' : ''
+                          }`}
                         title={button.label}
                       >
                         {button.icon}
