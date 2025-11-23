@@ -3,7 +3,6 @@
 import { Header } from '@/components/Header';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Users, GraduationCap, Building2, Mail, ArrowLeft } from 'lucide-react';
 
 export default function Sobre() {
   return (
@@ -30,8 +29,7 @@ export default function Sobre() {
             <div className="space-y-10">
               {/* Equipe de Desenvolvimento */}
               <section>
-                <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
-                  <Users className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-slate-100">
                   Equipe
                 </h2>
                 <div className="space-y-2.5">
@@ -68,8 +66,7 @@ export default function Sobre() {
 
               {/* Orientação */}
               <section>
-                <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
-                  <GraduationCap className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-slate-100">
                   Orientação
                 </h2>
                 <div className="py-4 px-4 border-l-2 border-blue-500 dark:border-blue-400 bg-blue-50/30 dark:bg-blue-950/20">
@@ -87,8 +84,7 @@ export default function Sobre() {
 
               {/* Instituição */}
               <section>
-                <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
-                  <Building2 className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-slate-100">
                   Instituição de Ensino
                 </h2>
                 <div className="space-y-2.5">
@@ -110,8 +106,7 @@ export default function Sobre() {
 
               {/* Contato */}
               <section>
-                <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
-                  <Mail className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-slate-100">
                   Informações de Contato
                 </h2>
                 <div className="py-3 px-4 border-l-2 border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">
@@ -129,10 +124,9 @@ export default function Sobre() {
             <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+                className="text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
               >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="text-sm">Voltar para a página inicial</span>
+                Voltar para a página inicial
               </Link>
             </div>
           </motion.div>
