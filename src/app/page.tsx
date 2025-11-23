@@ -5,6 +5,7 @@ import { GradientButton } from '@/components/GradientButton';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { ScrollProgress } from '@/components/ScrollProgress';
+import { BookOpen, Code, Rocket, Hand, Clock, Users, Target, Building2 } from 'lucide-react';
 
 export default function Home() {
   const containerRef = useRef(null);
@@ -75,34 +76,35 @@ export default function Home() {
             <div className="flex items-center justify-center gap-8 mb-12 text-slate-500 dark:text-slate-300">
               {[
                 {
-                  icon: '📚',
+                  icon: BookOpen,
                   text: 'Aprenda',
                   tooltip: 'Conteúdo didático e estruturado',
                 },
                 {
-                  icon: '💻',
+                  icon: Code,
                   text: 'Pratique',
                   tooltip: 'Exercícios práticos e interativos',
                 },
                 {
-                  icon: '🚀',
+                  icon: Rocket,
                   text: 'Crie',
                   tooltip: 'Projetos reais para seu portfólio',
                 },
-              ].map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-2"
-                >
-                  <span className="text-2xl">
-                    {item.icon}
-                  </span>
-                  <span>{item.text}</span>
-                  {index < 2 && (
-                    <div className="w-2 h-2 bg-slate-400 dark:bg-slate-500 rounded-full" />
-                  )}
-                </div>
-              ))}
+              ].map((item, index) => {
+                const IconComponent = item.icon;
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2"
+                  >
+                    <IconComponent className="w-5 h-5" />
+                    <span>{item.text}</span>
+                    {index < 2 && (
+                      <div className="w-2 h-2 bg-slate-400 dark:bg-slate-500 rounded-full" />
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             <motion.div
@@ -139,7 +141,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {[
               {
-                icon: '👋',
+                icon: Hand,
                 title: 'Comece aos Poucos',
                 description:
                   'Interface intuitiva e conteúdo didático para iniciantes',
@@ -147,57 +149,59 @@ export default function Home() {
                 tooltip: 'Comece do zero sem complicações',
               },
               {
-                icon: '⏱️',
+                icon: Clock,
                 title: 'Aprenda no seu Ritmo',
                 gradient: 'from-blue-500 to-blue-600',
                 tooltip: 'Estude quando e onde quiser',
               },
               {
-                icon: '👥',
+                icon: Users,
                 title: 'Retorno imediato',
                 gradient: 'from-purple-500 to-purple-600',
                 tooltip: 'Receba retorno instantâneo com IA',
               },
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.2 }}
-                whileHover={{
-                  scale: 1.05,
-                  transition: { duration: 0.2 },
-                }}
-                className="group bg-white dark:bg-slate-800 p-8 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-lg border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-2xl"
-              >
-                <div className="text-center">
-                  <motion.div
-                    className={`w-20 h-20 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mx-auto mb-6`}
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <motion.span
-                      className="text-3xl"
-                      animate={{
-                        y: [0, -5, 0],
-                        rotate: [0, 5, 0],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        delay: index * 0.2,
-                      }}
+            ].map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.2 }}
+                  whileHover={{
+                    scale: 1.05,
+                    transition: { duration: 0.2 },
+                  }}
+                  className="group bg-white dark:bg-slate-800 p-8 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-lg border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-2xl"
+                >
+                  <div className="text-center">
+                    <motion.div
+                      className={`w-20 h-20 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mx-auto mb-6`}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      {feature.icon}
-                    </motion.span>
-                  </motion.div>
-                  <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-slate-100">
-                    {feature.title}
-                  </h3>
-                </div>
-              </motion.div>
-            ))}
+                      <motion.div
+                        animate={{
+                          y: [0, -5, 0],
+                          rotate: [0, 5, 0],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          delay: index * 0.2,
+                        }}
+                      >
+                        <IconComponent className="w-10 h-10 text-white" />
+                      </motion.div>
+                    </motion.div>
+                    <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-slate-100">
+                      {feature.title}
+                    </h3>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -226,7 +230,10 @@ export default function Home() {
             </motion.p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <GradientButton href="/cadastro">
-                🎯 Criar Conta Gratuita
+                <span className="flex items-center gap-2">
+                  <Target className="w-5 h-5" />
+                  Criar Conta Gratuita
+                </span>
               </GradientButton>
             </motion.div>
           </div>
@@ -237,10 +244,11 @@ export default function Home() {
       <footer className="py-8 border-t border-slate-200 dark:footer-border-custom bg-slate-50/30 footer-bg">
         <div className="container mx-auto px-6 text-center">
           <motion.p
-            className="text-slate-600 dark:text-slate-300"
+            className="text-slate-600 dark:text-slate-300 flex items-center justify-center gap-2"
             whileHover={{ scale: 1.02 }}
           >
-            🏛️ Senior Code AI - Aprenda programação passo a passo
+            <Building2 className="w-4 h-4" />
+            Senior Code AI - Aprenda programação passo a passo
           </motion.p>
         </div>
       </footer>

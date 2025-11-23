@@ -171,10 +171,18 @@ export function Header({
       );
     }
 
-    // Home variant - mostra botão "Entrar"
+    // Home variant - mostra botão "Entrar" e link "Sobre"
     if (variant === 'home') {
       return (
         <div className="flex items-center gap-4">
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Link
+              href="/sobre"
+              className="px-4 py-2 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium text-base"
+            >
+              Sobre
+            </Link>
+          </motion.div>
           <ThemeToggle />
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Link
@@ -245,7 +253,9 @@ export function Header({
           </motion.div>
 
           {/* Right Actions */}
-          {renderRightActions()}
+          <div className="flex items-center gap-4">
+            {renderRightActions()}
+          </div>
         </div>
       </motion.div>
 

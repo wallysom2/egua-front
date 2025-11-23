@@ -31,8 +31,75 @@ interface ToastNotification {
 interface SortableValue {
   titulo: string;
   tipo: 'pratico' | 'quiz';
-  status: 'em_andamento' | 'concluido' | 'nao_iniciado';
-  criado: Date;
+}
+
+// Função auxiliar para inferir o tipo do exercício baseado nas questões
+function inferirTipoExercicio(exercicio: any): 'pratico' | 'quiz' {
+  // Se já tem o campo tipo, usar ele
+  if (exercicio.tipo) {
+    const tipoNormalizado = String(exercicio.tipo).toLowerCase().trim();
+    if (
+      tipoNormalizado === 'pratico' ||
+      tipoNormalizado === 'programacao' ||
+      tipoNormalizado === 'programação' ||
+      tipoNormalizado === 'codigo' ||
+      tipoNormalizado === 'código'
+    ) {
+      return 'pratico';
+    }
+    if (tipoNormalizado === 'quiz') {
+      return 'quiz';
+    }
+  }
+  
+  // Se não tem tipo, inferir baseado nas questões
+  const exercicioComQuestoes = exercicio as any;
+  if (exercicioComQuestoes.exercicio_questao && Array.isArray(exercicioComQuestoes.exercicio_questao)) {
+    const questoes = exercicioComQuestoes.exercicio_questao;
+    if (questoes.length === 0) return 'pratico'; // Default
+    
+    // Se alguma questão é de programação, o exercício é prático
+    const temProgramacao = questoes.some(
+      (eq: any) => eq.questao?.tipo === 'programacao' || eq.questao?.tipo === 'programação'
+    );
+    
+    if (temProgramacao) {
+      return 'pratico';
+    }
+    
+    // Se todas são quiz, então é quiz
+    const todasSaoQuiz = questoes.every(
+      (eq: any) => eq.questao?.tipo === 'quiz'
+    );
+    
+    if (todasSaoQuiz) {
+      return 'quiz';
+    }
+  }
+  
+  // Default para prático
+  return 'pratico';
+}
+
+// Função auxiliar para normalizar o tipo do exercício
+function normalizarTipoExercicio(tipo: string | undefined | null): 'pratico' | 'quiz' {
+  if (!tipo) return 'pratico';
+  
+  const tipoNormalizado = String(tipo).toLowerCase().trim();
+  
+  // Variações de prático
+  if (
+    tipoNormalizado === 'pratico' ||
+    tipoNormalizado === 'programacao' ||
+    tipoNormalizado === 'programação' ||
+    tipoNormalizado === 'codigo' ||
+    tipoNormalizado === 'código'
+  ) {
+    return 'pratico';
+  }
+  
+  // Default para quiz
+  return 'quiz';
 }
 
 export default function Licoes() {
@@ -57,9 +124,7 @@ export default function Licoes() {
   const [selectedLinguagem, setSelectedLinguagem] = useState<number | 'todas'>(
     'todas',
   );
-  const [sortBy, setSortBy] = useState<'titulo' | 'tipo' | 'status' | 'criado'>(
-    'titulo',
-  );
+  const [sortBy, setSortBy] = useState<'titulo' | 'tipo'>('titulo');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -128,7 +193,7 @@ export default function Licoes() {
 
   // Filtrar e ordenar exercícios
   useEffect(() => {
-    let filtered = exercicios;
+    let filtered = [...exercicios]; // Criar cópia para não modificar o array original
 
     // Filtro por busca
     if (searchTerm) {
@@ -137,11 +202,12 @@ export default function Licoes() {
       );
     }
 
-    // Filtro por tipo
+    // Filtro por tipo - usar tipo normalizado
     if (selectedTipo !== 'todos') {
-      filtered = filtered.filter(
-        (exercicio) => exercicio.tipo === selectedTipo,
-      );
+      filtered = filtered.filter((exercicio) => {
+        const tipoNormalizado = normalizarTipoExercicio(exercicio.tipo);
+        return tipoNormalizado === selectedTipo;
+      });
     }
 
     // Filtro por linguagem
@@ -160,10 +226,35 @@ export default function Licoes() {
       });
     }
 
-    // Ordenação
+    // Ordenação com agrupamento por tipo quando filtro de tipo está ativo
     filtered.sort((a, b) => {
-      let aVal: SortableValue[keyof SortableValue],
-        bVal: SortableValue[keyof SortableValue];
+      // Se o filtro de tipo está ativo, agrupar por tipo primeiro
+      if (selectedTipo !== 'todos') {
+        const tipoA = normalizarTipoExercicio(a.tipo);
+        const tipoB = normalizarTipoExercicio(b.tipo);
+        
+        // Se os tipos são diferentes, manter a ordem (já estão filtrados)
+        if (tipoA !== tipoB) {
+          return 0;
+        }
+      } else {
+        // Se não há filtro de tipo, agrupar por tipo primeiro quando ordenar por tipo
+        if (sortBy === 'tipo') {
+          const tipoA = normalizarTipoExercicio(a.tipo);
+          const tipoB = normalizarTipoExercicio(b.tipo);
+          
+          if (tipoA !== tipoB) {
+            // Prático primeiro, depois Quiz
+            if (tipoA === 'pratico') return sortOrder === 'asc' ? -1 : 1;
+            if (tipoB === 'pratico') return sortOrder === 'asc' ? 1 : -1;
+            return 0;
+          }
+        }
+      }
+
+      // Depois ordenar pelo critério selecionado dentro do mesmo grupo
+      let aVal: any;
+      let bVal: any;
 
       switch (sortBy) {
         case 'titulo':
@@ -171,28 +262,27 @@ export default function Licoes() {
           bVal = b.titulo.toLowerCase();
           break;
         case 'tipo':
-          aVal = a.tipo;
-          bVal = b.tipo;
-          break;
-        case 'status':
-          aVal = getStatusExercicio() || 'nao_iniciado';
-          bVal = getStatusExercicio() || 'nao_iniciado';
-          break;
-        case 'criado':
-          aVal = new Date(a.created_at || 0);
-          bVal = new Date(b.created_at || 0);
+          // Se já agrupamos por tipo acima, ordenar por título dentro do grupo
+          aVal = a.titulo.toLowerCase();
+          bVal = b.titulo.toLowerCase();
           break;
         default:
-          aVal = a.titulo;
-          bVal = b.titulo;
+          aVal = a.titulo.toLowerCase();
+          bVal = b.titulo.toLowerCase();
       }
 
-      if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+      // Comparação para strings
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
+      }
+
       return 0;
     });
 
-    setFilteredExercicios(filtered);
+    // Criar nova referência do array ordenado para garantir que o React detecte a mudança
+    setFilteredExercicios([...filtered]);
   }, [
     exercicios,
     searchTerm,
@@ -221,7 +311,31 @@ export default function Licoes() {
         ]);
 
         if (Array.isArray(exerciciosData)) {
-          setExercicios(exerciciosData);
+          // Inferir e normalizar tipos dos exercícios baseado nas questões
+          const exerciciosNormalizados = exerciciosData.map((ex) => {
+            const tipoInferido = inferirTipoExercicio(ex);
+            return {
+              ...ex,
+              tipo: tipoInferido,
+            };
+          });
+          
+          // Log para debug - verificar tipos dos exercícios
+          console.log('Exercícios carregados (antes normalização):', exerciciosData.map((ex: any) => ({
+            id: ex.id,
+            titulo: ex.titulo,
+            tipo: ex.tipo,
+            tipoRaw: typeof ex.tipo,
+            temQuestoes: !!ex.exercicio_questao,
+            tiposQuestoes: ex.exercicio_questao?.map((eq: any) => eq.questao?.tipo) || []
+          })));
+          console.log('Exercícios carregados (após normalização):', exerciciosNormalizados.map(ex => ({
+            id: ex.id,
+            titulo: ex.titulo,
+            tipo: ex.tipo,
+          })));
+          
+          setExercicios(exerciciosNormalizados);
         }
 
         if (Array.isArray(linguagensData)) {
@@ -382,31 +496,6 @@ export default function Licoes() {
                 </select>
               </div>
 
-              {/* Filtro por Status */}
-              <div className="lg:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
-                  Status
-                </label>
-                <select
-                  value={selectedStatus}
-                  onChange={(e) =>
-                    setSelectedStatus(
-                      e.target.value as
-                      | 'todos'
-                      | 'nao_iniciado'
-                      | 'em_andamento'
-                      | 'concluido',
-                    )
-                  }
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                >
-                  <option value="todos">Todos</option>
-                  <option value="nao_iniciado">Não Iniciado</option>
-                  <option value="em_andamento">Em Progresso</option>
-                  <option value="concluido">Concluído</option>
-                </select>
-              </div>
-
               {/* Filtro por Linguagem */}
               <div className="lg:col-span-2">
                 <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
@@ -438,24 +527,16 @@ export default function Licoes() {
                   Ordenar por
                 </label>
                 <div className="flex gap-2">
-                  <select
-                    value={sortBy}
-                    onChange={(e) =>
-                      setSortBy(
-                        e.target.value as
-                        | 'titulo'
-                        | 'tipo'
-                        | 'status'
-                        | 'criado',
-                      )
-                    }
-                    className="flex-1 px-3 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
-                  >
-                    <option value="titulo">Título</option>
-                    <option value="tipo">Tipo</option>
-                    <option value="status">Status</option>
-                    <option value="criado">Data</option>
-                  </select>
+                   <select
+                     value={sortBy}
+                     onChange={(e) =>
+                       setSortBy(e.target.value as 'titulo' | 'tipo')
+                     }
+                     className="flex-1 px-3 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
+                   >
+                     <option value="titulo">Título</option>
+                     <option value="tipo">Tipo</option>
+                   </select>
                   <button
                     onClick={() =>
                       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
@@ -487,20 +568,14 @@ export default function Licoes() {
                       {selectedTipo === 'pratico' ? 'Prático' : 'Quiz'}
                     </span>
                   )}
-                  {selectedStatus !== 'todos' && (
-                    <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded-full text-sm border border-green-200 dark:border-green-700">
-                      Status: {selectedStatus.replace('_', ' ')}
-                    </span>
-                  )}
                   {selectedLinguagem !== 'todas' && (
                     <span className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 rounded-full text-sm border border-yellow-200 dark:border-yellow-700">
                       {linguagensMap.get(selectedLinguagem as number)}
                     </span>
                   )}
-                  {(searchTerm ||
-                    selectedTipo !== 'todos' ||
-                    selectedStatus !== 'todos' ||
-                    selectedLinguagem !== 'todas') && (
+                   {(searchTerm ||
+                     selectedTipo !== 'todos' ||
+                     selectedLinguagem !== 'todas') && (
                       <button
                         onClick={clearFilters}
                         className="px-3 py-1 bg-slate-100 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary rounded-full text-sm hover:bg-slate-200 dark:hover:bg-border-hover transition-colors flex items-center gap-1"
@@ -558,33 +633,29 @@ export default function Licoes() {
               <div className="text-6xl mb-6">
                 {searchTerm ||
                   selectedTipo !== 'todos' ||
-                  selectedStatus !== 'todos' ||
                   selectedLinguagem !== 'todas'
                   ? '🔍'
                   : '📚'}
               </div>
               <h3 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-4">
-                {searchTerm ||
-                  selectedTipo !== 'todos' ||
-                  selectedStatus !== 'todos' ||
-                  selectedLinguagem !== 'todas'
-                  ? 'Nenhum exercício encontrado'
-                  : 'Nenhum exercício criado ainda'}
+                 {searchTerm ||
+                   selectedTipo !== 'todos' ||
+                   selectedLinguagem !== 'todas'
+                   ? 'Nenhum exercício encontrado'
+                   : 'Nenhum exercício criado ainda'}
               </h3>
               <p className="text-slate-600 dark:text-text-secondary text-lg mb-8 max-w-md mx-auto leading-relaxed">
-                {searchTerm ||
-                  selectedTipo !== 'todos' ||
-                  selectedStatus !== 'todos' ||
-                  selectedLinguagem !== 'todas'
-                  ? 'Tente ajustar os filtros ou fazer uma nova busca'
-                  : isProfessor || isDesenvolvedor
-                    ? 'Comece criando seu primeiro exercício de programação!'
-                    : 'Entre em contato com um professor ou desenvolvedor para ter acesso aos exercícios'}
+                 {searchTerm ||
+                   selectedTipo !== 'todos' ||
+                   selectedLinguagem !== 'todas'
+                   ? 'Tente ajustar os filtros ou fazer uma nova busca'
+                   : isProfessor || isDesenvolvedor
+                     ? 'Comece criando seu primeiro exercício de programação!'
+                     : 'Entre em contato com um professor ou desenvolvedor para ter acesso aos exercícios'}
               </p>
-              {searchTerm ||
-                selectedTipo !== 'todos' ||
-                selectedStatus !== 'todos' ||
-                selectedLinguagem !== 'todas' ? (
+               {searchTerm ||
+                 selectedTipo !== 'todos' ||
+                 selectedLinguagem !== 'todas' ? (
                 <button
                   onClick={clearFilters}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-slate-200 dark:bg-bg-tertiary text-slate-900 dark:text-text-primary rounded-lg hover:bg-slate-300 dark:hover:bg-border-hover transition-colors"
@@ -620,10 +691,13 @@ export default function Licoes() {
 
                 const badges = [];
 
-                // Type Badge
+                // Type Badge - usar tipo normalizado
+                const tipoNormalizado = normalizarTipoExercicio(exercicio.tipo);
+                const isPratico = tipoNormalizado === 'pratico';
+                
                 badges.push({
-                  text: exercicio.tipo === 'pratico' ? 'Prático' : 'Quiz',
-                  variant: exercicio.tipo === 'pratico' ? 'blue' : 'purple'
+                  text: isPratico ? 'Prático' : 'Quiz',
+                  variant: isPratico ? 'blue' : 'purple'
                 });
 
                 // Status Badge
