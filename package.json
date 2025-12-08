@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint --dir ."
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.4",
