@@ -33,7 +33,7 @@ export function DebugAnalise({
         <div className="absolute bottom-12 right-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4 shadow-xl w-80 max-h-96 overflow-y-auto">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-medium text-slate-900 dark:text-white">
-              Debug - Análise Gemini
+              Debug - Análise IA
             </h3>
             <button
               onClick={() => setIsOpen(false)}

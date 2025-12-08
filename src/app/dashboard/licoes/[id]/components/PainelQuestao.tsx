@@ -6,7 +6,7 @@ interface PainelQuestaoProps {
   questao?: Questao;
   questaoAtual: number;
   totalQuestoes: number;
-  // Props para o retorno da IA Gemini
+  // Props para o retorno da IA
   respostaId?: string | null;
 }
 
@@ -60,7 +60,7 @@ export function PainelQuestao({
         </div>
       </div>
 
-      {/* Retorno da IA Gemini - Só para questões de programação */}
+      {/* Retorno da IA - Só para questões de programação */}
       {(questao.tipo === 'programacao' || questao.tipo === 'codigo') && respostaId && (
         <div className="mb-6">
           <AnaliseGemini
