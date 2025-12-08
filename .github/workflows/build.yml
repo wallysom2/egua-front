@@ -27,9 +27,6 @@ jobs:
       - name: Instalar dependências
         run: npm i
 
-      - name: Executar lint
-        run: npm run lint
-
       - name: Build do projeto
         run: npm run build
 

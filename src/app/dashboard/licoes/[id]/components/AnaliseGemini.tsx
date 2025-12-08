@@ -25,7 +25,7 @@ export function AnaliseGemini({
         <div className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
           <div className="w-4 h-4 border-2 border-yellow-600 border-t-transparent rounded-full animate-spin"></div>
           <span className="text-sm">
-            Enviando código para análise da IA Gemini...
+            Enviando código para análise da IA...
           </span>
         </div>
       </div>
@@ -61,7 +61,7 @@ export function AnaliseGemini({
           <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
             <div className="w-4 h-4 border-2 border-slate-600 border-t-transparent rounded-full animate-spin"></div>
             <span className="text-sm">
-              IA Gemini está analisando seu código. Aguarde alguns instantes...
+              IA está analisando seu código. Aguarde alguns instantes...
             </span>
           </div>
           {loading && (
@@ -148,7 +148,7 @@ export function AnaliseGemini({
             </span>
             <div>
               <h4 className="font-semibold text-lg mb-2">
-                Retorno da IA Gemini
+                Retorno da IA
               </h4>
               <p className="text-sm leading-relaxed whitespace-pre-wrap">
                 {analise.mensagem_personalizada.mensagem}

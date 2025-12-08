@@ -98,8 +98,8 @@ export interface RespostaCodigo {
 
 export type RespostaExercicio = RespostaMultiplaEscolha | RespostaCodigo;
 
-// Tipos para análise do Gemini
-export interface AnaliseGemini {
+// Tipos para análise da IA
+export interface AnaliseIA {
   criterio: string;
   peso: number;
   aprovado: boolean;
@@ -125,7 +125,7 @@ export interface RespostaComAnalise {
     tipo: string;
   };
   analise_disponivel: boolean;
-  analises?: AnaliseGemini[]; // Opcional para compatibilidade com formato antigo
+  analises?: AnaliseIA[]; // Opcional para compatibilidade com formato antigo
   resultado_geral: ResultadoAnalise;
   mensagem_personalizada?: MensagemPersonalizada; // Nova propriedade para mensagem da IA
 }

@@ -52,7 +52,7 @@ export function useAnaliseGemini({
         console.log('Análise recebida:', data);
       } else if (response.status === 404) {
         setError(
-          'Análise ainda não está disponível. A IA Gemini está processando seu código...',
+          'Análise ainda não está disponível. A IA está processando seu código...',
         );
         console.log('Análise ainda não disponível para resposta:', respostaId);
       } else {
