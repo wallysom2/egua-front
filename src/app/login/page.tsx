@@ -49,8 +49,8 @@ export default function Login() {
       }
     } catch (err) {
       setError(
-        err instanceof Error 
-          ? err.message 
+        err instanceof Error
+          ? err.message
           : 'Erro ao fazer login. Tente novamente.',
       );
     } finally {
@@ -78,8 +78,8 @@ export default function Login() {
       }
     } catch (err) {
       setError(
-        err instanceof Error 
-          ? err.message 
+        err instanceof Error
+          ? err.message
           : 'Erro ao fazer login com Google. Tente novamente.',
       );
     } finally {
@@ -259,6 +259,9 @@ export default function Login() {
                   setError('Erro ao fazer login com Google');
                   setLoading(false);
                 }}
+                width="400"
+                text="signin_with"
+                shape="rectangular"
               />
             </div>
 

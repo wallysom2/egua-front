@@ -261,6 +261,8 @@ body {
 /* Estilos customizados para o botão do Google Login */
 .google-login-wrapper {
   width: 100%;
+  display: flex;
+  justify-content: center;
   overflow: hidden;
   position: relative;
 }
@@ -268,18 +270,21 @@ body {
 .google-login-wrapper > div {
   width: 100% !important;
   max-width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
 }
 
 .google-login-wrapper > div > div {
   width: 100% !important;
-  max-width: 100% !important;
+  max-width: 400px !important;
   min-height: 3rem !important;
   overflow: hidden !important;
 }
 
 .google-login-wrapper iframe {
   width: 100% !important;
-  max-width: 100% !important;
+  max-width: 400px !important;
+  min-width: 280px !important;
 }
 
 /* Estilos para o MDEditor */
