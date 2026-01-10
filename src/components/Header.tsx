@@ -62,9 +62,8 @@ export function Header({
                 </p>
               </div>
               <svg
-                className={`w-4 h-4 text-slate-500 dark:text-text-tertiary transition-transform ${
-                  userMenuOpen ? 'rotate-180' : ''
-                }`}
+                className={`w-4 h-4 text-slate-500 dark:text-text-tertiary transition-transform ${userMenuOpen ? 'rotate-180' : ''
+                  }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -119,23 +118,56 @@ export function Header({
                       className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-text-secondary hover:bg-slate-50 dark:hover:bg-bg-tertiary transition-colors"
                       onClick={() => setUserMenuOpen(false)}
                     >
-                      📚 <span>Conteúdo Teórico</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                      </svg> <span>Conteúdo Teórico</span>
                     </Link>
                     <Link
                       href="/dashboard/licoes"
                       className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-text-secondary hover:bg-slate-50 dark:hover:bg-bg-tertiary transition-colors"
                       onClick={() => setUserMenuOpen(false)}
                     >
-                      🎯 <span>Lições Práticas</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                      </svg> <span>Lições Práticas</span>
                     </Link>
                     <Link
                       href="/dashboard/compilador"
                       className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-text-secondary hover:bg-slate-50 dark:hover:bg-bg-tertiary transition-colors"
                       onClick={() => setUserMenuOpen(false)}
                     >
-                      💻 <span>Compilador Online</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 18" />
+                      </svg> <span>Compilador Online</span>
                     </Link>
                   </div>
+
+                  {/* Admin - Apenas para desenvolvedores */}
+                  {user?.tipo?.toLowerCase() === 'desenvolvedor' && (
+                    <div className="border-b border-slate-200 dark:border-border-custom">
+                      <Link
+                        href="/dashboard/usuarios"
+                        className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-text-secondary hover:bg-slate-50 dark:hover:bg-bg-tertiary transition-colors"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-5 h-5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
+                          />
+                        </svg>
+                        <span className="font-medium">Gerenciar Usuários</span>
+                      </Link>
+                    </div>
+                  )}
 
                   {/* Logout */}
                   {onLogout && (
@@ -227,8 +259,8 @@ export function Header({
         animate={{ y: 0 }}
         className="fixed w-full z-40 py-4 border-b border-slate-200/50 dark:header-border-custom backdrop-blur-sm"
         style={{
-          backgroundColor: variant === 'home' 
-            ? 'var(--color-header-bg)' 
+          backgroundColor: variant === 'home'
+            ? 'var(--color-header-bg)'
             : 'var(--color-header-bg-opacity)',
         }}
       >
@@ -237,9 +269,8 @@ export function Header({
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link
               href={logoHref}
-              className={`${textSize} font-bold text-slate-900 dark:text-text-primary flex items-center gap-2 ${
-                logoSize === 'lg' ? 'gap-3' : 'gap-2'
-              }`}
+              className={`${textSize} font-bold text-slate-900 dark:text-text-primary flex items-center gap-2 ${logoSize === 'lg' ? 'gap-3' : 'gap-2'
+                }`}
             >
               <Image
                 src="/hu.png"
