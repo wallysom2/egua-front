@@ -7,8 +7,8 @@ import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
-
-import { API_BASE_URL } from '@/config/api';
+import { apiClient } from '@/lib/api-client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Conteudo {
   id: number;
@@ -32,49 +32,9 @@ function useConteudo(id: string) {
   const [error, setError] = useState<string | null>(null);
   const [conteudo, setConteudo] = useState<Conteudo | null>(null);
 
-  const checkUserType = useCallback(async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token não encontrado');
-      }
-
-      const response = await fetch(`${API_BASE_URL}/auth/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao verificar tipo de usuário');
-      }
-
-      // ... existing code ...
-    } catch (error) {
-      console.error('Erro ao verificar tipo de usuário:', error);
-    }
-  }, []);
-
   const fetchConteudo = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token não encontrado');
-      }
-
-      const response = await fetch(`${API_BASE_URL}/conteudos/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Conteúdo não encontrado');
-      }
-
-      const data = await response.json();
+      const data = await apiClient.get<Conteudo>(`/conteudos/${id}`);
       setConteudo(data);
     } catch (error) {
       setError(
@@ -87,29 +47,18 @@ function useConteudo(id: string) {
 
   const handleDelete = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token não encontrado');
-      }
-
-      await fetch(`${API_BASE_URL}/conteudos/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
+      await apiClient.delete(`/conteudos/${id}`);
       window.location.href = '/dashboard/conteudo';
     } catch (error) {
       console.error('Erro ao excluir conteúdo:', error);
     }
   };
 
+
+
   useEffect(() => {
-    checkUserType();
     fetchConteudo();
-  }, [checkUserType, fetchConteudo]);
+  }, [fetchConteudo]);
 
   return {
     loading,

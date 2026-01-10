@@ -12,8 +12,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
 import { useAuth } from '@/contexts/AuthContext';
-
-import { API_BASE_URL } from '@/config/api';
+import { apiClient } from '@/lib/api-client';
 
 interface Linguagem {
   id: number;
@@ -41,65 +40,22 @@ interface ToolbarButton {
   italic?: boolean;
 }
 
-const getToken = () => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    throw new Error('Token não encontrado');
-  }
-  return token;
+const fetchLinguagens = async (): Promise<Linguagem[]> => {
+  return await apiClient.get<Linguagem[]>('/linguagens');
 };
 
-const fetchLinguagens = async (token: string): Promise<Linguagem[]> => {
-  const response = await fetch(`${API_BASE_URL}/linguagens`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Erro ao carregar linguagens');
-  }
-
-  return response.json();
-};
-
-const fetchConteudo = async (id: string, token: string): Promise<Conteudo> => {
-  const response = await fetch(`${API_BASE_URL}/conteudos/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Erro ao carregar conteúdo');
-  }
-
-  return response.json();
+const fetchConteudo = async (id: string): Promise<Conteudo> => {
+  return await apiClient.get<Conteudo>(`/conteudos/${id}`);
 };
 
 const atualizarConteudo = async (
   id: string,
   conteudo: Conteudo,
-  token: string,
 ): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/conteudos/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      ...conteudo,
-      nivel_leitura: conteudo.nivel_leitura || 'basico',
-    }),
+  await apiClient.put(`/conteudos/${id}`, {
+    ...conteudo,
+    nivel_leitura: conteudo.nivel_leitura || 'basico',
   });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Erro ao atualizar conteúdo');
-  }
 };
 
 const useConteudo = (id: string) => {
@@ -153,10 +109,9 @@ const useConteudo = (id: string) => {
 
   const carregarDados = useCallback(async () => {
     try {
-      const token = getToken();
       const [linguagensData, conteudoData] = await Promise.all([
-        fetchLinguagens(token),
-        fetchConteudo(id, token),
+        fetchLinguagens(),
+        fetchConteudo(id),
       ]);
 
       setLinguagens(linguagensData);
@@ -190,8 +145,7 @@ const useConteudo = (id: string) => {
     setError(null);
 
     try {
-      const token = getToken();
-      await atualizarConteudo(id, formData, token);
+      await atualizarConteudo(id, formData);
       return true;
     } catch (err) {
       setError(

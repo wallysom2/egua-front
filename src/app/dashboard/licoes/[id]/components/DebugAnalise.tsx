@@ -50,38 +50,34 @@ export function DebugAnalise({
               </strong>
               <div className="mt-1 space-y-1">
                 <div
-                  className={`p-2 rounded text-xs ${
-                    respostaId
+                  className={`p-2 rounded text-xs ${respostaId
                       ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200'
                       : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200'
-                  }`}
+                    }`}
                 >
                   Resposta ID: {respostaId || 'Não definido'}
                 </div>
                 <div
-                  className={`p-2 rounded text-xs ${
-                    progressoId
+                  className={`p-2 rounded text-xs ${progressoId
                       ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200'
                       : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200'
-                  }`}
+                    }`}
                 >
                   Progresso ID: {progressoId || 'Não criado ainda'}
                 </div>
                 <div
-                  className={`p-2 rounded text-xs ${
-                    userId
+                  className={`p-2 rounded text-xs ${userId
                       ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200'
                       : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200'
-                  }`}
+                    }`}
                 >
                   User ID: {userId || 'Não definido'}
                 </div>
                 <div
-                  className={`p-2 rounded text-xs ${
-                    exercicioId
+                  className={`p-2 rounded text-xs ${exercicioId
                       ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200'
                       : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200'
-                  }`}
+                    }`}
                 >
                   Exercicio ID: {exercicioId || 'Não definido'}
                 </div>
@@ -111,24 +107,21 @@ export function DebugAnalise({
               </strong>
               <ol className="mt-1 space-y-1 text-xs">
                 <li
-                  className={`flex items-center gap-2 ${
-                    userId && exercicioId ? 'text-green-600' : 'text-slate-500'
-                  }`}
+                  className={`flex items-center gap-2 ${userId && exercicioId ? 'text-green-600' : 'text-slate-500'
+                    }`}
                 >
                   {userId && exercicioId ? '✅' : '⏳'} 1. Dados de
                   usuário/exercício
                 </li>
                 <li
-                  className={`flex items-center gap-2 ${
-                    progressoId ? 'text-green-600' : 'text-slate-500'
-                  }`}
+                  className={`flex items-center gap-2 ${progressoId ? 'text-green-600' : 'text-slate-500'
+                    }`}
                 >
                   {progressoId ? '✅' : '⏳'} 2. Progresso criado
                 </li>
                 <li
-                  className={`flex items-center gap-2 ${
-                    respostaId ? 'text-green-600' : 'text-slate-500'
-                  }`}
+                  className={`flex items-center gap-2 ${respostaId ? 'text-green-600' : 'text-slate-500'
+                    }`}
                 >
                   {respostaId ? '✅' : '⏳'} 3. Resposta submetida
                 </li>
@@ -140,12 +133,11 @@ export function DebugAnalise({
 
             <div>
               <strong className="text-slate-700 dark:text-slate-300">
-                Local Storage:
+                Autenticação:
               </strong>
               <div className="mt-1 text-xs">
                 <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded">
-                  Token:{' '}
-                  {localStorage.getItem('token') ? 'Presente' : 'Ausente'}
+                  Supabase Auth (verificar via DevTools)
                 </div>
               </div>
             </div>

@@ -11,8 +11,7 @@ import { motion } from 'framer-motion';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { useAuth } from '@/contexts/AuthContext';
-
-import { API_BASE_URL } from '@/config/api';
+import { apiClient } from '@/lib/api-client';
 
 // Lista de emojis comuns para o picker simples
 const COMMON_EMOJIS = [
@@ -210,43 +209,6 @@ interface FormData {
   linguagem_id: string;
 }
 
-const fetchLinguagens = async (token: string) => {
-  const response = await fetch(`${API_BASE_URL}/linguagens`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Erro ao carregar linguagens');
-  }
-
-  return response.json();
-};
-
-const criarConteudo = async (formData: FormData, token: string) => {
-  const response = await fetch(`${API_BASE_URL}/conteudos`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      titulo: formData.titulo,
-      corpo: formData.corpo,
-      nivel_leitura: formData.nivel_leitura || 'basico',
-      linguagem_id: Number(formData.linguagem_id),
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Erro ao criar conteúdo');
-  }
-
-  return response.json();
-};
-
 export default function NovoConteudoPage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -308,13 +270,7 @@ export default function NovoConteudoPage() {
 
     const carregarLinguagens = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          router.push('/login');
-          return;
-        }
-
-        const data = await fetchLinguagens(token);
+        const data = await apiClient.get<Linguagem[]>('/linguagens');
         setLinguagens(data);
 
         // Definir Egua como padrão
@@ -340,13 +296,12 @@ export default function NovoConteudoPage() {
     setError(null);
 
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        router.push('/login');
-        return;
-      }
-
-      await criarConteudo(formData, token);
+      await apiClient.post('/conteudos', {
+        titulo: formData.titulo,
+        corpo: formData.corpo,
+        nivel_leitura: formData.nivel_leitura || 'basico',
+        linguagem_id: Number(formData.linguagem_id),
+      });
       router.push('/dashboard/conteudo');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao criar conteúdo');

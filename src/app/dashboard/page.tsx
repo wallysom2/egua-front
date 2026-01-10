@@ -10,7 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function Dashboard() {
   const router = useRouter();
-  const { user, logout, isAuthenticated, isLoading } = useAuth();
+  const { user, signOut, isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
     // Verificar se o usuário está autenticado
@@ -25,7 +25,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
-      <Header variant="dashboard" user={user} onLogout={logout} />
+      <Header variant="dashboard" user={user} onLogout={signOut} />
 
       {/* Módulos Principais */}
       <main className="flex-grow py-16 pt-32">

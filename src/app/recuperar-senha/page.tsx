@@ -3,21 +3,17 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { GradientButton } from '@/components/GradientButton';
 import { BackButton } from '@/components/BackButton';
-
-// API URL que pode ser substituída em produção
-import { API_BASE_URL } from '@/config/api';
+import { createClient } from '@/lib/supabase/client';
 
 export default function RecuperarSenha() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,25 +22,26 @@ export default function RecuperarSenha() {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/auth/solicitar-recuperacao`, {
-        email: email
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/redefinir-senha`,
       });
 
-      if (response.data.success) {
-        setSuccess(response.data.message);
-        // Redirecionar para página de inserir código após um tempo
-        setTimeout(() => {
-          router.push(`/recuperar-senha/inserir-codigo?email=${encodeURIComponent(email)}`);
-        }, 3000);
+      if (error) {
+        // Traduzir mensagens de erro comuns
+        if (error.message.includes('rate limit')) {
+          setError('Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.');
+        } else if (error.message.includes('Invalid email')) {
+          setError('Email inválido. Verifique e tente novamente.');
+        } else {
+          setError(error.message);
+        }
       } else {
-        setError(response.data.message || 'Erro ao solicitar recuperação');
+        setSuccess(
+          'Se esse email estiver cadastrado, você receberá um link para redefinir sua senha. Verifique sua caixa de entrada e spam.'
+        );
       }
-    } catch (err) {
-      setError(
-        axios.isAxiosError(err) && err.response?.data?.message
-          ? err.response.data.message
-          : 'Erro ao solicitar recuperação de senha',
-      );
+    } catch {
+      setError('Erro ao solicitar recuperação de senha. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -97,13 +94,16 @@ export default function RecuperarSenha() {
                 </svg>
               </div>
               <h1 className="text-3xl font-bold mb-2">Recuperar Senha</h1>
+              <p className="text-slate-600 dark:text-slate-400">
+                Digite seu email e enviaremos um link para redefinir sua senha
+              </p>
             </div>
 
             {error && (
               <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-xl mb-6 flex items-center gap-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
+                  className="h-5 w-5 flex-shrink-0"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -118,10 +118,10 @@ export default function RecuperarSenha() {
             )}
 
             {success && (
-              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 px-4 py-3 rounded-xl mb-6 flex items-center gap-2">
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 px-4 py-3 rounded-xl mb-6 flex items-start gap-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
+                  className="h-5 w-5 flex-shrink-0 mt-0.5"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -131,10 +131,9 @@ export default function RecuperarSenha() {
                     clipRule="evenodd"
                   />
                 </svg>
-                {success}
+                <span>{success}</span>
               </div>
             )}
-
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
@@ -153,17 +152,18 @@ export default function RecuperarSenha() {
                   className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
                   placeholder="Digite seu email"
                   required
+                  disabled={!!success}
                 />
               </div>
 
               <div>
                 <GradientButton
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || !!success}
                   loading={loading}
                   className="w-full"
                 >
-                  Enviar Instruções
+                  {success ? 'Email Enviado!' : 'Enviar Link de Recuperação'}
                 </GradientButton>
               </div>
             </form>

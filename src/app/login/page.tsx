@@ -1,26 +1,28 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useGoogleLogin } from '@react-oauth/google';
 import { Header } from '@/components/Header';
 import { GradientButton } from '@/components/GradientButton';
 import { useAuth } from '@/contexts/AuthContext';
-import { apiClient } from '@/lib/api-client';
-import type { AuthResponse, LoginData } from '@/types/user';
+import { Loading } from '@/components/Loading';
 
-export default function Login() {
+function LoginContent() {
   const router = useRouter();
-  const { login } = useAuth();
-  const [formData, setFormData] = useState<LoginData>({
+  const searchParams = useSearchParams();
+  const { signIn, signInWithGoogle, isLoading } = useAuth();
+  const [formData, setFormData] = useState({
     email: '',
     senha: '',
   });
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [localLoading, setLocalLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Verificar erro de OAuth no callback
+  const authError = searchParams.get('error');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,67 +35,50 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    setLocalLoading(true);
 
     try {
-      const response = await apiClient.post<AuthResponse>('/api/auth/login', formData);
+      const result = await signIn(formData.email, formData.senha);
 
-      if (response.success && response.data) {
-        // Usa o método login do AuthContext
-        login(response.data.usuario, response.data.token);
-
-        // Redireciona após login bem-sucedido
-        router.push('/dashboard');
+      if (result.error) {
+        // Traduzir mensagens de erro comuns
+        if (result.error.includes('Invalid login credentials')) {
+          setError('Email ou senha incorretos');
+        } else if (result.error.includes('Email not confirmed')) {
+          setError('Confirme seu email antes de fazer login');
+        } else {
+          setError(result.error);
+        }
       } else {
-        setError(response.message || 'Erro ao fazer login');
+        // Redirecionar após login bem-sucedido
+        const redirect = searchParams.get('redirect') || '/dashboard';
+        router.push(redirect);
       }
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Erro ao fazer login. Tente novamente.',
-      );
+    } catch {
+      setError('Erro ao fazer login. Tente novamente.');
     } finally {
-      setLoading(false);
+      setLocalLoading(false);
     }
   };
 
-  const handleGoogleSuccess = async (tokenResponse: any) => {
+  const handleGoogleLogin = async () => {
     setError('');
-    setLoading(true);
+    setLocalLoading(true);
 
     try {
-      const response = await apiClient.post<AuthResponse>('/api/auth/login-google', {
-        token: tokenResponse.access_token,
-      });
-
-      if (response.success && response.data) {
-        // Usa o método login do AuthContext
-        login(response.data.usuario, response.data.token);
-
-        // Redireciona após login bem-sucedido
-        router.push('/dashboard');
-      } else {
-        setError(response.message || 'Erro ao fazer login com Google');
+      const result = await signInWithGoogle();
+      if (result.error) {
+        setError(result.error);
       }
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Erro ao fazer login com Google. Tente novamente.',
-      );
+      // O redirecionamento é feito pelo Supabase OAuth flow
+    } catch {
+      setError('Erro ao fazer login com Google');
     } finally {
-      setLoading(false);
+      setLocalLoading(false);
     }
   };
 
-  const googleLogin = useGoogleLogin({
-    onSuccess: handleGoogleSuccess,
-    onError: () => {
-      setError('Erro ao fazer login com Google');
-      setLoading(false);
-    },
-  });
+  const loading = isLoading || localLoading;
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
@@ -117,7 +102,7 @@ export default function Login() {
               <h1 className="text-3xl font-bold mb-2 text-center">Bem-vindo!</h1>
             </motion.div>
 
-            {error && (
+            {(error || authError) && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -135,7 +120,7 @@ export default function Login() {
                     clipRule="evenodd"
                   />
                 </svg>
-                {error}
+                {error || (authError === 'auth' ? 'Erro na autenticação. Tente novamente.' : authError)}
               </motion.div>
             )}
 
@@ -263,7 +248,7 @@ export default function Login() {
             <div className="w-full mb-6">
               <button
                 type="button"
-                onClick={() => googleLogin()}
+                onClick={handleGoogleLogin}
                 disabled={loading}
                 className="w-full px-8 py-4 rounded-xl bg-white dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom hover:bg-slate-50 dark:hover:bg-bg-secondary transition-colors duration-200 text-lg font-semibold inline-flex items-center justify-center gap-3 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -304,5 +289,14 @@ export default function Login() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+// Wrapper com Suspense para useSearchParams
+export default function Login() {
+  return (
+    <Suspense fallback={<Loading text="Carregando..." />}>
+      <LoginContent />
+    </Suspense>
   );
 }
