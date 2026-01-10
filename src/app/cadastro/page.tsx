@@ -325,7 +325,6 @@ export default function Cadastro() {
                 >
                   <option value="aluno">Aluno</option>
                   <option value="professor">Professor</option>
-                  <option value="desenvolvedor">Desenvolvedor</option>
                 </select>
               </div>
 
