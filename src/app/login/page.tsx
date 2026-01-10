@@ -1,14 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Header } from '@/components/Header';
 import { GradientButton } from '@/components/GradientButton';
 import { useAuth } from '@/contexts/AuthContext';
+import { Loading } from '@/components/Loading';
 
-export default function Login() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { signIn, signInWithGoogle, isLoading } = useAuth();
@@ -288,5 +289,14 @@ export default function Login() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+// Wrapper com Suspense para useSearchParams
+export default function Login() {
+  return (
+    <Suspense fallback={<Loading text="Carregando..." />}>
+      <LoginContent />
+    </Suspense>
   );
 }

@@ -1,7 +1,9 @@
 import { API_BASE_URL } from '@/config/api';
+import { createClient } from '@/lib/supabase/client';
 
 /**
  * Classe para gerenciar requisições HTTP de forma centralizada
+ * Usa o token de autenticação do Supabase automaticamente
  */
 class ApiClient {
   private baseUrl: string;
@@ -12,15 +14,25 @@ class ApiClient {
 
   /**
    * Obtém os headers padrão para as requisições
+   * O token é obtido da sessão do Supabase
    */
-  private getHeaders(): HeadersInit {
-    const token = localStorage.getItem('token');
+  private async getHeaders(): Promise<HeadersInit> {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     };
 
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
+    // Apenas no browser, obter token da sessão do Supabase
+    if (typeof window !== 'undefined') {
+      try {
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (session?.access_token) {
+          headers.Authorization = `Bearer ${session.access_token}`;
+        }
+      } catch (error) {
+        console.warn('Erro ao obter sessão Supabase:', error);
+      }
     }
 
     return headers;
@@ -30,16 +42,22 @@ class ApiClient {
    * Processa a resposta da API
    */
   private async handleResponse<T>(response: Response): Promise<T> {
-    // Se não autenticado, redirecionar para login
+    // Se não autenticado, fazer logout do Supabase
     if (response.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      
-      // Apenas redireciona se não estiver em rotas públicas
-      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
-        window.location.href = '/login';
+      if (typeof window !== 'undefined') {
+        try {
+          const supabase = createClient();
+          await supabase.auth.signOut();
+        } catch (error) {
+          console.warn('Erro ao fazer signOut:', error);
+        }
+
+        // Apenas redireciona se não estiver em rotas públicas
+        if (!window.location.pathname.includes('/login')) {
+          window.location.href = '/login';
+        }
       }
-      
+
       throw new Error('Sessão expirada. Faça login novamente.');
     }
 
@@ -74,7 +92,7 @@ class ApiClient {
   async get<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'GET',
-      headers: this.getHeaders(),
+      headers: await this.getHeaders(),
       ...options,
     });
     return this.handleResponse<T>(response);
@@ -86,7 +104,7 @@ class ApiClient {
   async post<T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'POST',
-      headers: this.getHeaders(),
+      headers: await this.getHeaders(),
       body: data ? JSON.stringify(data) : undefined,
       ...options,
     });
@@ -99,7 +117,7 @@ class ApiClient {
   async put<T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'PUT',
-      headers: this.getHeaders(),
+      headers: await this.getHeaders(),
       body: data ? JSON.stringify(data) : undefined,
       ...options,
     });
@@ -112,7 +130,7 @@ class ApiClient {
   async patch<T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'PATCH',
-      headers: this.getHeaders(),
+      headers: await this.getHeaders(),
       body: data ? JSON.stringify(data) : undefined,
       ...options,
     });
@@ -125,7 +143,7 @@ class ApiClient {
   async delete<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'DELETE',
-      headers: this.getHeaders(),
+      headers: await this.getHeaders(),
       ...options,
     });
     return this.handleResponse<T>(response);
@@ -135,6 +153,7 @@ class ApiClient {
 /**
  * Instância única do cliente de API
  * Use esta instância em todo o projeto para fazer requisições
+ * O token do Supabase é anexado automaticamente
  * 
  * @example
  * ```typescript
@@ -144,7 +163,7 @@ class ApiClient {
  * const exercicios = await apiClient.get('/exercicios');
  * 
  * // POST
- * const resultado = await apiClient.post('/api/auth/login', { email, senha });
+ * const resultado = await apiClient.post('/respostas', { resposta });
  * 
  * // PUT
  * await apiClient.put('/exercicios/1', exercicioData);
@@ -154,4 +173,3 @@ class ApiClient {
  * ```
  */
 export const apiClient = new ApiClient(API_BASE_URL);
-
