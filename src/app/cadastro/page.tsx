@@ -7,21 +7,21 @@ import { motion } from 'framer-motion';
 import { Header } from '@/components/Header';
 import { GradientButton } from '@/components/GradientButton';
 import { useAuth } from '@/contexts/AuthContext';
-import { apiClient } from '@/lib/api-client';
-import type { AuthResponse, CadastroData } from '@/types/user';
+import type { TipoUsuario } from '@/types/user';
 
 export default function Cadastro() {
   const router = useRouter();
-  const { login } = useAuth();
-  const [formData, setFormData] = useState<CadastroData>({
+  const { signUp, isLoading } = useAuth();
+  const [formData, setFormData] = useState({
     nome: '',
     email: '',
     senha: '',
     confirmarSenha: '',
-    tipo: 'aluno',
+    tipo: 'aluno' as TipoUsuario,
   });
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState('');
+  const [localLoading, setLocalLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -38,6 +38,7 @@ export default function Cadastro() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
     // Validação simples
     if (formData.senha !== formData.confirmarSenha) {
@@ -55,30 +56,42 @@ export default function Cadastro() {
       return;
     }
 
-    setLoading(true);
+    setLocalLoading(true);
 
     try {
-      const response = await apiClient.post<AuthResponse>('/api/auth/cadastro', formData);
-
-      if (response.success && response.data) {
-        // Usa o método login do AuthContext para armazenar os dados
-        login(response.data.usuario, response.data.token);
-
-        // Redireciona após cadastro bem-sucedido
-        router.push('/dashboard');
-      } else {
-        setError(response.message || 'Erro ao criar conta');
-      }
-    } catch (err) {
-      setError(
-        err instanceof Error 
-          ? err.message 
-          : 'Erro ao criar conta. Tente novamente.',
+      const result = await signUp(
+        formData.email,
+        formData.senha,
+        formData.nome,
+        formData.tipo
       );
+
+      if (result.error) {
+        // Traduzir mensagens de erro comuns
+        if (result.error.includes('already registered')) {
+          setError('Este email já está cadastrado');
+        } else if (result.error.includes('Password should be')) {
+          setError('A senha deve ter pelo menos 6 caracteres');
+        } else {
+          setError(result.error);
+        }
+      } else {
+        // Mostrar mensagem de sucesso
+        setSuccess('Conta criada com sucesso! Redirecionando...');
+
+        // Redirecionar após cadastro bem-sucedido
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 1500);
+      }
+    } catch {
+      setError('Erro ao criar conta. Tente novamente.');
     } finally {
-      setLoading(false);
+      setLocalLoading(false);
     }
   };
+
+  const loading = isLoading || localLoading;
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
@@ -121,6 +134,28 @@ export default function Cadastro() {
                   />
                 </svg>
                 {error}
+              </motion.div>
+            )}
+
+            {success && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 px-4 py-3 rounded-xl mb-6 flex items-center gap-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                {success}
               </motion.div>
             )}
 
@@ -176,14 +211,14 @@ export default function Cadastro() {
                     name="senha"
                     value={formData.senha}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 pr-12 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+                    className="w-full px-4 py-3 pr-12 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
                     required
                     minLength={6}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 dark:text-text-tertiary hover:text-slate-700 dark:hover:text-text-secondary transition-colors"
                   >
                     {showPassword ? (
                       <svg
@@ -232,13 +267,13 @@ export default function Cadastro() {
                     name="confirmarSenha"
                     value={formData.confirmarSenha}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 pr-12 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+                    className="w-full px-4 py-3 pr-12 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 dark:text-text-tertiary hover:text-slate-700 dark:hover:text-text-secondary transition-colors"
                   >
                     {showConfirmPassword ? (
                       <svg
@@ -307,7 +342,7 @@ export default function Cadastro() {
             </form>
 
             <div className="mt-8 text-center">
-              <p className="text-slate-600 dark:text-slate-400">
+              <p className="text-slate-600 dark:text-text-secondary">
                 Já tem uma conta?{' '}
                 <Link
                   href="/login"

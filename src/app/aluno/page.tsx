@@ -23,7 +23,7 @@ interface Exercicio {
 
 export default function DashboardAluno() {
   const router = useRouter();
-  const { user, logout, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { user, signOut, isAuthenticated, isLoading: authLoading } = useAuth();
   const [exercicios, setExercicios] = useState<Exercicio[]>([]);
   const [linguagensMap, setLinguagensMap] = useState<Map<number, string>>(
     new Map(),
@@ -135,7 +135,7 @@ export default function DashboardAluno() {
             <div className="flex items-center gap-4">
               <ThemeToggle />
               <button
-                onClick={logout}
+                onClick={signOut}
                 className="px-6 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors text-lg font-medium"
               >
                 Sair
@@ -193,11 +193,10 @@ export default function DashboardAluno() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className={`rounded-2xl border p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 ${
-                        exercicio.status === 'concluido'
+                      className={`rounded-2xl border p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 ${exercicio.status === 'concluido'
                           ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-600 hover:border-green-400 dark:hover:border-green-500'
                           : 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-600'
-                      }`}
+                        }`}
                     >
                       {/* Header com status */}
                       <div className="flex justify-between items-start mb-4">
