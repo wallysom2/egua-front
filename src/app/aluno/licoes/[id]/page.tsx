@@ -13,8 +13,8 @@ import { type Exercicio, type Questao } from '@/types/exercicio';
 import { ExercicioProgramacao } from '@/app/dashboard/licoes/[id]/components';
 import { motion } from 'framer-motion';
 import { Loading } from '@/components/Loading';
-
-import { API_BASE_URL } from '@/config/api';
+import { apiClient } from '@/lib/api-client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface User {
   nome: string;
@@ -51,33 +51,30 @@ function QuestaoQuizSimples({
                 !exercicioFinalizado && onRespostaChange(questao.id, opcao.id)
               }
               disabled={exercicioFinalizado}
-              className={`w-full p-4 text-left rounded-xl border-2 transition-all text-lg font-medium ${
-                exercicioFinalizado
-                  ? isCorrect
-                    ? 'bg-green-100 border-green-500 text-green-800'
-                    : isIncorrect
+              className={`w-full p-4 text-left rounded-xl border-2 transition-all text-lg font-medium ${exercicioFinalizado
+                ? isCorrect
+                  ? 'bg-green-100 border-green-500 text-green-800'
+                  : isIncorrect
                     ? 'bg-red-100 border-red-500 text-red-800'
                     : 'bg-gray-100 border-gray-300 text-gray-600'
-                  : isSelected
+                : isSelected
                   ? 'bg-blue-100 border-blue-500 text-blue-800'
                   : 'bg-white border-gray-300 text-gray-800 hover:bg-blue-50 hover:border-blue-300'
-              } ${
-                exercicioFinalizado ? 'cursor-not-allowed' : 'cursor-pointer'
-              }`}
+                } ${exercicioFinalizado ? 'cursor-not-allowed' : 'cursor-pointer'
+                }`}
             >
               <div className="flex items-center gap-3">
                 <div
-                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-sm font-bold ${
-                    exercicioFinalizado
-                      ? isCorrect
-                        ? 'border-green-500 bg-green-500 text-white'
-                        : isIncorrect
+                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-sm font-bold ${exercicioFinalizado
+                    ? isCorrect
+                      ? 'border-green-500 bg-green-500 text-white'
+                      : isIncorrect
                         ? 'border-red-500 bg-red-500 text-white'
                         : 'border-gray-300 bg-gray-100'
-                      : isSelected
+                    : isSelected
                       ? 'border-blue-500 bg-blue-500 text-white'
                       : 'border-gray-300'
-                  }`}
+                    }`}
                 >
                   {String.fromCharCode(65 + index)}
                 </div>
@@ -122,9 +119,8 @@ export default function ExercicioAlunoDetalhes({
   params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
-  const resolvedParams = use(params);
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [exercicio, setExercicio] = useState<Exercicio | null>(null);
-  const [user, setUser] = useState<User | null>(null);
   const [questaoAtual, setQuestaoAtual] = useState(0);
   const [respostas, setRespostas] = useState<{ [key: number]: string }>({});
   const [loading, setLoading] = useState(true);
@@ -137,94 +133,53 @@ export default function ExercicioAlunoDetalhes({
   const [mostrarRetorno, setMostrarRetorno] = useState(false);
   const [exercicioConcluido, setExercicioConcluido] = useState(false);
 
+  const resolvedParams = use(params);
+
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    // Aguardar auth carregar
+    if (authLoading) return;
+
+    // Se não autenticado, redirecionar
+    if (!isAuthenticated) {
       router.push('/login');
       return;
     }
 
     // Verificar se é aluno
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        if (userData.tipo !== 'aluno') {
-          router.push('/dashboard');
-          return;
-        }
-        setUser(userData);
-      } catch (error) {
-        console.error('Erro ao processar dados do usuário:', error);
-        router.push('/login');
-        return;
-      }
+    if (user && user.tipo !== 'aluno') {
+      router.push('/dashboard');
+      return;
     }
 
     const fetchExercicio = async () => {
       try {
         // Buscar exercício
-        const exercicioResponse = await fetch(
-          `${API_BASE_URL}/exercicios/${resolvedParams.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        );
-
-        if (!exercicioResponse.ok) {
-          throw new Error('Erro ao carregar exercício');
-        }
-
-        const exercicioData = await exercicioResponse.json();
+        const exercicioData = await apiClient.get<Record<string, unknown>>(`/exercicios/${resolvedParams.id}`);
         const exercicioProcessado = processarExercicio(exercicioData);
 
         // Se não há questões no exercício processado, tentar buscar separadamente
         if (exercicioProcessado.questoes.length === 0) {
-          // Buscar questões do exercício separadamente
-          const questoesResponse = await fetch(
-            `${API_BASE_URL}/exercicios/${resolvedParams.id}/questoes`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            },
-          );
-
-          if (questoesResponse.ok) {
-            const questoesData = await questoesResponse.json();
+          try {
+            const questoesData = await apiClient.get<Record<string, unknown>[]>(`/exercicios/${resolvedParams.id}/questoes`);
             const questoesProcessadas = processarQuestoesDoEndpoint(
               questoesData,
               parseInt(resolvedParams.id),
             );
             exercicioProcessado.questoes = questoesProcessadas;
-          } else {
+          } catch {
             // Última tentativa: buscar todas as questões e filtrar
             try {
-              const todasQuestoesResponse = await fetch(`${API_BASE_URL}/questoes`, {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  'Content-Type': 'application/json',
-                },
-              });
-
-              if (todasQuestoesResponse.ok) {
-                const todasQuestoes = await todasQuestoesResponse.json();
-
-                if (Array.isArray(todasQuestoes)) {
-                  const questoesFiltradas = todasQuestoes.filter(
-                    (q) =>
-                      q.conteudo_id === parseInt(resolvedParams.id) ||
-                      q.exercicio_id === parseInt(resolvedParams.id),
-                  );
-                  exercicioProcessado.questoes = processarQuestoesDoEndpoint(
-                    questoesFiltradas,
-                    parseInt(resolvedParams.id),
-                  );
-                }
+              const todasQuestoes = await apiClient.get<Record<string, unknown>[]>('/questoes');
+              if (Array.isArray(todasQuestoes)) {
+                const questoesFiltradas = todasQuestoes.filter(
+                  (q) =>
+                    q.conteudo_id === parseInt(resolvedParams.id) ||
+                    q.exercicio_id === parseInt(resolvedParams.id),
+                );
+                exercicioProcessado.questoes = processarQuestoesDoEndpoint(
+                  questoesFiltradas,
+                  parseInt(resolvedParams.id),
+                );
               }
             } catch (error) {
               console.error('Erro ao buscar todas as questões:', error);
@@ -238,21 +193,8 @@ export default function ExercicioAlunoDetalhes({
           !exercicioProcessado.nome_linguagem
         ) {
           try {
-            const langResponse = await fetch(
-              `${API_BASE_URL}/linguagens/${exercicioProcessado.linguagem_id}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  'Content-Type': 'application/json',
-                },
-              },
-            );
-            if (langResponse.ok) {
-              const langData = await langResponse.json();
-              exercicioProcessado.nome_linguagem = langData.nome;
-            } else {
-              exercicioProcessado.nome_linguagem = 'Senior Code AI';
-            }
+            const langData = await apiClient.get<{ nome: string }>(`/linguagens/${exercicioProcessado.linguagem_id}`);
+            exercicioProcessado.nome_linguagem = langData.nome;
           } catch {
             exercicioProcessado.nome_linguagem = 'Senior Code AI';
           }
@@ -268,7 +210,7 @@ export default function ExercicioAlunoDetalhes({
     };
 
     fetchExercicio();
-  }, [resolvedParams.id, router]);
+  }, [resolvedParams.id, router, isAuthenticated, authLoading, user]);
 
   const questaoAtualData = exercicio?.questoes[questaoAtual];
   const totalQuestoes = exercicio?.questoes.length || 0;
@@ -310,68 +252,29 @@ export default function ExercicioAlunoDetalhes({
     setExercicioFinalizado(true);
     setMostrarRetorno(true);
 
-    const token = localStorage.getItem('token');
     try {
       // Se o exercício foi aprovado, salvar no banco
       if (exercicioCompleto) {
         // Primeiro, verificar se o exercício já foi iniciado
-        const statusResponse = await fetch(
-          `${API_BASE_URL}/user-exercicio/status/${resolvedParams.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        );
+        const statusData = await apiClient.get<{ status: string; progresso?: { id: string } }>(`/user-exercicio/status/${resolvedParams.id}`);
 
         let userExercicioId: string | null = null;
 
-        if (statusResponse.ok) {
-          const statusData = await statusResponse.json();
-
-          if (statusData.status === 'nao_iniciado') {
-            // Iniciar o exercício
-            const iniciarResponse = await fetch(
-              `${API_BASE_URL}/user-exercicio/iniciar`,
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  exercicio_id: parseInt(resolvedParams.id),
-                }),
-              },
-            );
-
-            if (iniciarResponse.ok) {
-              const iniciarData = await iniciarResponse.json();
-              userExercicioId = iniciarData.id;
-            }
-          } else if (statusData.progresso) {
-            userExercicioId = statusData.progresso.id;
-          }
+        if (statusData.status === 'nao_iniciado') {
+          // Iniciar o exercício
+          const iniciarData = await apiClient.post<{ id: string }>('/user-exercicio/iniciar', {
+            exercicio_id: parseInt(resolvedParams.id),
+          });
+          userExercicioId = iniciarData.id;
+        } else if (statusData.progresso) {
+          userExercicioId = statusData.progresso.id;
         }
 
         // Se temos um userExercicioId, finalizar o exercício
         if (userExercicioId) {
-          const finalizarResponse = await fetch(
-            `${API_BASE_URL}/user-exercicio/${userExercicioId}/finalizar`,
-            {
-              method: 'PATCH',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-              },
-            },
-          );
-
-          if (finalizarResponse.ok) {
-            console.log('Exercício finalizado com sucesso no banco de dados');
-            setExercicioConcluido(true);
-          }
+          await apiClient.patch(`/user-exercicio/${userExercicioId}/finalizar`);
+          console.log('Exercício finalizado com sucesso no banco de dados');
+          setExercicioConcluido(true);
         }
       }
 

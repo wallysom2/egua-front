@@ -7,7 +7,8 @@ import { motion } from 'framer-motion';
 import { Header } from '@/components/Header';
 import { Loading } from '@/components/Loading';
 import { ContentCard } from '@/components/ContentCard';
-import { API_BASE_URL } from '@/config/api';
+import { useAuth } from '@/contexts/AuthContext';
+import { apiClient } from '@/lib/api-client';
 
 interface Conteudo {
   id: number;
@@ -23,49 +24,29 @@ export default function ConteudoPage() {
   const [filteredConteudos, setFilteredConteudos] = useState<Conteudo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isProfessor, setIsProfessor] = useState(false);
-  const [isDesenvolvedor, setIsDesenvolvedor] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLevel, setSelectedLevel] = useState<
     'todos' | 'basico' | 'intermediario'
   >('todos');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const isProfessor = user?.tipo === 'professor';
+  const isDesenvolvedor = user?.tipo === 'desenvolvedor';
+
   useEffect(() => {
-    const checkUserType = () => {
-      const user = localStorage.getItem('user');
-      if (user) {
-        const userData = JSON.parse(user);
-        setIsProfessor(userData.tipo === 'professor');
-        setIsDesenvolvedor(userData.tipo === 'desenvolvedor');
-      }
-    };
+    // Aguardar autenticação carregar
+    if (authLoading) return;
+
+    // Se não autenticado, redirecionar
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
 
     const fetchConteudos = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          router.push('/login');
-          return;
-        }
-
-        const response = await fetch(`${API_BASE_URL}/conteudos`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => null);
-          throw new Error(
-            errorData?.message ||
-            `Erro ao carregar conteúdos: ${response.status}`,
-          );
-        }
-
-        const data = await response.json();
+        const data = await apiClient.get<Conteudo[]>('/conteudos');
         setConteudos(data);
         setFilteredConteudos(data);
       } catch (err) {
@@ -80,9 +61,8 @@ export default function ConteudoPage() {
       }
     };
 
-    checkUserType();
     fetchConteudos();
-  }, [router]);
+  }, [router, isAuthenticated, authLoading]);
 
   // Filter and search logic
   useEffect(() => {
@@ -111,19 +91,7 @@ export default function ConteudoPage() {
     if (!confirm('Tem certeza que deseja excluir este conteúdo?')) return;
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_BASE_URL}/conteudos/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao excluir conteúdo');
-      }
-
+      await apiClient.delete(`/conteudos/${id}`);
       setConteudos(conteudos.filter((conteudo) => conteudo.id !== id));
     } catch (err) {
       setError('Erro ao excluir conteúdo. Tente novamente mais tarde.');
@@ -136,7 +104,7 @@ export default function ConteudoPage() {
     setSelectedLevel('todos');
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return <Loading text="Carregando conteúdos..." />;
   }
 
