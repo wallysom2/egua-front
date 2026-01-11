@@ -36,12 +36,9 @@ export default function Dashboard() {
             transition={{ duration: 0.8 }}
             className="mb-12 text-center"
           >
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-4">
-              O que você deseja fazer hoje?
-            </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className={`grid grid-cols-1 ${user?.tipo === 'aluno' ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-8 max-w-5xl mx-auto`}>
             {/* Conteúdo */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -59,7 +56,7 @@ export default function Dashboard() {
                   Conteúdo Teórico
                 </h3>
                 <p className="text-slate-600 dark:text-text-secondary text-lg mb-8 leading-relaxed">
-                  Materiais didáticos estruturados e conceitos fundamentais.
+                  Materiais didáticos estruturados.
                 </p>
                 <Link
                   href="/dashboard/conteudo"
@@ -72,32 +69,66 @@ export default function Dashboard() {
               </div>
             </motion.div>
 
-            {/* Lições */}
+            {/* Lições - Apenas para professores/desenvolvedores */}
+            {(user?.tipo === 'professor' || user?.tipo === 'desenvolvedor') && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="group bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom hover:border-slate-300 dark:hover:border-border-hover transition-all hover:shadow-2xl"
+              >
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-white">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-text-primary">
+                    Lições Práticas
+                  </h3>
+                  <p className="text-slate-600 dark:text-text-secondary text-lg mb-8 leading-relaxed">
+                    Crie e gerencie exercícios interativos.
+                  </p>
+                  <Link
+                    href="/dashboard/licoes"
+                    className="block w-full py-4 px-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all font-medium text-lg"
+                  >
+                    Gerenciar Lições
+                  </Link>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Turmas */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="group bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom hover:border-slate-300 dark:hover:border-border-hover transition-all hover:shadow-2xl"
+              transition={{ delay: user?.tipo === 'aluno' ? 0.3 : 0.4 }}
+              className="group bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom hover:border-orange-300 dark:hover:border-orange-500/50 transition-all hover:shadow-2xl"
             >
               <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10 text-white">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                   </svg>
                 </div>
                 <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-text-primary">
-                  Lições Práticas
+                  Turmas
                 </h3>
                 <p className="text-slate-600 dark:text-text-secondary text-lg mb-8 leading-relaxed">
-                  Exercícios interativos com retorno imediato.
+                  {user?.tipo === 'professor' || user?.tipo === 'desenvolvedor'
+                    ? 'Crie turmas e acompanhe seus alunos.'
+                    : 'Acesse suas turmas e trilhas de aprendizado.'}
                 </p>
                 <Link
-                  href="/dashboard/licoes"
-                  className="block w-full py-4 px-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all font-medium text-lg"
+                  href={user?.tipo === 'professor' || user?.tipo === 'desenvolvedor'
+                    ? '/dashboard/turmas'
+                    : '/dashboard/minhas-turmas'}
+                  className="block w-full py-4 px-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all font-medium text-lg"
                 >
                   {user?.tipo === 'professor' || user?.tipo === 'desenvolvedor'
-                    ? 'Adicionar Lições'
-                    : 'Fazer Lições'}
+                    ? 'Gerenciar Turmas'
+                    : 'Minhas Turmas'}
                 </Link>
               </div>
             </motion.div>
@@ -106,7 +137,7 @@ export default function Dashboard() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: user?.tipo === 'aluno' ? 0.4 : 0.5 }}
               className="group bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom hover:border-slate-300 dark:hover:border-border-hover transition-all hover:shadow-2xl"
             >
               <div className="text-center">

@@ -16,6 +16,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, nome: string, tipo: TipoUsuario) => Promise<{ error?: string }>;
   signInWithGoogle: () => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,6 +32,7 @@ function mapSupabaseUserToAppUser(supabaseUser: SupabaseUser | null): User | nul
     email: supabaseUser.email || '',
     nome: supabaseUser.user_metadata?.nome || supabaseUser.user_metadata?.full_name || 'Usuário',
     tipo: (supabaseUser.user_metadata?.tipo as TipoUsuario) || 'aluno',
+    avatar_url: supabaseUser.user_metadata?.avatar_url || supabaseUser.user_metadata?.picture || null,
     ativo: true,
   };
 }
@@ -163,6 +165,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push('/login');
   }, [supabase, router]);
 
+  /**
+   * Refresh user data from Supabase
+   */
+  const refreshUser = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      setSupabaseUser(user);
+    }
+  }, [supabase]);
+
   const user = mapSupabaseUserToAppUser(supabaseUser);
 
   const value = {
@@ -175,6 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signInWithGoogle,
     signOut,
+    refreshUser,
   };
 
   return (
