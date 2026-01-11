@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { KeyRound, AlertTriangle, RefreshCw, GraduationCap, Star, BookOpen, CheckCircle, Rocket, Play } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
@@ -67,7 +68,7 @@ export default function MinhasTurmasPage() {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-bg-primary">
                 <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom max-w-md mx-auto shadow-lg p-8">
-                    <div className="text-6xl mb-6">⚠️</div>
+                    <div className="text-6xl mb-6"><AlertTriangle className="w-16 h-16 mx-auto text-amber-500" /></div>
                     <h2 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-4">
                         Erro ao carregar
                     </h2>
@@ -76,7 +77,7 @@ export default function MinhasTurmasPage() {
                         onClick={() => window.location.reload()}
                         className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
-                        🔄 Tentar Novamente
+                        <RefreshCw className="w-5 h-5" /> Tentar Novamente
                     </button>
                 </div>
             </div>
@@ -115,7 +116,7 @@ export default function MinhasTurmasPage() {
                                 href="/dashboard/entrar-turma"
                                 className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
                             >
-                                <span>🔑</span> Entrar em Turma
+                                <KeyRound className="w-5 h-5" /> Entrar em Turma
                             </Link>
                         </div>
                     </div>
@@ -142,7 +143,7 @@ export default function MinhasTurmasPage() {
                     {/* Grid de Turmas */}
                     {turmas.length === 0 ? (
                         <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom shadow-sm">
-                            <div className="text-6xl mb-6">🎓</div>
+                            <div className="text-6xl mb-6"><GraduationCap className="w-16 h-16 mx-auto text-slate-400" /></div>
                             <h3 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-4">
                                 Você ainda não está em nenhuma turma
                             </h3>
@@ -153,7 +154,7 @@ export default function MinhasTurmasPage() {
                                 href="/dashboard/entrar-turma"
                                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-colors"
                             >
-                                🔑 Entrar em uma Turma
+                                <KeyRound className="w-5 h-5" /> Entrar em uma Turma
                             </Link>
                         </div>
                     ) : (
@@ -202,15 +203,15 @@ export default function MinhasTurmasPage() {
                                         {/* Stats */}
                                         <div className="flex items-center gap-4 mb-4 text-sm">
                                             <div className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
-                                                <span>⭐</span>
+                                                <Star className="w-4 h-4" />
                                                 <span className="font-bold">{turma.progresso.xp_total} XP</span>
                                             </div>
                                             <div className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
-                                                <span>📚</span>
+                                                <BookOpen className="w-4 h-4" />
                                                 <span>{turma._count.trilha_modulo} módulos</span>
                                             </div>
                                             <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
-                                                <span>✅</span>
+                                                <CheckCircle className="w-4 h-4" />
                                                 <span>{turma.progresso.completadas}/{turma.progresso.total}</span>
                                             </div>
                                         </div>
@@ -220,7 +221,7 @@ export default function MinhasTurmasPage() {
                                             href={`/dashboard/turma/${turma.id}`}
                                             className="block w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg text-center font-medium transition-colors"
                                         >
-                                            {turma.progresso.percentual === 0 ? '🚀 Começar' : '▶️ Continuar'}
+                                            {turma.progresso.percentual === 0 ? <><Rocket className="w-4 h-4" /> Começar</> : <><Play className="w-4 h-4" /> Continuar</>}
                                         </Link>
                                     </div>
                                 </motion.div>

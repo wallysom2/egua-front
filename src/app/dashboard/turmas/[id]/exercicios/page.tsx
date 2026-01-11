@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, FileText, ClipboardList, Eye, Trash2 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
@@ -174,7 +175,7 @@ export default function ExerciciosTurmaPage() {
                                 disabled={exerciciosDisponiveis.length === 0}
                                 className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg flex items-center gap-2 font-medium transition-colors disabled:opacity-50"
                             >
-                                <span>➕</span> Adicionar Exercício
+                                <Plus className="w-5 h-5" /> Adicionar Exercício
                             </button>
                         </div>
                     </div>
@@ -190,7 +191,7 @@ export default function ExerciciosTurmaPage() {
                         className="mb-8"
                     >
                         <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
-                            📝 Exercícios da Turma
+                            <FileText className="w-8 h-8 inline mr-2" /> Exercícios da Turma
                         </h1>
                         <p className="text-slate-600 dark:text-text-secondary">
                             {exerciciosTurma.length} exercício{exerciciosTurma.length !== 1 ? 's' : ''} associado{exerciciosTurma.length !== 1 ? 's' : ''}
@@ -200,7 +201,7 @@ export default function ExerciciosTurmaPage() {
                     {/* Lista de Exercícios */}
                     {exerciciosTurma.length === 0 ? (
                         <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom shadow-sm">
-                            <div className="text-6xl mb-6">📋</div>
+                            <div className="text-6xl mb-6"><ClipboardList className="w-16 h-16 mx-auto text-slate-400" /></div>
                             <h3 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-4">
                                 Nenhum exercício adicionado
                             </h3>
@@ -212,7 +213,7 @@ export default function ExerciciosTurmaPage() {
                                     onClick={openAddModal}
                                     className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-colors"
                                 >
-                                    ➕ Adicionar Primeiro Exercício
+                                    <Plus className="w-5 h-5" /> Adicionar Primeiro Exercício
                                 </button>
                             )}
                         </div>
@@ -256,14 +257,14 @@ export default function ExerciciosTurmaPage() {
                                             href={`/dashboard/licoes/${te.exercicio_id}`}
                                             className="px-4 py-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
                                         >
-                                            👁️ Ver
+                                            <Eye className="w-4 h-4" /> Ver
                                         </Link>
                                         <button
                                             onClick={() => handleRemoveExercicio(te.exercicio_id)}
                                             className="p-2 text-slate-400 hover:text-red-600 transition-colors"
                                             title="Remover exercício"
                                         >
-                                            🗑️
+                                            <Trash2 className="w-5 h-5" />
                                         </button>
                                     </motion.div>
                                 ))}
@@ -288,7 +289,7 @@ export default function ExerciciosTurmaPage() {
                             className="bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom p-6 max-w-md w-full shadow-2xl"
                         >
                             <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-6">
-                                ➕ Adicionar Exercício
+                                <Plus className="w-5 h-5 inline mr-1" /> Adicionar Exercício
                             </h3>
 
                             <div className="space-y-4">
@@ -361,7 +362,7 @@ export default function ExerciciosTurmaPage() {
             </AnimatePresence>
 
             {/* Toast Notifications */}
-            <div className="fixed top-4 right-4 z-50 space-y-2">
+            <div className="fixed bottom-4 right-4 z-50 space-y-2">
                 <AnimatePresence>
                     {toasts.map((toast) => (
                         <motion.div
@@ -370,8 +371,8 @@ export default function ExerciciosTurmaPage() {
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, x: 50, scale: 0.9 }}
                             className={`p-4 rounded-lg shadow-lg border ${toast.type === 'success'
-                                    ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700 text-green-800 dark:text-green-300'
-                                    : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700 text-red-800 dark:text-red-300'
+                                ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700 text-green-800 dark:text-green-300'
+                                : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700 text-red-800 dark:text-red-300'
                                 }`}
                         >
                             {toast.message}

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Camera, Check, Code, GraduationCap, UserCog } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
@@ -228,25 +229,7 @@ export default function PerfilPage() {
                                             {uploading ? (
                                                 <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin" />
                                             ) : (
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth={1.5}
-                                                    stroke="currentColor"
-                                                    className="w-8 h-8 text-white"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"
-                                                    />
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"
-                                                    />
-                                                </svg>
+                                                <Camera className="w-8 h-8 text-white" />
                                             )}
                                         </button>
                                     </div>
@@ -298,9 +281,6 @@ export default function PerfilPage() {
                                         disabled
                                         className="w-full px-4 py-3 bg-slate-100 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-lg text-slate-500 dark:text-text-tertiary cursor-not-allowed"
                                     />
-                                    <p className="mt-1 text-xs text-slate-400 dark:text-text-tertiary">
-                                        O email não pode ser alterado
-                                    </p>
                                 </div>
 
                                 {/* Tipo de Conta (readonly) */}
@@ -315,9 +295,9 @@ export default function PerfilPage() {
                                                 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
                                                 : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                                             }`}>
-                                            {user?.tipo === 'desenvolvedor' && '👨‍💻'}
-                                            {user?.tipo === 'professor' && '👨‍🏫'}
-                                            {user?.tipo === 'aluno' && '📚'}
+                                            {user?.tipo === 'desenvolvedor' && <Code className="w-4 h-4" />}
+                                            {user?.tipo === 'professor' && <UserCog className="w-4 h-4" />}
+                                            {user?.tipo === 'aluno' && <GraduationCap className="w-4 h-4" />}
                                             <span className="capitalize">{user?.tipo || 'Usuário'}</span>
                                         </span>
                                     </div>
@@ -336,20 +316,7 @@ export default function PerfilPage() {
                                         </>
                                     ) : (
                                         <>
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                strokeWidth={1.5}
-                                                stroke="currentColor"
-                                                className="w-5 h-5"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    d="M4.5 12.75l6 6 9-13.5"
-                                                />
-                                            </svg>
+                                            <Check className="w-5 h-5" />
                                             Salvar Alterações
                                         </>
                                     )}
@@ -361,7 +328,7 @@ export default function PerfilPage() {
             </main>
 
             {/* Toast Notifications */}
-            <div className="fixed top-4 right-4 z-50 space-y-2">
+            <div className="fixed bottom-4 right-4 z-50 space-y-2">
                 <AnimatePresence>
                     {toasts.map((toast) => (
                         <motion.div

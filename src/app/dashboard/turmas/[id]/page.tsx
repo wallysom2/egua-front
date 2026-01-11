@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BookOpen, XCircle, ArrowLeft, Check, Copy, Pencil, Users, FileText, Target } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
@@ -165,7 +166,7 @@ export default function TurmaDetalhesPage() {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-bg-primary">
                 <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom max-w-md mx-auto shadow-lg p-8">
-                    <div className="text-6xl mb-6">❌</div>
+                    <div className="text-6xl mb-6"><XCircle className="w-16 h-16 mx-auto text-red-500" /></div>
                     <h2 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-4">
                         Turma não encontrada
                     </h2>
@@ -174,7 +175,7 @@ export default function TurmaDetalhesPage() {
                         href="/dashboard/turmas"
                         className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors inline-block"
                     >
-                        ← Voltar para Turmas
+                        <ArrowLeft className="w-5 h-5" /> Voltar para Turmas
                     </Link>
                 </div>
             </div>
@@ -247,7 +248,7 @@ export default function TurmaDetalhesPage() {
                                                 disabled={saving}
                                                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
                                             >
-                                                {saving ? 'Salvando...' : '✓ Salvar'}
+                                                {saving ? 'Salvando...' : <><Check className="w-4 h-4" /> Salvar</>}
                                             </button>
                                             <button
                                                 onClick={() => {
@@ -264,8 +265,8 @@ export default function TurmaDetalhesPage() {
                                 ) : (
                                     <>
                                         <div className="flex items-start gap-4 mb-4">
-                                            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">
-                                                📖
+                                            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                                                <BookOpen className="w-8 h-8" />
                                             </div>
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-3">
@@ -278,7 +279,7 @@ export default function TurmaDetalhesPage() {
                                                             className="p-2 text-slate-500 hover:text-orange-600 transition-colors"
                                                             title="Editar turma"
                                                         >
-                                                            ✏️
+                                                            <Pencil className="w-5 h-5" />
                                                         </button>
                                                     )}
                                                 </div>
@@ -305,17 +306,14 @@ export default function TurmaDetalhesPage() {
                                     <button
                                         onClick={copyToClipboard}
                                         className={`p-3 rounded-lg transition-colors ${copiedCode
-                                                ? 'bg-green-500 text-white'
-                                                : 'bg-orange-500 hover:bg-orange-600 text-white'
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-orange-500 hover:bg-orange-600 text-white'
                                             }`}
                                         title="Copiar código"
                                     >
-                                        {copiedCode ? '✓' : '📋'}
+                                        {copiedCode ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                                     </button>
                                 </div>
-                                <p className="text-xs text-orange-600 dark:text-orange-400 mt-3">
-                                    Compartilhe este código com seus alunos para que eles possam entrar na turma
-                                </p>
                             </div>
                         </div>
 
@@ -351,8 +349,8 @@ export default function TurmaDetalhesPage() {
                             transition={{ delay: 0.1 }}
                             className="bg-white dark:bg-bg-secondary rounded-xl p-6 shadow-lg border border-slate-200 dark:border-border-custom hover:border-blue-300 dark:hover:border-blue-500/50 transition-all"
                         >
-                            <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white text-2xl mb-4">
-                                👥
+                            <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white mb-4">
+                                <Users className="w-7 h-7" />
                             </div>
                             <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-2">
                                 Alunos
@@ -375,8 +373,8 @@ export default function TurmaDetalhesPage() {
                             transition={{ delay: 0.2 }}
                             className="bg-white dark:bg-bg-secondary rounded-xl p-6 shadow-lg border border-slate-200 dark:border-border-custom hover:border-green-300 dark:hover:border-green-500/50 transition-all"
                         >
-                            <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white text-2xl mb-4">
-                                📝
+                            <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white mb-4">
+                                <FileText className="w-7 h-7" />
                             </div>
                             <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-2">
                                 Exercícios
@@ -399,8 +397,8 @@ export default function TurmaDetalhesPage() {
                             transition={{ delay: 0.3 }}
                             className="bg-white dark:bg-bg-secondary rounded-xl p-6 shadow-lg border border-slate-200 dark:border-border-custom hover:border-purple-300 dark:hover:border-purple-500/50 transition-all"
                         >
-                            <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center text-white text-2xl mb-4">
-                                🎯
+                            <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center text-white mb-4">
+                                <Target className="w-7 h-7" />
                             </div>
                             <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-2">
                                 Trilha de Aprendizado
@@ -416,50 +414,11 @@ export default function TurmaDetalhesPage() {
                             </Link>
                         </motion.div>
                     </div>
-
-                    {/* Preview da Trilha */}
-                    {turma.trilha_modulo.length > 0 && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 }}
-                            className="bg-white dark:bg-bg-secondary rounded-xl p-6 shadow-lg border border-slate-200 dark:border-border-custom"
-                        >
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-4">
-                                Preview da Trilha de Aprendizado
-                            </h3>
-                            <div className="space-y-4">
-                                {turma.trilha_modulo.slice(0, 3).map((modulo, index) => (
-                                    <div
-                                        key={modulo.id}
-                                        className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-bg-tertiary rounded-xl"
-                                    >
-                                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl">
-                                            {modulo.icone || (index + 1)}
-                                        </div>
-                                        <div className="flex-1">
-                                            <h4 className="font-bold text-slate-900 dark:text-text-primary">
-                                                {modulo.titulo}
-                                            </h4>
-                                            <p className="text-sm text-slate-600 dark:text-text-secondary">
-                                                {modulo.trilha_licao.length} lições • {modulo.xp_recompensa} XP
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
-                                {turma.trilha_modulo.length > 3 && (
-                                    <p className="text-center text-slate-500 dark:text-text-secondary">
-                                        + {turma.trilha_modulo.length - 3} módulos
-                                    </p>
-                                )}
-                            </div>
-                        </motion.div>
-                    )}
                 </div>
             </main>
 
             {/* Toast Notifications */}
-            <div className="fixed top-4 right-4 z-50 space-y-2">
+            <div className="fixed bottom-4 right-4 z-50 space-y-2">
                 <AnimatePresence>
                     {toasts.map((toast) => (
                         <motion.div
@@ -468,20 +427,20 @@ export default function TurmaDetalhesPage() {
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, x: 50, scale: 0.9 }}
                             className={`p-4 rounded-lg shadow-lg border ${toast.type === 'success'
-                                    ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700'
-                                    : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700'
+                                ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700'
+                                : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700'
                                 }`}
                         >
                             <p className={`font-medium ${toast.type === 'success'
-                                    ? 'text-green-800 dark:text-green-300'
-                                    : 'text-red-800 dark:text-red-300'
+                                ? 'text-green-800 dark:text-green-300'
+                                : 'text-red-800 dark:text-red-300'
                                 }`}>
                                 {toast.message}
                             </p>
                             {toast.description && (
                                 <p className={`text-sm ${toast.type === 'success'
-                                        ? 'text-green-600 dark:text-green-400'
-                                        : 'text-red-600 dark:text-red-400'
+                                    ? 'text-green-600 dark:text-green-400'
+                                    : 'text-red-600 dark:text-red-400'
                                     }`}>
                                     {toast.description}
                                 </p>

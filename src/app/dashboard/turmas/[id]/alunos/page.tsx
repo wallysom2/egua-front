@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Star, Trash2, Loader, Users, Inbox } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
@@ -145,7 +146,7 @@ export default function AlunosTurmaPage() {
                         className="mb-8"
                     >
                         <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
-                            👥 Alunos da Turma
+                            <Users className="w-8 h-8 inline mr-2" /> Alunos da Turma
                         </h1>
                         <p className="text-slate-600 dark:text-text-secondary">
                             {alunos.length} aluno{alunos.length !== 1 ? 's' : ''} matriculado{alunos.length !== 1 ? 's' : ''}
@@ -155,7 +156,7 @@ export default function AlunosTurmaPage() {
                     {/* Lista de Alunos */}
                     {alunos.length === 0 ? (
                         <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom shadow-sm">
-                            <div className="text-6xl mb-6">📭</div>
+                            <div className="text-6xl mb-6"><Inbox className="w-16 h-16 mx-auto text-slate-400" /></div>
                             <h3 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-4">
                                 Nenhum aluno matriculado
                             </h3>
@@ -224,7 +225,7 @@ export default function AlunosTurmaPage() {
                                     {/* XP */}
                                     <div className="col-span-2 text-center">
                                         <span className="inline-flex items-center gap-1 px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-full text-sm font-medium">
-                                            ⭐ {aluno.estatisticas.xp_total}
+                                            <Star className="w-4 h-4" /> {aluno.estatisticas.xp_total}
                                         </span>
                                     </div>
 
@@ -244,7 +245,7 @@ export default function AlunosTurmaPage() {
                                             className="p-2 text-slate-400 hover:text-red-600 transition-colors disabled:opacity-50"
                                             title="Remover aluno"
                                         >
-                                            {removingId === aluno.aluno_id ? '⏳' : '🗑️'}
+                                            {removingId === aluno.aluno_id ? <Loader className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5" />}
                                         </button>
                                     </div>
                                 </motion.div>
@@ -255,7 +256,7 @@ export default function AlunosTurmaPage() {
             </main>
 
             {/* Toast Notifications */}
-            <div className="fixed top-4 right-4 z-50 space-y-2">
+            <div className="fixed bottom-4 right-4 z-50 space-y-2">
                 <AnimatePresence>
                     {toasts.map((toast) => (
                         <motion.div

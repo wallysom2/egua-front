@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { BookOpen, Lightbulb, Check } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { useAuth } from '@/contexts/AuthContext';
@@ -98,8 +99,8 @@ export default function CriarTurmaPage() {
                     >
                         {/* Header */}
                         <div className="text-center mb-8">
-                            <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-white text-3xl shadow-lg">
-                                📚
+                            <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-white shadow-lg">
+                                <BookOpen className="w-10 h-10" />
                             </div>
                             <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
                                 Criar Nova Turma
@@ -158,7 +159,7 @@ export default function CriarTurmaPage() {
                                 {/* Info Box */}
                                 <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
                                     <div className="flex gap-3">
-                                        <div className="text-blue-500 text-xl">💡</div>
+                                        <Lightbulb className="w-6 h-6 text-blue-500" />
                                         <div>
                                             <p className="text-blue-800 dark:text-blue-300 font-medium">
                                                 Código de Acesso Automático
@@ -198,7 +199,7 @@ export default function CriarTurmaPage() {
                                             </>
                                         ) : (
                                             <>
-                                                ✓ Criar Turma
+                                                <Check className="w-5 h-5" /> Criar Turma
                                             </>
                                         )}
                                     </button>

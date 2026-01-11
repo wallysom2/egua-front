@@ -51,32 +51,32 @@ function inferirTipoExercicio(exercicio: any): 'pratico' | 'quiz' {
       return 'quiz';
     }
   }
-  
+
   // Se não tem tipo, inferir baseado nas questões
   const exercicioComQuestoes = exercicio as any;
   if (exercicioComQuestoes.exercicio_questao && Array.isArray(exercicioComQuestoes.exercicio_questao)) {
     const questoes = exercicioComQuestoes.exercicio_questao;
     if (questoes.length === 0) return 'pratico'; // Default
-    
+
     // Se alguma questão é de programação, o exercício é prático
     const temProgramacao = questoes.some(
       (eq: any) => eq.questao?.tipo === 'programacao' || eq.questao?.tipo === 'programação'
     );
-    
+
     if (temProgramacao) {
       return 'pratico';
     }
-    
+
     // Se todas são quiz, então é quiz
     const todasSaoQuiz = questoes.every(
       (eq: any) => eq.questao?.tipo === 'quiz'
     );
-    
+
     if (todasSaoQuiz) {
       return 'quiz';
     }
   }
-  
+
   // Default para prático
   return 'pratico';
 }
@@ -84,9 +84,9 @@ function inferirTipoExercicio(exercicio: any): 'pratico' | 'quiz' {
 // Função auxiliar para normalizar o tipo do exercício
 function normalizarTipoExercicio(tipo: string | undefined | null): 'pratico' | 'quiz' {
   if (!tipo) return 'pratico';
-  
+
   const tipoNormalizado = String(tipo).toLowerCase().trim();
-  
+
   // Variações de prático
   if (
     tipoNormalizado === 'pratico' ||
@@ -97,7 +97,7 @@ function normalizarTipoExercicio(tipo: string | undefined | null): 'pratico' | '
   ) {
     return 'pratico';
   }
-  
+
   // Default para quiz
   return 'quiz';
 }
@@ -232,7 +232,7 @@ export default function Licoes() {
       if (selectedTipo !== 'todos') {
         const tipoA = normalizarTipoExercicio(a.tipo);
         const tipoB = normalizarTipoExercicio(b.tipo);
-        
+
         // Se os tipos são diferentes, manter a ordem (já estão filtrados)
         if (tipoA !== tipoB) {
           return 0;
@@ -242,7 +242,7 @@ export default function Licoes() {
         if (sortBy === 'tipo') {
           const tipoA = normalizarTipoExercicio(a.tipo);
           const tipoB = normalizarTipoExercicio(b.tipo);
-          
+
           if (tipoA !== tipoB) {
             // Prático primeiro, depois Quiz
             if (tipoA === 'pratico') return sortOrder === 'asc' ? -1 : 1;
@@ -319,7 +319,7 @@ export default function Licoes() {
               tipo: tipoInferido,
             };
           });
-          
+
           // Log para debug - verificar tipos dos exercícios
           console.log('Exercícios carregados (antes normalização):', exerciciosData.map((ex: any) => ({
             id: ex.id,
@@ -334,7 +334,7 @@ export default function Licoes() {
             titulo: ex.titulo,
             tipo: ex.tipo,
           })));
-          
+
           setExercicios(exerciciosNormalizados);
         }
 
@@ -527,16 +527,16 @@ export default function Licoes() {
                   Ordenar por
                 </label>
                 <div className="flex gap-2">
-                   <select
-                     value={sortBy}
-                     onChange={(e) =>
-                       setSortBy(e.target.value as 'titulo' | 'tipo')
-                     }
-                     className="flex-1 px-3 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
-                   >
-                     <option value="titulo">Título</option>
-                     <option value="tipo">Tipo</option>
-                   </select>
+                  <select
+                    value={sortBy}
+                    onChange={(e) =>
+                      setSortBy(e.target.value as 'titulo' | 'tipo')
+                    }
+                    className="flex-1 px-3 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
+                  >
+                    <option value="titulo">Título</option>
+                    <option value="tipo">Tipo</option>
+                  </select>
                   <button
                     onClick={() =>
                       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
@@ -573,9 +573,9 @@ export default function Licoes() {
                       {linguagensMap.get(selectedLinguagem as number)}
                     </span>
                   )}
-                   {(searchTerm ||
-                     selectedTipo !== 'todos' ||
-                     selectedLinguagem !== 'todas') && (
+                  {(searchTerm ||
+                    selectedTipo !== 'todos' ||
+                    selectedLinguagem !== 'todas') && (
                       <button
                         onClick={clearFilters}
                         className="px-3 py-1 bg-slate-100 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary rounded-full text-sm hover:bg-slate-200 dark:hover:bg-border-hover transition-colors flex items-center gap-1"
@@ -638,24 +638,24 @@ export default function Licoes() {
                   : '📚'}
               </div>
               <h3 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-4">
-                 {searchTerm ||
-                   selectedTipo !== 'todos' ||
-                   selectedLinguagem !== 'todas'
-                   ? 'Nenhum exercício encontrado'
-                   : 'Nenhum exercício criado ainda'}
+                {searchTerm ||
+                  selectedTipo !== 'todos' ||
+                  selectedLinguagem !== 'todas'
+                  ? 'Nenhum exercício encontrado'
+                  : 'Nenhum exercício criado ainda'}
               </h3>
               <p className="text-slate-600 dark:text-text-secondary text-lg mb-8 max-w-md mx-auto leading-relaxed">
-                 {searchTerm ||
-                   selectedTipo !== 'todos' ||
-                   selectedLinguagem !== 'todas'
-                   ? 'Tente ajustar os filtros ou fazer uma nova busca'
-                   : isProfessor || isDesenvolvedor
-                     ? 'Comece criando seu primeiro exercício de programação!'
-                     : 'Entre em contato com um professor ou desenvolvedor para ter acesso aos exercícios'}
+                {searchTerm ||
+                  selectedTipo !== 'todos' ||
+                  selectedLinguagem !== 'todas'
+                  ? 'Tente ajustar os filtros ou fazer uma nova busca'
+                  : isProfessor || isDesenvolvedor
+                    ? 'Comece criando seu primeiro exercício de programação!'
+                    : 'Entre em contato com um professor ou desenvolvedor para ter acesso aos exercícios'}
               </p>
-               {searchTerm ||
-                 selectedTipo !== 'todos' ||
-                 selectedLinguagem !== 'todas' ? (
+              {searchTerm ||
+                selectedTipo !== 'todos' ||
+                selectedLinguagem !== 'todas' ? (
                 <button
                   onClick={clearFilters}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-slate-200 dark:bg-bg-tertiary text-slate-900 dark:text-text-primary rounded-lg hover:bg-slate-300 dark:hover:bg-border-hover transition-colors"
@@ -694,7 +694,7 @@ export default function Licoes() {
                 // Type Badge - usar tipo normalizado
                 const tipoNormalizado = normalizarTipoExercicio(exercicio.tipo);
                 const isPratico = tipoNormalizado === 'pratico';
-                
+
                 badges.push({
                   text: isPratico ? 'Prático' : 'Quiz',
                   variant: isPratico ? 'blue' : 'purple'
@@ -793,7 +793,7 @@ export default function Licoes() {
       </AnimatePresence>
 
       {/* Toast Notifications */}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
+      <div className="fixed bottom-4 right-4 z-50 space-y-2">
         <AnimatePresence>
           {toasts.map((toast) => (
             <motion.div

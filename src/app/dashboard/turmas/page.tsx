@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, BookOpen, AlertTriangle, RefreshCw, Copy, Check, Trash2 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
@@ -137,16 +138,16 @@ export default function TurmasPage() {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-bg-primary">
                 <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom max-w-md mx-auto shadow-lg p-8">
-                    <div className="text-6xl mb-6">⚠️</div>
+                    <div className="text-6xl mb-6"><AlertTriangle className="w-16 h-16 mx-auto text-amber-500" /></div>
                     <h2 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-4">
                         Erro ao carregar
                     </h2>
                     <p className="text-slate-600 dark:text-text-secondary mb-6">{error}</p>
                     <button
                         onClick={() => window.location.reload()}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto"
                     >
-                        🔄 Tentar Novamente
+                        <RefreshCw className="w-5 h-5" /> Tentar Novamente
                     </button>
                 </div>
             </div>
@@ -185,7 +186,7 @@ export default function TurmasPage() {
                                 href="/dashboard/turmas/criar"
                                 className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
                             >
-                                <span>➕</span> Nova Turma
+                                <Plus className="w-5 h-5" /> Nova Turma
                             </Link>
                         </div>
                     </div>
@@ -212,7 +213,7 @@ export default function TurmasPage() {
                     {/* Grid de Turmas */}
                     {turmas.length === 0 ? (
                         <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom shadow-sm">
-                            <div className="text-6xl mb-6">📚</div>
+                            <div className="text-6xl mb-6"><BookOpen className="w-16 h-16 mx-auto text-slate-400" /></div>
                             <h3 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-4">
                                 Nenhuma turma criada
                             </h3>
@@ -223,7 +224,7 @@ export default function TurmasPage() {
                                 href="/dashboard/turmas/criar"
                                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-colors"
                             >
-                                ➕ Criar Primeira Turma
+                                <Plus className="w-5 h-5" /> Criar Primeira Turma
                             </Link>
                         </div>
                     ) : (
@@ -254,7 +255,7 @@ export default function TurmasPage() {
                                             )}
                                         </div>
                                         <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white text-xl">
-                                            📖
+                                            <BookOpen className="w-6 h-6" />
                                         </div>
                                     </div>
 
@@ -272,12 +273,12 @@ export default function TurmasPage() {
                                             <button
                                                 onClick={() => copyToClipboard(turma.codigo_acesso)}
                                                 className={`p-2 rounded-lg transition-colors ${copiedCode === turma.codigo_acesso
-                                                        ? 'bg-green-500 text-white'
-                                                        : 'bg-slate-200 dark:bg-bg-secondary hover:bg-slate-300 dark:hover:bg-border-hover text-slate-700 dark:text-text-secondary'
+                                                    ? 'bg-green-500 text-white'
+                                                    : 'bg-slate-200 dark:bg-bg-secondary hover:bg-slate-300 dark:hover:bg-border-hover text-slate-700 dark:text-text-secondary'
                                                     }`}
                                                 title="Copiar código"
                                             >
-                                                {copiedCode === turma.codigo_acesso ? '✓' : '📋'}
+                                                {copiedCode === turma.codigo_acesso ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                                             </button>
                                         </div>
                                     </div>
@@ -317,7 +318,7 @@ export default function TurmasPage() {
                                             className="py-2 px-4 bg-slate-200 dark:bg-bg-tertiary hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-700 dark:text-text-secondary hover:text-red-600 dark:hover:text-red-400 rounded-lg transition-colors"
                                             title="Desativar turma"
                                         >
-                                            🗑️
+                                            <Trash2 className="w-5 h-5" />
                                         </button>
                                     </div>
                                 </motion.div>
@@ -343,7 +344,7 @@ export default function TurmasPage() {
                             className="bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom p-6 max-w-md w-full shadow-2xl"
                         >
                             <div className="text-center">
-                                <div className="text-6xl mb-4">⚠️</div>
+                                <div className="text-6xl mb-4"><AlertTriangle className="w-16 h-16 mx-auto text-amber-500" /></div>
                                 <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-2">
                                     Desativar Turma
                                 </h3>
@@ -369,7 +370,7 @@ export default function TurmasPage() {
                                                 Desativando...
                                             </>
                                         ) : (
-                                            '🗑️ Desativar'
+                                            <><Trash2 className="w-4 h-4" /> Desativar</>
                                         )}
                                     </button>
                                 </div>
@@ -380,7 +381,7 @@ export default function TurmasPage() {
             </AnimatePresence>
 
             {/* Toast Notifications */}
-            <div className="fixed top-4 right-4 z-50 space-y-2">
+            <div className="fixed bottom-4 right-4 z-50 space-y-2">
                 <AnimatePresence>
                     {toasts.map((toast) => (
                         <motion.div
@@ -389,26 +390,26 @@ export default function TurmasPage() {
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, x: 50, scale: 0.9 }}
                             className={`p-4 rounded-lg shadow-lg border ${toast.type === 'success'
-                                    ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700'
-                                    : toast.type === 'error'
-                                        ? 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700'
-                                        : 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700'
+                                ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700'
+                                : toast.type === 'error'
+                                    ? 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700'
+                                    : 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700'
                                 }`}
                         >
                             <p className={`font-medium ${toast.type === 'success'
-                                    ? 'text-green-800 dark:text-green-300'
-                                    : toast.type === 'error'
-                                        ? 'text-red-800 dark:text-red-300'
-                                        : 'text-blue-800 dark:text-blue-300'
+                                ? 'text-green-800 dark:text-green-300'
+                                : toast.type === 'error'
+                                    ? 'text-red-800 dark:text-red-300'
+                                    : 'text-blue-800 dark:text-blue-300'
                                 }`}>
                                 {toast.message}
                             </p>
                             {toast.description && (
                                 <p className={`text-sm ${toast.type === 'success'
-                                        ? 'text-green-600 dark:text-green-400'
-                                        : toast.type === 'error'
-                                            ? 'text-red-600 dark:text-red-400'
-                                            : 'text-blue-600 dark:text-blue-400'
+                                    ? 'text-green-600 dark:text-green-400'
+                                    : toast.type === 'error'
+                                        ? 'text-red-600 dark:text-red-400'
+                                        : 'text-blue-600 dark:text-blue-400'
                                     }`}>
                                     {toast.description}
                                 </p>

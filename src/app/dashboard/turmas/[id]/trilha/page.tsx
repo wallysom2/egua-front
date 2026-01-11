@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Target, BookOpen, BarChart2, Star, FileText, Pencil, Trash2, X } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
@@ -302,7 +303,7 @@ export default function TrilhaConfigPage() {
                                 onClick={openNewModulo}
                                 className="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg flex items-center gap-2 font-medium transition-colors"
                             >
-                                <span>➕</span> Novo Módulo
+                                <Plus className="w-5 h-5" /> Novo Módulo
                             </button>
                         </div>
                     </div>
@@ -318,7 +319,7 @@ export default function TrilhaConfigPage() {
                         className="mb-8"
                     >
                         <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
-                            🎯 Configurar Trilha de Aprendizado
+                            <Target className="w-8 h-8 inline mr-2" /> Configurar Trilha de Aprendizado
                         </h1>
                         <p className="text-slate-600 dark:text-text-secondary">
                             Organize módulos e lições para os alunos seguirem uma sequência de aprendizado
@@ -328,7 +329,7 @@ export default function TrilhaConfigPage() {
                     {/* Lista de Módulos */}
                     {modulos.length === 0 ? (
                         <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom shadow-sm">
-                            <div className="text-6xl mb-6">📚</div>
+                            <div className="text-6xl mb-6"><BookOpen className="w-16 h-16 mx-auto text-slate-400" /></div>
                             <h3 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-4">
                                 Nenhum módulo criado
                             </h3>
@@ -339,7 +340,7 @@ export default function TrilhaConfigPage() {
                                 onClick={openNewModulo}
                                 className="px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-colors"
                             >
-                                ➕ Criar Primeiro Módulo
+                                <Plus className="w-5 h-5" /> Criar Primeiro Módulo
                             </button>
                         </div>
                     ) : (
@@ -364,9 +365,9 @@ export default function TrilhaConfigPage() {
                                                         {modulo.titulo}
                                                     </h3>
                                                     <div className="flex items-center gap-3 text-sm text-slate-600 dark:text-text-secondary">
-                                                        <span>📊 Ordem: {modulo.ordem}</span>
-                                                        <span>⭐ {modulo.xp_recompensa} XP</span>
-                                                        <span>📝 {modulo.trilha_licao.length} lições</span>
+                                                        <span><BarChart2 className="w-4 h-4 inline" /> Ordem: {modulo.ordem}</span>
+                                                        <span><Star className="w-4 h-4 inline" /> {modulo.xp_recompensa} XP</span>
+                                                        <span><FileText className="w-4 h-4 inline" /> {modulo.trilha_licao.length} lições</span>
                                                     </div>
                                                     {modulo.descricao && (
                                                         <p className="text-sm text-slate-500 dark:text-text-secondary mt-1">
@@ -381,14 +382,14 @@ export default function TrilhaConfigPage() {
                                                     className="p-2 text-slate-500 hover:text-purple-600 transition-colors"
                                                     title="Editar módulo"
                                                 >
-                                                    ✏️
+                                                    <Pencil className="w-5 h-5" />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeleteModulo(modulo.id)}
                                                     className="p-2 text-slate-500 hover:text-red-600 transition-colors"
                                                     title="Remover módulo"
                                                 >
-                                                    🗑️
+                                                    <Trash2 className="w-5 h-5" />
                                                 </button>
                                             </div>
                                         </div>
@@ -425,7 +426,7 @@ export default function TrilhaConfigPage() {
                                                             className="p-2 text-slate-400 hover:text-red-600 transition-colors"
                                                             title="Remover lição"
                                                         >
-                                                            ✕
+                                                            <X className="w-5 h-5" />
                                                         </button>
                                                     </div>
                                                 ))}
@@ -436,7 +437,7 @@ export default function TrilhaConfigPage() {
                                             onClick={() => openNewLicao(modulo.id)}
                                             className="w-full py-3 border-2 border-dashed border-slate-300 dark:border-border-custom text-slate-500 dark:text-text-secondary hover:border-purple-400 hover:text-purple-600 rounded-lg transition-colors flex items-center justify-center gap-2"
                                         >
-                                            ➕ Adicionar Lição
+                                            <Plus className="w-5 h-5" /> Adicionar Lição
                                         </button>
                                     </div>
                                 </motion.div>
@@ -462,7 +463,7 @@ export default function TrilhaConfigPage() {
                             className="bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom p-6 max-w-md w-full shadow-2xl"
                         >
                             <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-6">
-                                {editingModulo ? '✏️ Editar Módulo' : '➕ Novo Módulo'}
+                                {editingModulo ? <><Pencil className="w-5 h-5 inline" /> Editar Módulo</> : <><Plus className="w-5 h-5 inline" /> Novo Módulo</>}
                             </h3>
 
                             <div className="space-y-4">
@@ -571,7 +572,7 @@ export default function TrilhaConfigPage() {
                             className="bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom p-6 max-w-md w-full shadow-2xl"
                         >
                             <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-6">
-                                ➕ Adicionar Lição
+                                <Plus className="w-5 h-5 inline" /> Adicionar Lição
                             </h3>
 
                             <div className="space-y-4">
@@ -642,7 +643,7 @@ export default function TrilhaConfigPage() {
             </AnimatePresence>
 
             {/* Toast Notifications */}
-            <div className="fixed top-4 right-4 z-50 space-y-2">
+            <div className="fixed bottom-4 right-4 z-50 space-y-2">
                 <AnimatePresence>
                     {toasts.map((toast) => (
                         <motion.div
@@ -651,8 +652,8 @@ export default function TrilhaConfigPage() {
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, x: 50, scale: 0.9 }}
                             className={`p-4 rounded-lg shadow-lg border ${toast.type === 'success'
-                                    ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700 text-green-800 dark:text-green-300'
-                                    : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700 text-red-800 dark:text-red-300'
+                                ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700 text-green-800 dark:text-green-300'
+                                : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700 text-red-800 dark:text-red-300'
                                 }`}
                         >
                             {toast.message}

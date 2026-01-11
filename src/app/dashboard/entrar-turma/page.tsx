@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { KeyRound, Rocket, ArrowLeft, Lightbulb, Check } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { useAuth } from '@/contexts/AuthContext';
@@ -118,8 +119,8 @@ export default function EntrarTurmaPage() {
                                 className="text-center"
                             >
                                 <div className="bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom">
-                                    <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-5xl">
-                                        ✓
+                                    <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white">
+                                        <Check className="w-12 h-12" />
                                     </div>
                                     <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
                                         Matrícula Realizada!
@@ -132,13 +133,13 @@ export default function EntrarTurmaPage() {
                                             href={`/dashboard/turma/${success.turmaId}`}
                                             className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg font-medium transition-colors"
                                         >
-                                            🚀 Começar a Estudar
+                                            <Rocket className="w-5 h-5" /> Começar a Estudar
                                         </Link>
                                         <Link
                                             href="/dashboard/minhas-turmas"
                                             className="w-full py-3 bg-slate-200 dark:bg-bg-tertiary text-slate-900 dark:text-text-primary rounded-lg hover:bg-slate-300 dark:hover:bg-border-hover font-medium transition-colors"
                                         >
-                                            ← Minhas Turmas
+                                            <ArrowLeft className="w-5 h-5" /> Minhas Turmas
                                         </Link>
                                     </div>
                                 </div>
@@ -153,7 +154,7 @@ export default function EntrarTurmaPage() {
                                 {/* Header */}
                                 <div className="text-center mb-8">
                                     <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-white text-3xl shadow-lg">
-                                        🔑
+                                        <KeyRound className="w-10 h-10" />
                                     </div>
                                     <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
                                         Entrar em uma Turma
@@ -213,7 +214,7 @@ export default function EntrarTurmaPage() {
                                                 </>
                                             ) : (
                                                 <>
-                                                    🚀 Entrar na Turma
+                                                    <Rocket className="w-5 h-5" /> Entrar na Turma
                                                 </>
                                             )}
                                         </button>
@@ -223,7 +224,7 @@ export default function EntrarTurmaPage() {
                                 {/* Info */}
                                 <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
                                     <div className="flex gap-3">
-                                        <div className="text-blue-500 text-xl">💡</div>
+                                        <Lightbulb className="w-6 h-6 text-blue-500" />
                                         <div>
                                             <p className="text-blue-800 dark:text-blue-300 font-medium">
                                                 Onde consigo o código?

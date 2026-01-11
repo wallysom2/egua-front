@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Lock, Star, CheckCircle, ArrowLeft, BookOpen, ChevronDown, Check, Play, ArrowRight } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
@@ -125,7 +126,7 @@ export default function TurmaAlunoPage() {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-bg-primary">
                 <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom max-w-md mx-auto shadow-lg p-8">
-                    <div className="text-6xl mb-6">🔒</div>
+                    <div className="text-6xl mb-6"><Lock className="w-16 h-16 mx-auto text-slate-400" /></div>
                     <h2 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-4">
                         Acesso Restrito
                     </h2>
@@ -134,7 +135,7 @@ export default function TurmaAlunoPage() {
                         href="/dashboard/minhas-turmas"
                         className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors inline-block"
                     >
-                        ← Minhas Turmas
+                        <ArrowLeft className="w-5 h-5 inline" /> Minhas Turmas
                     </Link>
                 </div>
             </div>
@@ -180,13 +181,13 @@ export default function TurmaAlunoPage() {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-full">
-                                <span className="text-xl">⭐</span>
+                                <Star className="w-5 h-5" />
                                 <span className="font-bold text-yellow-700 dark:text-yellow-400">
                                     {progresso.estatisticas.xp_total} XP
                                 </span>
                             </div>
                             <div className="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 rounded-full">
-                                <span className="text-xl">✅</span>
+                                <CheckCircle className="w-5 h-5" />
                                 <span className="font-bold text-green-700 dark:text-green-400">
                                     {progresso.estatisticas.licoes_completadas}/{progresso.estatisticas.total_licoes}
                                 </span>
@@ -216,7 +217,7 @@ export default function TurmaAlunoPage() {
                 <div className="container mx-auto px-6 max-w-2xl">
                     {progresso.modulos.length === 0 ? (
                         <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom shadow-sm">
-                            <div className="text-6xl mb-6">📚</div>
+                            <div className="text-6xl mb-6"><BookOpen className="w-16 h-16 mx-auto text-slate-400" /></div>
                             <h3 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-4">
                                 Trilha em Construção
                             </h3>
@@ -244,10 +245,10 @@ export default function TurmaAlunoPage() {
                                             className="w-full p-6 flex items-center gap-4 text-left hover:bg-slate-50 dark:hover:bg-bg-tertiary transition-colors"
                                         >
                                             <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl shadow-lg ${modulo.completado
-                                                    ? 'bg-gradient-to-br from-green-500 to-emerald-600'
-                                                    : 'bg-gradient-to-br from-purple-500 to-purple-600'
+                                                ? 'bg-gradient-to-br from-green-500 to-emerald-600'
+                                                : 'bg-gradient-to-br from-purple-500 to-purple-600'
                                                 }`}>
-                                                {modulo.completado ? '✓' : modulo.icone || (moduloIndex + 1)}
+                                                {modulo.completado ? <Check className="w-6 h-6" /> : modulo.icone || (moduloIndex + 1)}
                                             </div>
                                             <div className="flex-1">
                                                 <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary">
@@ -275,7 +276,7 @@ export default function TurmaAlunoPage() {
                                                 animate={{ rotate: isExpanded ? 180 : 0 }}
                                                 className="text-2xl text-slate-400"
                                             >
-                                                ▼
+                                                <ChevronDown className="w-6 h-6" />
                                             </motion.div>
                                         </button>
 
@@ -317,15 +318,15 @@ export default function TurmaAlunoPage() {
                                                                                 <Link
                                                                                     href={`/dashboard/licoes/${licao.exercicio.id}`}
                                                                                     className={`flex items-center gap-4 p-4 rounded-xl transition-all ${status === 'completada'
-                                                                                            ? 'bg-green-50 dark:bg-green-900/20 border-2 border-green-300 dark:border-green-700'
-                                                                                            : 'bg-slate-50 dark:bg-bg-tertiary border-2 border-purple-300 dark:border-purple-700 hover:border-purple-400 dark:hover:border-purple-600 hover:shadow-lg'
+                                                                                        ? 'bg-green-50 dark:bg-green-900/20 border-2 border-green-300 dark:border-green-700'
+                                                                                        : 'bg-slate-50 dark:bg-bg-tertiary border-2 border-purple-300 dark:border-purple-700 hover:border-purple-400 dark:hover:border-purple-600 hover:shadow-lg'
                                                                                         }`}
                                                                                 >
                                                                                     <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white text-xl z-10 ${status === 'completada'
-                                                                                            ? 'bg-gradient-to-br from-green-500 to-emerald-600'
-                                                                                            : 'bg-gradient-to-br from-purple-500 to-purple-600 animate-pulse'
+                                                                                        ? 'bg-gradient-to-br from-green-500 to-emerald-600'
+                                                                                        : 'bg-gradient-to-br from-purple-500 to-purple-600 animate-pulse'
                                                                                         }`}>
-                                                                                        {status === 'completada' ? '✓' : '▶'}
+                                                                                        {status === 'completada' ? <Check className="w-6 h-6" /> : <Play className="w-6 h-6" />}
                                                                                     </div>
                                                                                     <div className="flex-1">
                                                                                         <p className="font-medium text-slate-900 dark:text-text-primary">
@@ -343,13 +344,13 @@ export default function TurmaAlunoPage() {
                                                                                         </div>
                                                                                     </div>
                                                                                     {status === 'disponivel' && (
-                                                                                        <span className="text-purple-500 text-2xl">→</span>
+                                                                                        <ArrowRight className="w-6 h-6 text-purple-500" />
                                                                                     )}
                                                                                 </Link>
                                                                             ) : (
                                                                                 <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-100 dark:bg-bg-tertiary/50 border-2 border-slate-200 dark:border-border-custom opacity-60">
                                                                                     <div className="w-12 h-12 rounded-full flex items-center justify-center bg-slate-300 dark:bg-slate-600 text-white text-xl z-10">
-                                                                                        🔒
+                                                                                        <Lock className="w-6 h-6" />
                                                                                     </div>
                                                                                     <div className="flex-1">
                                                                                         <p className="font-medium text-slate-500 dark:text-slate-400">
