@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { use } from 'react';
@@ -30,8 +30,15 @@ export default function ExercicioDetalhes({
   params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const resolvedParams = use(params);
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+
+  // Determinar URL de retorno baseado de onde o usuário veio
+  const fromTurma = searchParams.get('from') === 'turma';
+  const turmaId = searchParams.get('turmaId');
+  const licaoId = searchParams.get('licaoId');
+  const returnUrl = fromTurma && turmaId ? `/dashboard/turma/${turmaId}` : '/dashboard/licoes';
   const [exercicio, setExercicio] = useState<Exercicio | null>(null);
   const [questaoAtual, setQuestaoAtual] = useState(0);
   const [respostas, setRespostas] = useState<{ [key: number]: string }>({});
@@ -184,19 +191,30 @@ export default function ExercicioDetalhes({
       }
     });
 
+    const pontuacao = totalQuestoes > 0 ? (acertos / totalQuestoes) * 100 : 100;
+
     setResultados({ acertos, total: totalQuestoes });
     setExercicioFinalizado(true);
     setMostrarModalResultados(true);
 
     try {
-      await apiClient.post(`/exercicios/${resolvedParams.id}/submit`, {
-        respostas: exercicio?.tipo === 'pratico' ? {} : respostas,
-        pontuacao: (acertos / totalQuestoes) * 100,
-      });
+      // Se veio da trilha, registrar progresso na trilha da turma
+      if (fromTurma && turmaId && licaoId) {
+        await apiClient.post(`/turmas/${turmaId}/progresso/${licaoId}`, {
+          completado: true,
+          pontuacao: pontuacao,
+        });
+      } else {
+        // Caso contrário, usar o endpoint padrão de exercícios
+        await apiClient.post(`/exercicios/${resolvedParams.id}/submit`, {
+          respostas: exercicio?.tipo === 'pratico' ? {} : respostas,
+          pontuacao: pontuacao,
+        });
+      }
 
       // Exercício finalizado com sucesso
       setTimeout(() => {
-        router.push('/dashboard/licoes');
+        router.push(returnUrl);
       }, 4000);
     } catch (error) {
       console.error('Erro ao finalizar exercício:', error);
@@ -276,10 +294,10 @@ export default function ExercicioDetalhes({
               🔄 Tentar Novamente
             </button>
             <button
-              onClick={() => router.push('/dashboard/licoes')}
+              onClick={() => router.push(returnUrl)}
               className="w-full px-6 py-3 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-medium rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
             >
-              ← Voltar para Lições
+              ← Voltar
             </button>
           </div>
         </div>
@@ -320,7 +338,7 @@ export default function ExercicioDetalhes({
             {/* Ações */}
             <div className="flex items-center space-x-3">
 
-              <BackButton href="/dashboard/licoes" />
+              <BackButton href={returnUrl} />
               <ThemeToggle />
             </div>
           </div>
@@ -515,7 +533,7 @@ export default function ExercicioDetalhes({
                   Revisar
                 </button>
                 <button
-                  onClick={() => router.push('/dashboard/licoes')}
+                  onClick={() => router.push(returnUrl)}
                   className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                 >
                   Continuar
@@ -572,7 +590,7 @@ export default function ExercicioDetalhes({
                   onClick={() => {
                     // Implementar lógica de exclusão aqui
                     setShowDeleteModal(false);
-                    router.push('/dashboard/licoes');
+                    router.push(returnUrl);
                   }}
                   className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
                 >

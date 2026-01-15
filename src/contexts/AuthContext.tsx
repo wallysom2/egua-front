@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import type { User as SupabaseUser, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import type { User, TipoUsuario } from '@/types/user';
 
 interface AuthContextType {
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Escutar mudanças de autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (event: AuthChangeEvent, session: Session | null) => {
         setSession(session);
         setSupabaseUser(session?.user ?? null);
         setIsLoading(false);

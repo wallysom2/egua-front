@@ -316,7 +316,7 @@ export default function TurmaAlunoPage() {
                                                                         >
                                                                             {status === 'disponivel' || status === 'completada' ? (
                                                                                 <Link
-                                                                                    href={`/dashboard/licoes/${licao.exercicio.id}`}
+                                                                                    href={`/dashboard/licoes/${licao.exercicio.id}?from=turma&turmaId=${turmaId}&licaoId=${licao.id}`}
                                                                                     className={`flex items-center gap-4 p-4 rounded-xl transition-all ${status === 'completada'
                                                                                         ? 'bg-green-50 dark:bg-green-900/20 border-2 border-green-300 dark:border-green-700'
                                                                                         : 'bg-slate-50 dark:bg-bg-tertiary border-2 border-purple-300 dark:border-purple-700 hover:border-purple-400 dark:hover:border-purple-600 hover:shadow-lg'

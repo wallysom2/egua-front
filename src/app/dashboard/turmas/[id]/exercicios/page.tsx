@@ -208,13 +208,29 @@ export default function ExerciciosTurmaPage() {
                             <p className="text-slate-600 dark:text-text-secondary mb-8 max-w-md mx-auto">
                                 Adicione exercícios para os alunos desta turma praticarem
                             </p>
-                            {exerciciosDisponiveis.length > 0 && (
+                            {exerciciosDisponiveis.length > 0 ? (
                                 <button
                                     onClick={openAddModal}
-                                    className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-colors"
+                                    className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-colors flex items-center gap-2 mx-auto"
                                 >
                                     <Plus className="w-5 h-5" /> Adicionar Primeiro Exercício
                                 </button>
+                            ) : todosExercicios.length === 0 ? (
+                                <div className="space-y-4">
+                                    <p className="text-amber-600 dark:text-amber-400 font-medium">
+                                        Nenhum exercício cadastrado no sistema ainda.
+                                    </p>
+                                    <Link
+                                        href="/dashboard/licoes/criar/exercicio"
+                                        className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors"
+                                    >
+                                        <Plus className="w-5 h-5" /> Criar Novo Exercício
+                                    </Link>
+                                </div>
+                            ) : (
+                                <p className="text-green-600 dark:text-green-400 font-medium">
+                                    Todos os exercícios disponíveis já foram adicionados a esta turma.
+                                </p>
                             )}
                         </div>
                     ) : (

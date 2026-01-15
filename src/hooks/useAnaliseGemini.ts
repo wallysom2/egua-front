@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { type RespostaComAnalise } from '@/types/exercicio';
 import { API_BASE_URL } from '@/config/api';
+import { createClient } from '@/lib/supabase/client';
 
 interface UseAnaliseGeminiProps {
   respostaId: string | null;
@@ -35,12 +36,19 @@ export function useAnaliseGemini({
     setError(null);
 
     try {
-      const token = localStorage.getItem('token');
+      // Usar token do Supabase Auth em vez de localStorage
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        throw new Error('Usuário não autenticado');
+      }
+
       const response = await fetch(
         `${API_BASE_URL}/respostas/analise/${respostaId}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${session.access_token}`,
             'Content-Type': 'application/json',
           },
         },
