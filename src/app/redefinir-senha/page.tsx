@@ -38,7 +38,7 @@ export default function RedefinirSenha() {
     checkSession();
 
     // Escutar eventos de autenticação (quando o link de recuperação é carregado)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: any) => {
       if (event === 'PASSWORD_RECOVERY') {
         setIsValidSession(true);
         setIsCheckingSession(false);
