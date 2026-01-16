@@ -9,6 +9,7 @@ export interface User {
   nome: string;
   email: string;
   tipo: TipoUsuario;
+  avatar_url?: string | null;
   ativo?: boolean;
 }
 
