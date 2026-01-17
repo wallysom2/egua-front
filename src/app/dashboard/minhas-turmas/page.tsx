@@ -9,6 +9,7 @@ import { KeyRound, AlertTriangle, RefreshCw, GraduationCap, Star, BookOpen, Chec
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
+import { DashboardCard } from '@/components/DashboardCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
 
@@ -162,69 +163,49 @@ export default function MinhasTurmasPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
                         >
                             {turmas.map((turma, index) => (
-                                <motion.div
+                                <DashboardCard
                                     key={turma.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                    className="group bg-white dark:bg-bg-secondary rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-border-custom hover:border-brand-300 dark:hover:border-brand-500/50 transition-all hover:shadow-xl"
+                                    title={turma.nome}
+                                    icon={GraduationCap}
+                                    color="brand"
+                                    delay={index * 0.1}
                                 >
-                                    {/* Header com Progresso */}
-                                    <div className="relative h-24 bg-gradient-to-r from-brand-500 to-brand-600">
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="text-center text-white">
-                                                <p className="text-4xl font-bold">{turma.progresso.percentual}%</p>
-                                                <p className="text-sm opacity-90">Progresso</p>
-                                            </div>
-                                        </div>
-                                        {/* Barra de XP */}
-                                        <div className="absolute bottom-0 left-0 right-0 h-2 bg-black/20">
-                                            <div
-                                                className="h-full bg-yellow-400 transition-all duration-500"
-                                                style={{ width: `${turma.progresso.percentual}%` }}
-                                            />
-                                        </div>
+                                    {/* Overlay de Progresso (Sutil) */}
+                                    <div
+                                        className="absolute bottom-0 left-0 h-1 bg-brand-500 transition-all duration-500"
+                                        style={{ width: `${turma.progresso.percentual}%` }}
+                                    />
+
+                                    {/* Badge de Progresso */}
+                                    <div className="absolute top-4 right-4 bg-yellow-400 text-slate-900 text-xs font-bold px-2 py-1 rounded-full shadow-sm">
+                                        {turma.progresso.percentual}%
                                     </div>
 
-                                    {/* Corpo */}
-                                    <div className="p-6">
-                                        <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-2 line-clamp-1">
-                                            {turma.nome}
-                                        </h3>
-                                        {turma.descricao && (
-                                            <p className="text-slate-600 dark:text-text-secondary text-sm mb-4 line-clamp-2">
-                                                {turma.descricao}
-                                            </p>
-                                        )}
-
+                                    <div className="flex flex-col items-center w-full">
                                         {/* Stats */}
-                                        <div className="flex items-center gap-4 mb-4 text-sm">
-                                            <div className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
+                                        <div className="flex flex-wrap items-center justify-center gap-3 mb-6 text-sm">
+                                            <div className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400 font-bold">
                                                 <Star className="w-4 h-4" />
-                                                <span className="font-bold">{turma.progresso.xp_total} XP</span>
+                                                <span>{turma.progresso.xp_total} XP</span>
                                             </div>
-                                            <div className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
+                                            <div className="flex items-center gap-1 text-slate-500 dark:text-text-secondary">
                                                 <BookOpen className="w-4 h-4" />
-                                                <span>{turma._count.trilha_modulo} módulos</span>
-                                            </div>
-                                            <div className="flex items-center gap-1 text-brand-600 dark:text-brand-400">
-                                                <CheckCircle className="w-4 h-4" />
-                                                <span>{turma.progresso.completadas}/{turma.progresso.total}</span>
+                                                <span>{turma._count.trilha_modulo} mod</span>
                                             </div>
                                         </div>
 
-                                        {/* Botão */}
+                                        {/* Botão de Ação */}
                                         <Link
                                             href={`/dashboard/turma/${turma.id}`}
-                                            className="block w-full py-3 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg text-center font-medium transition-colors"
+                                            className="w-full py-3 px-6 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-xl transition-all font-bold text-base shadow-md flex items-center justify-center gap-2"
                                         >
                                             {turma.progresso.percentual === 0 ? <><Rocket className="w-4 h-4" /> Começar</> : <><Play className="w-4 h-4" /> Continuar</>}
                                         </Link>
                                     </div>
-                                </motion.div>
+                                </DashboardCard>
                             ))}
                         </motion.div>
                     )}

@@ -8,6 +8,7 @@ import { Plus, Users, AlertTriangle, RefreshCw, Copy, Check, Trash2 } from 'luci
 import { Header } from '@/components/Header';
 import { Loading } from '@/components/Loading';
 import { BackButton } from '@/components/BackButton';
+import { DashboardCard } from '@/components/DashboardCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
 
@@ -203,52 +204,38 @@ export default function TurmasPage() {
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                             {turmas.map((turma, index) => (
-                                <Link key={turma.id} href={`/dashboard/turmas/${turma.id}`}>
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.1 }}
-                                        className="group bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom hover:border-brand-300 dark:hover:border-brand-500/50 transition-all hover:shadow-2xl cursor-pointer h-full"
+                                <DashboardCard
+                                    key={turma.id}
+                                    title={turma.nome}
+                                    icon={Users}
+                                    color="brand"
+                                    href={`/dashboard/turmas/${turma.id}`}
+                                    delay={index * 0.1}
+                                >
+                                    {/* Código de Acesso */}
+                                    <div
+                                        className="inline-flex items-center gap-2 px-3 py-4 bg-slate-100 dark:bg-bg-tertiary rounded-lg mt-8"
+                                        onClick={(e) => e.stopPropagation()}
                                     >
-                                        <div className="text-center">
-                                            {/* Ícone */}
-                                            <div className="w-20 h-20 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                                                <Users className="w-10 h-10 text-white" />
-                                            </div>
-
-                                            {/* Nome da Turma */}
-                                            <h3 className="text-lg font-bold mb-4 text-slate-900 dark:text-text-primary truncate" title={turma.nome}>
-                                                {turma.nome}
-                                            </h3>
-
-                                            {/* Código de Acesso */}
-                                            <div
-                                                className="inline-flex items-center gap-2 px-3 py-4 bg-slate-100 dark:bg-bg-tertiary rounded-lg mt-8 mb-6"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                <span className="font-mono font-bold text-slate-900 dark:text-text-primary tracking-wider">
-                                                    {turma.codigo_acesso}
-                                                </span>
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        copyToClipboard(turma.codigo_acesso);
-                                                    }}
-                                                    className={`p-1.5 rounded transition-colors ${copiedCode === turma.codigo_acesso
-                                                        ? 'bg-green-500 text-white'
-                                                        : 'bg-slate-200 dark:bg-bg-secondary hover:bg-slate-300 dark:hover:bg-border-hover text-slate-600 dark:text-text-secondary'
-                                                        }`}
-                                                    title="Copiar código"
-                                                >
-                                                    {copiedCode === turma.codigo_acesso ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                                                </button>
-                                            </div>
-
-
-                                        </div>
-                                    </motion.div>
-                                </Link>
+                                        <span className="font-mono font-bold text-slate-900 dark:text-text-primary tracking-wider">
+                                            {turma.codigo_acesso}
+                                        </span>
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                copyToClipboard(turma.codigo_acesso);
+                                            }}
+                                            className={`p-1.5 rounded transition-colors ${copiedCode === turma.codigo_acesso
+                                                ? 'bg-green-500 text-white'
+                                                : 'bg-slate-200 dark:bg-bg-secondary hover:bg-slate-300 dark:hover:bg-border-hover text-slate-600 dark:text-text-secondary'
+                                                }`}
+                                            title="Copiar código"
+                                        >
+                                            {copiedCode === turma.codigo_acesso ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                        </button>
+                                    </div>
+                                </DashboardCard>
                             ))}
                         </div>
                     )}

@@ -8,6 +8,7 @@ import { XCircle, ArrowLeft, Check, Copy, Pencil, Users, FileText, Target, QrCod
 import { Header } from '@/components/Header';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
+import { DashboardCard } from '@/components/DashboardCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
 
@@ -332,57 +333,30 @@ export default function TurmaDetalhesPage() {
                     </AnimatePresence>
 
                     {/* Cards de Ação */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                        {/* Gerenciar Alunos */}
-                        <Link href={`/dashboard/turmas/${turma.id}/alunos`}>
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.1 }}
-                                className="group bg-white dark:bg-[#334155] rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-brand-400 dark:hover:border-brand-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
-                            >
-                                <div className="w-24 h-24 bg-gradient-to-br from-brand-400 to-brand-500 rounded-2xl flex items-center justify-center mb-6 transition-transform shadow-lg shadow-brand-500/20">
-                                    <Users className="w-12 h-12 text-white" />
-                                </div>
-                                <h3 className="text-2xl font-bold text-slate-900 dark:text-text-primary text-center">
-                                    Alunos
-                                </h3>
-                            </motion.div>
-                        </Link>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                        <DashboardCard
+                            title="Alunos"
+                            icon={Users}
+                            color="brand"
+                            href={`/dashboard/turmas/${turma.id}/alunos`}
+                            delay={0.1}
+                        />
 
-                        {/* Gerenciar Exercícios */}
-                        <Link href={`/dashboard/turmas/${turma.id}/exercicios`}>
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2 }}
-                                className="group bg-white dark:bg-[#334155] rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-brand-400 dark:hover:border-brand-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
-                            >
-                                <div className="w-24 h-24 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl flex items-center justify-center mb-6 transition-transform shadow-lg shadow-brand-600/20">
-                                    <FileText className="w-12 h-12 text-white" />
-                                </div>
-                                <h3 className="text-2xl font-bold text-slate-900 dark:text-text-primary text-center">
-                                    Exercícios
-                                </h3>
-                            </motion.div>
-                        </Link>
+                        <DashboardCard
+                            title="Exercícios"
+                            icon={FileText}
+                            color="brand"
+                            href={`/dashboard/turmas/${turma.id}/exercicios`}
+                            delay={0.2}
+                        />
 
-                        {/* Trilha de Aprendizado */}
-                        <Link href={`/dashboard/turmas/${turma.id}/trilha`}>
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3 }}
-                                className="group bg-white dark:bg-[#334155] rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-brand-500 dark:hover:border-brand-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
-                            >
-                                <div className="w-24 h-24 bg-gradient-to-br from-brand-600 to-brand-700 rounded-2xl flex items-center justify-center mb-6 transition-transform shadow-lg shadow-brand-700/20">
-                                    <Target className="w-12 h-12 text-white" />
-                                </div>
-                                <h3 className="text-2xl font-bold text-slate-900 dark:text-text-primary text-center">
-                                    Trilha
-                                </h3>
-                            </motion.div>
-                        </Link>
+                        <DashboardCard
+                            title="Trilha"
+                            icon={Target}
+                            color="brand"
+                            href={`/dashboard/turmas/${turma.id}/trilha`}
+                            delay={0.3}
+                        />
                     </div>
                 </div>
             </main>
