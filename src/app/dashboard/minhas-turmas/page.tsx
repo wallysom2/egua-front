@@ -11,6 +11,7 @@ import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
 import { DashboardCard } from '@/components/DashboardCard';
 import { useAuth } from '@/contexts/AuthContext';
+import { Header } from '@/components/Header';
 import { apiClient } from '@/lib/api-client';
 
 interface TurmaAluno {
@@ -31,7 +32,7 @@ interface TurmaAluno {
 
 export default function MinhasTurmasPage() {
     const router = useRouter();
-    const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+    const { user, signOut, isAuthenticated, isLoading: authLoading } = useAuth();
     const [turmas, setTurmas] = useState<TurmaAluno[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -87,51 +88,31 @@ export default function MinhasTurmasPage() {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
-            {/* Navbar */}
-            <motion.div
-                initial={{ y: -100 }}
-                animate={{ y: 0 }}
-                className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary backdrop-blur-sm"
-            >
-                <div className="container mx-auto px-4">
-                    <div className="flex justify-between items-center">
-                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                            <Link
-                                href="/dashboard"
-                                className="text-2xl font-bold text-slate-900 dark:text-text-primary flex items-center gap-2"
-                            >
-                                <Image
-                                    src="/hu.png"
-                                    alt="Senior Code AI Logo"
-                                    width={32}
-                                    height={32}
-                                    className="w-8 h-8"
-                                />
-                                <span>Senior Code AI</span>
-                            </Link>
-                        </motion.div>
-                        <div className="flex items-center gap-3">
-                            <BackButton href="/dashboard" />
-                            <ThemeToggle />
-                            <Link
-                                href="/dashboard/entrar-turma"
-                                className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
-                            >
-                                <KeyRound className="w-5 h-5" /> Entrar em Turma
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
+            <Header
+                variant="dashboard"
+                user={user}
+                onLogout={signOut}
+                extraActions={
+                    <>
+                        <BackButton href="/dashboard" />
+                        <Link
+                            href="/dashboard/entrar-turma"
+                            className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
+                        >
+                            <KeyRound className="w-5 h-5" /> Entrar em Turma
+                        </Link>
+                    </>
+                }
+            />
 
             {/* Conteúdo Principal */}
-            <main className="flex-1 py-16 pt-32">
+            <main className="flex-1 flex items-center py-20 pt-32">
                 <div className="container mx-auto px-6">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="mb-12"
+                        className="mb-12 text-center"
                     >
                         <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
                             Minhas Turmas
@@ -143,7 +124,7 @@ export default function MinhasTurmasPage() {
 
                     {/* Grid de Turmas */}
                     {turmas.length === 0 ? (
-                        <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom shadow-sm">
+                        <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom shadow-sm max-w-2xl mx-auto">
                             <div className="text-6xl mb-6"><GraduationCap className="w-16 h-16 mx-auto text-slate-400" /></div>
                             <h3 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-4">
                                 Você ainda não está em nenhuma turma

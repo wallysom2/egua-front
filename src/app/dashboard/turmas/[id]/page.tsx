@@ -191,13 +191,48 @@ export default function TurmaDetalhesPage() {
             />
 
             {/* Conteúdo Principal */}
-            <main className="flex-grow flex items-center py-20">
-                <div className="container mx-auto px-6">
+            <main className="flex-grow flex items-center py-20 pt-32 relative">
+                {/* Código de Acesso e QR - Posicionado no Canto Superior Direito no Desktop */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="lg:absolute lg:top-36 lg:right-10 mb-8 lg:mb-0 text-center lg:text-right z-10 w-full lg:w-auto px-6 lg:px-0"
+                >
+                    <div className="inline-flex items-center gap-3 px-4 py-2 bg-white dark:bg-bg-secondary border border-slate-200 dark:border-border-custom rounded-xl shadow-sm">
+                        <div className="flex flex-col items-start pr-3 border-r border-slate-200 dark:border-border-custom">
+                            <span className="text-[10px] uppercase font-bold text-slate-400 dark:text-text-tertiary tracking-widest">Código</span>
+                            <span className="font-mono font-bold text-lg text-brand-600 dark:text-brand-500 tracking-wider">
+                                {turma.codigo_acesso}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={copyToClipboard}
+                                className={`p-2 rounded-lg transition-all ${copiedCode
+                                    ? 'bg-green-500 text-white shadow-green-500/20'
+                                    : 'bg-slate-50 dark:bg-bg-tertiary hover:bg-slate-100 dark:hover:bg-border-hover text-slate-600 dark:text-text-secondary border border-slate-200 dark:border-border-custom'
+                                    }`}
+                                title="Copiar código"
+                            >
+                                {copiedCode ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                            </button>
+                            <button
+                                onClick={() => setShowQrModal(true)}
+                                className="p-2 bg-slate-50 dark:bg-bg-tertiary hover:bg-slate-100 dark:hover:bg-border-hover text-slate-600 dark:text-text-secondary rounded-lg transition-all border border-slate-200 dark:border-border-custom"
+                                title="Gerar QR Code de Matrícula"
+                            >
+                                <QrCode className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                </motion.div>
+
+                <div className="container mx-auto px-6 relative">
                     {/* Header da Turma - Simplificado */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mb-12 text-center"
+                        className="mb-16 text-center"
                     >
                         {editMode ? (
                             <div className="max-w-md mx-auto space-y-4">
@@ -228,47 +263,20 @@ export default function TurmaDetalhesPage() {
                                 </div>
                             </div>
                         ) : (
-                            <>
-                                <div className="flex items-center justify-center gap-3 mb-4">
-                                    <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary">
-                                        {turma.nome}
-                                    </h1>
-                                    {canManage && (
-                                        <button
-                                            onClick={() => setEditMode(true)}
-                                            className="p-2 text-slate-400 hover:text-brand-600 transition-colors"
-                                            title="Editar nome"
-                                        >
-                                            <Pencil className="w-5 h-5" />
-                                        </button>
-                                    )}
-                                </div>
-
-                                {/* Código de Acesso Inline */}
-                                <div className="inline-flex items-center gap-3 px-4 py-2 bg-slate-100 dark:bg-bg-tertiary rounded-lg">
-                                    <span className="text-sm text-slate-500 dark:text-text-secondary">Código:</span>
-                                    <span className="font-mono font-bold text-lg text-slate-900 dark:text-text-primary tracking-wider">
-                                        {turma.codigo_acesso}
-                                    </span>
+                            <div className="flex items-center justify-center gap-3">
+                                <h1 className="text-4xl font-extrabold text-slate-900 dark:text-text-primary tracking-tight">
+                                    {turma.nome}
+                                </h1>
+                                {canManage && (
                                     <button
-                                        onClick={copyToClipboard}
-                                        className={`p-2 rounded-lg transition-colors ${copiedCode
-                                            ? 'bg-green-500 text-white'
-                                            : 'bg-slate-200 dark:bg-bg-secondary hover:bg-slate-300 dark:hover:bg-border-hover text-slate-600 dark:text-text-secondary'
-                                            }`}
-                                        title="Copiar código"
+                                        onClick={() => setEditMode(true)}
+                                        className="p-2 text-slate-300 hover:text-brand-600 transition-colors"
+                                        title="Editar nome"
                                     >
-                                        {copiedCode ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                                        <Pencil className="w-5 h-5" />
                                     </button>
-                                    <button
-                                        onClick={() => setShowQrModal(true)}
-                                        className="p-2 bg-slate-200 dark:bg-bg-secondary hover:bg-slate-300 dark:hover:bg-border-hover text-slate-600 dark:text-text-secondary rounded-lg transition-colors"
-                                        title="Gerar QR Code de Matrícula"
-                                    >
-                                        <QrCode className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </>
+                                )}
+                            </div>
                         )}
                     </motion.div>
 

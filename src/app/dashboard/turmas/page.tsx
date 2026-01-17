@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Users, AlertTriangle, RefreshCw, Copy, Check, Trash2 } from 'lucide-react';
+import { Plus, Users, AlertTriangle, RefreshCw, Copy, Check, Trash2, QrCode, X } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { Loading } from '@/components/Loading';
 import { BackButton } from '@/components/BackButton';
@@ -44,6 +44,7 @@ export default function TurmasPage() {
     const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
     const [copiedCode, setCopiedCode] = useState<string | null>(null);
+    const [showQrModal, setShowQrModal] = useState<Turma | null>(null);
 
     const isProfessor = user?.tipo === 'professor';
     const isDesenvolvedor = user?.tipo === 'desenvolvedor';
@@ -174,7 +175,7 @@ export default function TurmasPage() {
             />
 
             {/* Conteúdo Principal */}
-            <main className="flex-grow py-16 pt-32">
+            <main className="flex-grow flex items-center py-16 pt-32">
                 <div className="container mx-auto px-6">
                     {/* Grid de Turmas */}
                     {turmas.length === 0 ? (
@@ -234,6 +235,17 @@ export default function TurmasPage() {
                                         >
                                             {copiedCode === turma.codigo_acesso ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                                         </button>
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setShowQrModal(turma);
+                                            }}
+                                            className="p-1.5 bg-slate-200 dark:bg-bg-secondary hover:bg-slate-300 dark:hover:bg-border-hover text-slate-600 dark:text-text-secondary rounded transition-colors"
+                                            title="Gerar QR Code"
+                                        >
+                                            <QrCode className="w-3.5 h-3.5" />
+                                        </button>
                                     </div>
                                 </DashboardCard>
                             ))}
@@ -243,6 +255,65 @@ export default function TurmasPage() {
             </main>
 
 
+
+            {/* Modal de QR Code */}
+            <AnimatePresence>
+                {showQrModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="bg-white dark:bg-bg-secondary rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-200 dark:border-border-custom"
+                        >
+                            <div className="p-6 text-center">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary">
+                                        QR Code de Matrícula
+                                    </h3>
+                                    <button
+                                        onClick={() => setShowQrModal(null)}
+                                        className="p-2 hover:bg-slate-100 dark:hover:bg-bg-tertiary rounded-full transition-colors"
+                                    >
+                                        <X className="w-5 h-5 text-slate-500" />
+                                    </button>
+                                </div>
+
+                                <div className="bg-white p-4 rounded-xl inline-block mb-6 shadow-inner">
+                                    <img
+                                        src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
+                                            typeof window !== 'undefined'
+                                                ? `${window.location.origin}/dashboard/entrar-turma?codigo=${showQrModal.codigo_acesso}`
+                                                : ''
+                                        )}`}
+                                        alt="QR Code de Matrícula"
+                                        className="w-48 h-48 mx-auto"
+                                    />
+                                </div>
+
+                                <p className="text-slate-600 dark:text-text-secondary mb-2 font-medium">
+                                    Turma: <span className="text-brand-600">{showQrModal.nome}</span>
+                                </p>
+                                <p className="text-sm text-slate-500 dark:text-text-secondary mb-6 leading-relaxed">
+                                    Peça para seus alunos escanearem este QR Code para serem matriculados automaticamente.
+                                </p>
+
+                                <div className="flex flex-col gap-2">
+                                    <div className="py-3 bg-slate-100 dark:bg-bg-tertiary rounded-lg font-mono font-bold text-lg text-slate-900 dark:text-text-primary tracking-widest uppercase">
+                                        {showQrModal.codigo_acesso}
+                                    </div>
+                                    <button
+                                        onClick={() => setShowQrModal(null)}
+                                        className="w-full py-3 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg transition-all font-medium"
+                                    >
+                                        Fechar
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* Modal de Confirmação de Exclusão */}
             <AnimatePresence>

@@ -30,16 +30,8 @@ export default function Dashboard() {
       <Header variant="dashboard" user={user} onLogout={signOut} />
 
       {/* Módulos Principais */}
-      <main className="flex-grow py-16 pt-32">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mb-12 text-center"
-          >
-          </motion.div>
-
+      <main className="flex-grow flex items-center py-16 pt-32">
+        <div className="container mx-auto px-6 text-center">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {/* Conteúdo */}
             <DashboardCard
