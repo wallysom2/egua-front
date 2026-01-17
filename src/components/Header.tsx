@@ -51,6 +51,7 @@ export function Header({
     if (variant === 'dashboard' && user) {
       return (
         <div className="flex items-center gap-3">
+          {extraActions}
           <ThemeToggle />
           <div className="w-px h-6 bg-slate-300 dark:bg-border-custom"></div>
           <div className="relative">

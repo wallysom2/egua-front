@@ -3,12 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, BookOpen, AlertTriangle, RefreshCw, Copy, Check, Trash2 } from 'lucide-react';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { BackButton } from '@/components/BackButton';
+import { Plus, Users, AlertTriangle, RefreshCw, Copy, Check, Trash2 } from 'lucide-react';
+import { Header } from '@/components/Header';
 import { Loading } from '@/components/Loading';
+import { BackButton } from '@/components/BackButton';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
 
@@ -36,7 +35,7 @@ interface ToastNotification {
 
 export default function TurmasPage() {
     const router = useRouter();
-    const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+    const { user, signOut, isAuthenticated, isLoading: authLoading } = useAuth();
     const [turmas, setTurmas] = useState<Turma[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -68,7 +67,7 @@ export default function TurmasPage() {
                 description: 'Compartilhe com seus alunos',
             });
             setTimeout(() => setCopiedCode(null), 2000);
-        } catch (err) {
+        } catch {
             addToast({
                 type: 'error',
                 message: 'Erro ao copiar',
@@ -145,7 +144,7 @@ export default function TurmasPage() {
                     <p className="text-slate-600 dark:text-text-secondary mb-6">{error}</p>
                     <button
                         onClick={() => window.location.reload()}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto"
+                        className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center gap-2 mx-auto"
                     >
                         <RefreshCw className="w-5 h-5" /> Tentar Novamente
                     </button>
@@ -156,177 +155,117 @@ export default function TurmasPage() {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
-            {/* Navbar */}
-            <motion.div
-                initial={{ y: -100 }}
-                animate={{ y: 0 }}
-                className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary backdrop-blur-sm"
-            >
-                <div className="container mx-auto px-4">
-                    <div className="flex justify-between items-center">
-                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                            <Link
-                                href="/dashboard"
-                                className="text-2xl font-bold text-slate-900 dark:text-text-primary flex items-center gap-2"
-                            >
-                                <Image
-                                    src="/hu.png"
-                                    alt="Senior Code AI Logo"
-                                    width={32}
-                                    height={32}
-                                    className="w-8 h-8"
-                                />
-                                <span>Senior Code AI</span>
-                            </Link>
-                        </motion.div>
-                        <div className="flex items-center gap-3">
-                            <BackButton href="/dashboard" />
-                            <ThemeToggle />
-                            <Link
-                                href="/dashboard/turmas/criar"
-                                className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
-                            >
-                                <Plus className="w-5 h-5" /> Nova Turma
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
+            <Header
+                variant="dashboard"
+                user={user}
+                onLogout={signOut}
+                extraActions={
+                    <>
+                        <BackButton href="/dashboard" />
+                        <Link
+                            href="/dashboard/turmas/criar"
+                            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
+                        >
+                            <Plus className="w-5 h-5" /> Nova Turma
+                        </Link>
+                    </>
+                }
+            />
 
             {/* Conteúdo Principal */}
-            <main className="flex-1 py-16 pt-32">
+            <main className="flex-grow py-16 pt-32">
                 <div className="container mx-auto px-6">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="mb-12"
-                    >
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
-                            Minhas Turmas
-                        </h1>
-                        <p className="text-slate-600 dark:text-text-secondary">
-                            Gerencie suas turmas e acompanhe o progresso dos alunos
-                        </p>
-                    </motion.div>
-
                     {/* Grid de Turmas */}
                     {turmas.length === 0 ? (
-                        <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom shadow-sm">
-                            <div className="text-6xl mb-6"><BookOpen className="w-16 h-16 mx-auto text-slate-400" /></div>
-                            <h3 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-4">
-                                Nenhuma turma criada
-                            </h3>
-                            <p className="text-slate-600 dark:text-text-secondary text-lg mb-8 max-w-md mx-auto">
-                                Crie sua primeira turma para começar a organizar seus alunos e exercícios
-                            </p>
-                            <Link
-                                href="/dashboard/turmas/criar"
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-colors"
-                            >
-                                <Plus className="w-5 h-5" /> Criar Primeira Turma
-                            </Link>
-                        </div>
-                    ) : (
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                            className="max-w-md mx-auto"
                         >
-                            {turmas.map((turma, index) => (
-                                <motion.div
-                                    key={turma.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                    className="group bg-white dark:bg-bg-secondary rounded-xl p-6 shadow-lg border border-slate-200 dark:border-border-custom hover:border-orange-300 dark:hover:border-orange-500/50 transition-all hover:shadow-xl"
+                            <div className="bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom text-center">
+                                <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                    <Users className="w-10 h-10 text-white" />
+                                </div>
+                                <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-text-primary">
+                                    Nenhuma turma ainda
+                                </h3>
+                                <p className="text-slate-600 dark:text-text-secondary text-lg mb-8 leading-relaxed">
+                                    Crie sua primeira turma para começar a organizar seus alunos.
+                                </p>
+                                <Link
+                                    href="/dashboard/turmas/criar"
+                                    className="inline-flex items-center gap-2 w-full py-4 px-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all font-medium text-lg justify-center"
                                 >
-                                    {/* Header */}
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className="flex-1">
-                                            <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-1 line-clamp-1">
+                                    <Plus className="w-5 h-5" /> Criar Primeira Turma
+                                </Link>
+                            </div>
+                        </motion.div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                            {turmas.map((turma, index) => (
+                                <Link key={turma.id} href={`/dashboard/turmas/${turma.id}`}>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className="group bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom hover:border-orange-300 dark:hover:border-orange-500/50 transition-all hover:shadow-2xl cursor-pointer h-full"
+                                    >
+                                        <div className="text-center">
+                                            {/* Ícone */}
+                                            <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                                                <Users className="w-10 h-10 text-white" />
+                                            </div>
+
+                                            {/* Nome da Turma */}
+                                            <h3 className="text-lg font-bold mb-4 text-slate-900 dark:text-text-primary truncate" title={turma.nome}>
                                                 {turma.nome}
                                             </h3>
-                                            {turma.descricao && (
-                                                <p className="text-slate-600 dark:text-text-secondary text-sm line-clamp-2">
-                                                    {turma.descricao}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white text-xl">
-                                            <BookOpen className="w-6 h-6" />
-                                        </div>
-                                    </div>
 
-                                    {/* Código de Acesso */}
-                                    <div className="mb-4 p-3 bg-slate-100 dark:bg-bg-tertiary rounded-lg">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-xs text-slate-500 dark:text-text-secondary mb-1">
-                                                    Código de Acesso
-                                                </p>
-                                                <p className="font-mono font-bold text-lg text-slate-900 dark:text-text-primary tracking-wider">
-                                                    {turma.codigo_acesso}
-                                                </p>
-                                            </div>
-                                            <button
-                                                onClick={() => copyToClipboard(turma.codigo_acesso)}
-                                                className={`p-2 rounded-lg transition-colors ${copiedCode === turma.codigo_acesso
-                                                    ? 'bg-green-500 text-white'
-                                                    : 'bg-slate-200 dark:bg-bg-secondary hover:bg-slate-300 dark:hover:bg-border-hover text-slate-700 dark:text-text-secondary'
-                                                    }`}
-                                                title="Copiar código"
+                                            {/* Código de Acesso */}
+                                            <div
+                                                className="inline-flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-bg-tertiary rounded-lg mb-8"
+                                                onClick={(e) => e.stopPropagation()}
                                             >
-                                                {copiedCode === turma.codigo_acesso ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                                            </button>
-                                        </div>
-                                    </div>
+                                                <span className="font-mono font-bold text-slate-900 dark:text-text-primary tracking-wider">
+                                                    {turma.codigo_acesso}
+                                                </span>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        copyToClipboard(turma.codigo_acesso);
+                                                    }}
+                                                    className={`p-1.5 rounded transition-colors ${copiedCode === turma.codigo_acesso
+                                                        ? 'bg-green-500 text-white'
+                                                        : 'bg-slate-200 dark:bg-bg-secondary hover:bg-slate-300 dark:hover:bg-border-hover text-slate-600 dark:text-text-secondary'
+                                                        }`}
+                                                    title="Copiar código"
+                                                >
+                                                    {copiedCode === turma.codigo_acesso ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                                                </button>
+                                            </div>
 
-                                    {/* Estatísticas */}
-                                    <div className="grid grid-cols-3 gap-2 mb-4">
-                                        <div className="text-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                            <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                                                {turma._count.turma_aluno}
-                                            </p>
-                                            <p className="text-xs text-slate-600 dark:text-text-secondary">Alunos</p>
+                                            {/* Botão Visual */}
+                                            <div className="w-full py-4 px-6 bg-gradient-to-r from-orange-500 to-orange-600 group-hover:from-orange-600 group-hover:to-orange-700 text-white rounded-lg transition-all font-medium text-lg">
+                                                Gerenciar Turma
+                                            </div>
                                         </div>
-                                        <div className="text-center p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                                            <p className="text-xl font-bold text-green-600 dark:text-green-400">
-                                                {turma._count.turma_exercicio}
-                                            </p>
-                                            <p className="text-xs text-slate-600 dark:text-text-secondary">Exercícios</p>
-                                        </div>
-                                        <div className="text-center p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                                            <p className="text-xl font-bold text-purple-600 dark:text-purple-400">
-                                                {turma._count.trilha_modulo}
-                                            </p>
-                                            <p className="text-xs text-slate-600 dark:text-text-secondary">Módulos</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Ações */}
-                                    <div className="flex gap-2">
-                                        <Link
-                                            href={`/dashboard/turmas/${turma.id}`}
-                                            className="flex-1 py-2 px-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg text-center font-medium transition-colors"
-                                        >
-                                            Gerenciar
-                                        </Link>
-                                        <button
-                                            onClick={() => setShowDeleteModal(turma.id)}
-                                            className="py-2 px-4 bg-slate-200 dark:bg-bg-tertiary hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-700 dark:text-text-secondary hover:text-red-600 dark:hover:text-red-400 rounded-lg transition-colors"
-                                            title="Desativar turma"
-                                        >
-                                            <Trash2 className="w-5 h-5" />
-                                        </button>
-                                    </div>
-                                </motion.div>
+                                    </motion.div>
+                                </Link>
                             ))}
-                        </motion.div>
+                        </div>
                     )}
                 </div>
             </main>
+
+            {/* Footer */}
+            <footer className="py-8 border-t border-slate-200 dark:footer-border-custom bg-slate-50/30 footer-bg mt-auto">
+                <div className="container mx-auto px-6 text-center">
+                    <p className="text-slate-600 dark:text-text-secondary">
+                        Senior Code AI
+                    </p>
+                </div>
+            </footer>
 
             {/* Modal de Confirmação de Exclusão */}
             <AnimatePresence>
@@ -421,3 +360,4 @@ export default function TurmasPage() {
         </div>
     );
 }
+
