@@ -27,6 +27,8 @@ interface HeaderProps {
   onLogout?: () => void;
   logoHref?: string;
   logoSize?: 'sm' | 'md' | 'lg';
+  customTitle?: string;
+  hideLogo?: boolean;
 }
 
 export function Header({
@@ -38,6 +40,8 @@ export function Header({
   onLogout,
   logoHref = '/dashboard',
   logoSize = 'md',
+  customTitle,
+  hideLogo = false,
 }: HeaderProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -51,6 +55,7 @@ export function Header({
     if (variant === 'dashboard' && user) {
       return (
         <div className="flex items-center gap-3">
+          {extraActions}
           <ThemeToggle />
           <div className="w-px h-6 bg-slate-300 dark:bg-border-custom"></div>
           <div className="relative">
@@ -65,7 +70,7 @@ export function Header({
                   className="w-9 h-9 rounded-full object-cover border-2 border-blue-400"
                 />
               ) : (
-                <div className="w-9 h-9 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+                <div className="w-9 h-9 bg-gradient-to-r from-blue-500 to-brand-500 rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold text-sm">
                     {user?.nome?.charAt(0).toUpperCase() || 'U'}
                   </span>
@@ -182,7 +187,7 @@ export function Header({
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Link
               href="/login"
-              className="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 transition-all flex items-center gap-2 shadow-lg text-white"
+              className="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-brand-500 hover:from-blue-600 hover:to-brand-600 transition-all flex items-center gap-2 shadow-lg text-white"
             >
               <LogIn className="w-5 h-5" />
               Entrar
@@ -222,14 +227,16 @@ export function Header({
               className={`${textSize} font-bold text-slate-900 dark:text-text-primary flex items-center gap-2 ${logoSize === 'lg' ? 'gap-3' : 'gap-2'
                 }`}
             >
-              <Image
-                src="/hu.png"
-                alt="Senior Code AI Logo"
-                width={logoWidth}
-                height={logoHeight}
-                className={logoClass}
-              />
-              <span>Senior Code AI</span>
+              {!hideLogo && (
+                <Image
+                  src="/hu.png"
+                  alt="Senior Code AI Logo"
+                  width={logoWidth}
+                  height={logoHeight}
+                  className={logoClass}
+                />
+              )}
+              <span>{customTitle || 'Senior Code AI'}</span>
             </Link>
           </motion.div>
 

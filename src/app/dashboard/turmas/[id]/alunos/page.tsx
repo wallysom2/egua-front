@@ -190,10 +190,10 @@ export default function AlunosTurmaPage() {
                                             <img
                                                 src={aluno.usuario.avatar_url}
                                                 alt={aluno.usuario.nome}
-                                                className="w-12 h-12 rounded-full object-cover border-2 border-blue-200 dark:border-blue-700"
+                                                className="w-12 h-12 rounded-full object-cover border-2 border-brand-200 dark:border-brand-700"
                                             />
                                         ) : (
-                                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                            <div className="w-12 h-12 bg-gradient-to-br from-brand-500 to-brand-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
                                                 {getInitials(aluno.usuario.nome)}
                                             </div>
                                         )}

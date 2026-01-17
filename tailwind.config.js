@@ -23,7 +23,7 @@ module.exports = {
         'footer-bg': 'var(--color-footer-bg)',
         'footer-bg-opacity': 'var(--color-footer-bg-opacity)',
         'footer-border': 'var(--color-footer-border)',
-        
+
         // Cores específicas do projeto
         slate: {
           950: '#0a0e17',
@@ -38,6 +38,18 @@ module.exports = {
         indigo: {
           500: '#6366f1',
           600: '#4f46e5',
+        },
+        brand: {
+          50: 'var(--color-brand-50)',
+          100: 'var(--color-brand-100)',
+          200: 'var(--color-brand-200)',
+          300: 'var(--color-brand-300)',
+          400: 'var(--color-brand-400)',
+          500: 'var(--color-brand-500)',
+          600: 'var(--color-brand-600)',
+          700: 'var(--color-brand-700)',
+          800: 'var(--color-brand-800)',
+          900: 'var(--color-brand-900)',
         }
       }
     },

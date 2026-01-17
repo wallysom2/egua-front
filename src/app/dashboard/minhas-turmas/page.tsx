@@ -9,7 +9,9 @@ import { KeyRound, AlertTriangle, RefreshCw, GraduationCap, Star, BookOpen, Chec
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
+import { DashboardCard } from '@/components/DashboardCard';
 import { useAuth } from '@/contexts/AuthContext';
+import { Header } from '@/components/Header';
 import { apiClient } from '@/lib/api-client';
 
 interface TurmaAluno {
@@ -30,7 +32,7 @@ interface TurmaAluno {
 
 export default function MinhasTurmasPage() {
     const router = useRouter();
-    const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+    const { user, signOut, isAuthenticated, isLoading: authLoading } = useAuth();
     const [turmas, setTurmas] = useState<TurmaAluno[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -85,151 +87,116 @@ export default function MinhasTurmasPage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
-            {/* Navbar */}
-            <motion.div
-                initial={{ y: -100 }}
-                animate={{ y: 0 }}
-                className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary backdrop-blur-sm"
-            >
-                <div className="container mx-auto px-4">
-                    <div className="flex justify-between items-center">
-                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                            <Link
-                                href="/dashboard"
-                                className="text-2xl font-bold text-slate-900 dark:text-text-primary flex items-center gap-2"
-                            >
-                                <Image
-                                    src="/hu.png"
-                                    alt="Senior Code AI Logo"
-                                    width={32}
-                                    height={32}
-                                    className="w-8 h-8"
-                                />
-                                <span>Senior Code AI</span>
-                            </Link>
-                        </motion.div>
-                        <div className="flex items-center gap-3">
-                            <BackButton href="/dashboard" />
-                            <ThemeToggle />
-                            <Link
-                                href="/dashboard/entrar-turma"
-                                className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
-                            >
-                                <KeyRound className="w-5 h-5" /> Entrar em Turma
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
+        <>
+            <Header
+                variant="dashboard"
+                user={user}
+                onLogout={signOut}
+                customTitle="Minhas Turmas"
+                hideLogo={true}
+                extraActions={
+                    <>
+                        <BackButton href="/dashboard" />
+                        <Link
+                            href="/dashboard/entrar-turma"
+                            className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
+                        >
+                            <KeyRound className="w-5 h-5" /> Entrar em Turma
+                        </Link>
+                    </>
+                }
+            />
 
             {/* Conteúdo Principal */}
-            <main className="flex-1 py-16 pt-32">
+            <main className="flex-1 flex items-center py-12 pt-24">
                 <div className="container mx-auto px-6">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="mb-12"
-                    >
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
-                            Minhas Turmas
-                        </h1>
-                        <p className="text-slate-600 dark:text-text-secondary">
-                            Continue sua jornada de aprendizado
-                        </p>
-                    </motion.div>
 
                     {/* Grid de Turmas */}
                     {turmas.length === 0 ? (
-                        <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom shadow-sm">
-                            <div className="text-6xl mb-6"><GraduationCap className="w-16 h-16 mx-auto text-slate-400" /></div>
-                            <h3 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-4">
-                                Você ainda não está em nenhuma turma
-                            </h3>
-                            <p className="text-slate-600 dark:text-text-secondary text-lg mb-8 max-w-md mx-auto">
-                                Peça o código de acesso ao seu professor e entre em uma turma para começar a aprender!
-                            </p>
-                            <Link
-                                href="/dashboard/entrar-turma"
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-colors"
-                            >
-                                <KeyRound className="w-5 h-5" /> Entrar em uma Turma
-                            </Link>
-                        </div>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="max-w-lg mx-auto"
+                        >
+                            <div className="bg-white dark:bg-bg-secondary rounded-2xl p-10 shadow-xl border border-slate-200 dark:border-border-custom text-center">
+                                {/* Ícone Animado */}
+                                <motion.div
+                                    initial={{ scale: 0.8, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                                    className="w-24 h-24 bg-gradient-to-br from-brand-500/10 to-brand-600/10 rounded-full flex items-center justify-center mx-auto mb-8"
+                                >
+                                    <GraduationCap className="w-12 h-12 text-brand-500" />
+                                </motion.div>
+
+                                <h3 className="text-2xl font-extrabold text-slate-900 dark:text-text-primary mb-3 tracking-tight">
+                                    Você ainda não está em nenhuma turma
+                                </h3>
+                                <p className="text-slate-500 dark:text-text-secondary text-base mb-8 leading-relaxed">
+                                    Peça o código de acesso ao seu professor e <Link href="/dashboard/entrar-turma" className="text-brand-600 dark:text-brand-500 font-semibold hover:underline">entre em uma turma</Link> para começar a aprender!
+                                </p>
+
+                                <Link
+                                    href="/dashboard/entrar-turma"
+                                    className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl hover:from-brand-600 hover:to-brand-700 transition-all font-bold text-lg shadow-lg shadow-brand-500/20"
+                                >
+                                    <KeyRound className="w-5 h-5" /> Entrar em uma Turma
+                                </Link>
+                            </div>
+                        </motion.div>
                     ) : (
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                            transition={{ duration: 0.8 }}
+                            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-8 text-center"
                         >
                             {turmas.map((turma, index) => (
-                                <motion.div
+                                <DashboardCard
                                     key={turma.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                    className="group bg-white dark:bg-bg-secondary rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-border-custom hover:border-green-300 dark:hover:border-green-500/50 transition-all hover:shadow-xl"
+                                    title={turma.nome}
+                                    icon={GraduationCap}
+                                    color="brand"
+                                    href={`/dashboard/turma/${turma.id}`}
+                                    delay={index * 0.1}
                                 >
-                                    {/* Header com Progresso */}
-                                    <div className="relative h-24 bg-gradient-to-r from-green-500 to-emerald-600">
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="text-center text-white">
-                                                <p className="text-4xl font-bold">{turma.progresso.percentual}%</p>
-                                                <p className="text-sm opacity-90">Progresso</p>
-                                            </div>
-                                        </div>
-                                        {/* Barra de XP */}
-                                        <div className="absolute bottom-0 left-0 right-0 h-2 bg-black/20">
-                                            <div
-                                                className="h-full bg-yellow-400 transition-all duration-500"
-                                                style={{ width: `${turma.progresso.percentual}%` }}
-                                            />
-                                        </div>
+                                    {/* Overlay de Progresso (Sutil) */}
+                                    <div
+                                        className="absolute bottom-0 left-0 h-1 bg-brand-500 transition-all duration-500"
+                                        style={{ width: `${turma.progresso.percentual}%` }}
+                                    />
+
+                                    {/* Badge de Progresso */}
+                                    <div className="absolute top-4 right-4 bg-yellow-400 text-slate-900 text-xs font-bold px-2 py-1 rounded-full shadow-sm">
+                                        {turma.progresso.percentual}%
                                     </div>
 
-                                    {/* Corpo */}
-                                    <div className="p-6">
-                                        <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-2 line-clamp-1">
-                                            {turma.nome}
-                                        </h3>
-                                        {turma.descricao && (
-                                            <p className="text-slate-600 dark:text-text-secondary text-sm mb-4 line-clamp-2">
-                                                {turma.descricao}
-                                            </p>
-                                        )}
-
+                                    <div className="flex flex-col items-center w-full">
                                         {/* Stats */}
-                                        <div className="flex items-center gap-4 mb-4 text-sm">
-                                            <div className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
+                                        <div className="flex flex-wrap items-center justify-center gap-3 mb-6 text-sm">
+                                            <div className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400 font-bold">
                                                 <Star className="w-4 h-4" />
-                                                <span className="font-bold">{turma.progresso.xp_total} XP</span>
+                                                <span>{turma.progresso.xp_total} XP</span>
                                             </div>
-                                            <div className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
+                                            <div className="flex items-center gap-1 text-slate-500 dark:text-text-secondary">
                                                 <BookOpen className="w-4 h-4" />
-                                                <span>{turma._count.trilha_modulo} módulos</span>
-                                            </div>
-                                            <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
-                                                <CheckCircle className="w-4 h-4" />
-                                                <span>{turma.progresso.completadas}/{turma.progresso.total}</span>
+                                                <span>{turma._count.trilha_modulo} mod</span>
                                             </div>
                                         </div>
 
-                                        {/* Botão */}
-                                        <Link
-                                            href={`/dashboard/turma/${turma.id}`}
-                                            className="block w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg text-center font-medium transition-colors"
+                                        {/* Botão de Ação (Visual apenas, card já é Link) */}
+                                        <div
+                                            className="w-full py-3 px-6 bg-gradient-to-r from-brand-500 to-brand-600 group-hover:from-brand-600 group-hover:to-brand-700 text-white rounded-xl transition-all font-bold text-base shadow-md flex items-center justify-center gap-2"
                                         >
                                             {turma.progresso.percentual === 0 ? <><Rocket className="w-4 h-4" /> Começar</> : <><Play className="w-4 h-4" /> Continuar</>}
-                                        </Link>
+                                        </div>
                                     </div>
-                                </motion.div>
+                                </DashboardCard>
                             ))}
                         </motion.div>
                     )}
                 </div>
             </main>
-        </div>
+        </>
     );
 }

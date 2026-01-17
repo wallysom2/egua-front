@@ -301,7 +301,7 @@ export default function TrilhaConfigPage() {
                             <ThemeToggle />
                             <button
                                 onClick={openNewModulo}
-                                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg flex items-center gap-2 font-medium transition-colors"
+                                className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg flex items-center gap-2 font-medium transition-colors"
                             >
                                 <Plus className="w-5 h-5" /> Novo Módulo
                             </button>
@@ -338,7 +338,7 @@ export default function TrilhaConfigPage() {
                             </p>
                             <button
                                 onClick={openNewModulo}
-                                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-colors"
+                                className="px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-colors"
                             >
                                 <Plus className="w-5 h-5" /> Criar Primeiro Módulo
                             </button>
@@ -357,7 +357,7 @@ export default function TrilhaConfigPage() {
                                     <div className="p-6 bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-b border-slate-200 dark:border-border-custom">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl shadow-lg">
+                                                <div className="w-14 h-14 bg-gradient-to-br from-brand-500 to-brand-600 rounded-full flex items-center justify-center text-white text-2xl shadow-lg">
                                                     {modulo.icone || index + 1}
                                                 </div>
                                                 <div>
@@ -379,7 +379,7 @@ export default function TrilhaConfigPage() {
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => openEditModulo(modulo)}
-                                                    className="p-2 text-slate-500 hover:text-purple-600 transition-colors"
+                                                    className="p-2 text-slate-500 hover:text-brand-600 transition-colors"
                                                     title="Editar módulo"
                                                 >
                                                     <Pencil className="w-5 h-5" />
@@ -435,7 +435,7 @@ export default function TrilhaConfigPage() {
 
                                         <button
                                             onClick={() => openNewLicao(modulo.id)}
-                                            className="w-full py-3 border-2 border-dashed border-slate-300 dark:border-border-custom text-slate-500 dark:text-text-secondary hover:border-purple-400 hover:text-purple-600 rounded-lg transition-colors flex items-center justify-center gap-2"
+                                            className="w-full py-3 border-2 border-dashed border-slate-300 dark:border-border-custom text-slate-500 dark:text-text-secondary hover:border-brand-400 hover:text-brand-600 rounded-lg transition-colors flex items-center justify-center gap-2"
                                         >
                                             <Plus className="w-5 h-5" /> Adicionar Lição
                                         </button>
@@ -546,7 +546,7 @@ export default function TrilhaConfigPage() {
                                 <button
                                     onClick={editingModulo ? handleUpdateModulo : handleCreateModulo}
                                     disabled={saving}
-                                    className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-colors disabled:opacity-50"
+                                    className="flex-1 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-colors disabled:opacity-50"
                                 >
                                     {saving ? 'Salvando...' : editingModulo ? 'Salvar' : 'Criar'}
                                 </button>
@@ -632,7 +632,7 @@ export default function TrilhaConfigPage() {
                                 <button
                                     onClick={() => handleCreateLicao(showLicaoModal)}
                                     disabled={saving}
-                                    className="flex-1 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-colors disabled:opacity-50"
+                                    className="flex-1 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-colors disabled:opacity-50"
                                 >
                                     {saving ? 'Adicionando...' : 'Adicionar'}
                                 </button>
