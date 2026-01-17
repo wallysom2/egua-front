@@ -175,7 +175,7 @@ export default function TurmasPage() {
             />
 
             {/* Conteúdo Principal */}
-            <main className="flex-grow flex items-center py-16 pt-32">
+            <main className="flex-grow flex items-center py-12 pt-24">
                 <div className="container mx-auto px-6">
                     {/* Grid de Turmas */}
                     {turmas.length === 0 ? (
@@ -293,9 +293,6 @@ export default function TurmasPage() {
 
                                 <p className="text-slate-600 dark:text-text-secondary mb-2 font-medium">
                                     Turma: <span className="text-brand-600">{showQrModal.nome}</span>
-                                </p>
-                                <p className="text-sm text-slate-500 dark:text-text-secondary mb-6 leading-relaxed">
-                                    Peça para seus alunos escanearem este QR Code para serem matriculados automaticamente.
                                 </p>
 
                                 <div className="flex flex-col gap-2">

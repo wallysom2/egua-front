@@ -5,8 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { KeyRound, Rocket, ArrowLeft, Lightbulb, Check } from 'lucide-react';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { KeyRound, Rocket, ArrowLeft, Lightbulb, Check, Sparkles } from 'lucide-react';
+import { Header } from '@/components/Header';
 import { BackButton } from '@/components/BackButton';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api-client';
@@ -35,7 +35,7 @@ export default function EntrarTurmaPage() {
 function EntrarTurmaContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { isAuthenticated, isLoading: authLoading } = useAuth();
+    const { user, signOut, isAuthenticated, isLoading: authLoading } = useAuth();
     const [codigo, setCodigo] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -99,40 +99,20 @@ function EntrarTurmaContent() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
-            {/* Navbar */}
-            <motion.div
-                initial={{ y: -100 }}
-                animate={{ y: 0 }}
-                className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary backdrop-blur-sm"
-            >
-                <div className="container mx-auto px-4">
-                    <div className="flex justify-between items-center">
-                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                            <Link
-                                href="/dashboard"
-                                className="text-2xl font-bold text-slate-900 dark:text-text-primary flex items-center gap-2"
-                            >
-                                <Image
-                                    src="/hu.png"
-                                    alt="Senior Code AI Logo"
-                                    width={32}
-                                    height={32}
-                                    className="w-8 h-8"
-                                />
-                                <span>Senior Code AI</span>
-                            </Link>
-                        </motion.div>
-                        <div className="flex items-center gap-3">
-                            <BackButton href="/dashboard/minhas-turmas" />
-                            <ThemeToggle />
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
+        <>
+            <Header
+                variant="dashboard"
+                user={user}
+                onLogout={signOut}
+                customTitle="Entrar em Turma"
+                hideLogo={true}
+                extraActions={
+                    <BackButton href="/dashboard/minhas-turmas" />
+                }
+            />
 
             {/* Conteúdo Principal */}
-            <main className="flex-1 py-16 pt-32 flex items-center justify-center">
+            <main className="flex-1 py-12 pt-24 flex items-center justify-center">
                 <div className="container mx-auto px-6 max-w-md">
                     <AnimatePresence mode="wait">
                         {success ? (
@@ -143,54 +123,71 @@ function EntrarTurmaContent() {
                                 exit={{ opacity: 0, scale: 0.9 }}
                                 className="text-center"
                             >
-                                <div className="bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom">
-                                    <div className="w-24 h-24 bg-gradient-to-br from-brand-500 to-brand-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white">
-                                        <Check className="w-12 h-12" />
-                                    </div>
-                                    <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
-                                        Matrícula Realizada!
-                                    </h1>
-                                    <p className="text-slate-600 dark:text-text-secondary mb-6">
-                                        Você entrou na turma <strong>{success.turmaNome}</strong>
-                                    </p>
-                                    <div className="flex flex-col gap-3">
+                                <div className="bg-white dark:bg-bg-secondary rounded-2xl p-10 shadow-xl border border-slate-200 dark:border-border-custom">
+                                    {/* Ícone de Sucesso com Animação */}
+                                    <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                                        className="w-24 h-24 bg-gradient-to-br from-brand-500 to-brand-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg shadow-brand-500/30"
+                                    >
+                                        <Check className="w-12 h-12 text-white" strokeWidth={3} />
+                                    </motion.div>
+
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.2 }}
+                                    >
+                                        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-text-primary mb-3 tracking-tight">
+                                            Matrícula Realizada!
+                                        </h1>
+                                        <p className="text-slate-600 dark:text-text-secondary mb-8 text-lg">
+                                            Você entrou na turma <span className="font-bold text-brand-600 dark:text-brand-500">{success.turmaNome}</span>
+                                        </p>
+                                    </motion.div>
+
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.3 }}
+                                        className="flex flex-col gap-3"
+                                    >
                                         <Link
                                             href={`/dashboard/turma/${success.turmaId}`}
-                                            className="w-full py-3 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg font-medium transition-colors"
+                                            className="w-full py-4 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2 text-lg"
                                         >
-                                            <Rocket className="w-5 h-5" /> Começar a Estudar
+                                            <Sparkles className="w-5 h-5" /> Começar a Estudar
                                         </Link>
                                         <Link
                                             href="/dashboard/minhas-turmas"
-                                            className="w-full py-3 bg-slate-200 dark:bg-bg-tertiary text-slate-900 dark:text-text-primary rounded-lg hover:bg-slate-300 dark:hover:bg-border-hover font-medium transition-colors"
+                                            className="w-full py-4 bg-slate-100 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary rounded-xl hover:bg-slate-200 dark:hover:bg-border-hover font-medium transition-all flex items-center justify-center gap-2"
                                         >
                                             <ArrowLeft className="w-5 h-5" /> Minhas Turmas
                                         </Link>
-                                    </div>
+                                    </motion.div>
                                 </div>
                             </motion.div>
                         ) : (
                             <motion.div
                                 key="form"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
                             >
-                                {/* Header */}
-                                <div className="text-center mb-8">
-                                    <div className="w-20 h-20 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-white text-3xl shadow-lg">
-                                        <KeyRound className="w-10 h-10" />
+                                {/* Card Principal */}
+                                <div className="bg-white dark:bg-bg-secondary rounded-2xl p-10 shadow-xl border border-slate-200 dark:border-border-custom">
+                                    <div className="text-center mb-8">
+                                        <div className="w-16 h-16 bg-gradient-to-br from-brand-500/10 to-brand-600/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                            <KeyRound className="w-8 h-8 text-brand-600" />
+                                        </div>
+                                        <h1 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-2">
+                                            Digite seu Código
+                                        </h1>
+                                        <p className="text-slate-500 dark:text-text-secondary text-sm">
+                                            O código de 4 caracteres fornecido pelo seu professor
+                                        </p>
                                     </div>
-                                    <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
-                                        Entrar em uma Turma
-                                    </h1>
-                                    <p className="text-slate-600 dark:text-text-secondary">
-                                        Digite o código de acesso fornecido pelo professor
-                                    </p>
-                                </div>
-
-                                {/* Formulário */}
-                                <div className="bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom">
                                     <form onSubmit={handleSubmit} className="space-y-6">
                                         {/* Campo de Código */}
                                         <div>
@@ -205,14 +202,18 @@ function EntrarTurmaContent() {
                                                 type="text"
                                                 value={codigo}
                                                 onChange={handleCodeChange}
-                                                placeholder="XXXXXXXX"
+                                                placeholder="••••"
                                                 required
-                                                className="w-full px-4 py-4 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary placeholder-slate-400 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-center text-2xl font-mono tracking-[0.5em] uppercase"
-                                                style={{ letterSpacing: '0.3em' }}
+                                                className="w-full px-4 py-5 bg-slate-50 dark:bg-bg-tertiary border-2 border-slate-100 dark:border-border-custom rounded-xl text-slate-900 dark:text-text-primary placeholder-slate-300 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all text-center text-4xl font-mono tracking-[0.5em] uppercase shadow-inner"
                                             />
-                                            <p className="mt-2 text-sm text-slate-500 dark:text-text-secondary text-center">
-                                                {codigo.length}/4 caracteres
-                                            </p>
+                                            <div className="flex justify-between items-center mt-3 px-1">
+                                                <p className="text-xs font-semibold text-slate-400 dark:text-text-tertiary uppercase tracking-wider">
+                                                    Status: {codigo.length === 4 ? 'Pronto' : 'Incompleto'}
+                                                </p>
+                                                <p className="text-xs font-bold text-brand-600 dark:text-brand-500">
+                                                    {codigo.length}/4
+                                                </p>
+                                            </div>
                                         </div>
 
                                         {/* Erro */}
@@ -244,19 +245,16 @@ function EntrarTurmaContent() {
                                             )}
                                         </button>
                                     </form>
-                                </div>
 
-                                {/* Info */}
-                                <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
-                                    <div className="flex gap-3">
-                                        <Lightbulb className="w-6 h-6 text-blue-500" />
-                                        <div>
-                                            <p className="text-blue-800 dark:text-blue-300 font-medium">
-                                                Onde consigo o código?
-                                            </p>
-                                            <p className="text-blue-600 dark:text-blue-400 text-sm">
-                                                Peça ao seu professor o código de acesso da turma. É um código de 4 caracteres.
-                                            </p>
+                                    {/* Link de Ajuda mais sutil */}
+                                    <div className="mt-8 pt-6 border-t border-slate-100 dark:border-border-custom flex items-center justify-center">
+                                        <div className="flex items-center gap-2 text-slate-400 dark:text-text-tertiary hover:text-brand-600 dark:hover:text-brand-500 cursor-help transition-colors group">
+                                            <Lightbulb className="w-4 h-4" />
+                                            <span className="text-sm font-medium">Onde consigo o código?</span>
+                                            <div className="absolute bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-slate-900 text-white text-xs rounded-lg shadow-xl text-center">
+                                                Peça ao seu professor o código de acesso de 4 caracteres da sua turma.
+                                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-slate-900"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -265,6 +263,6 @@ function EntrarTurmaContent() {
                     </AnimatePresence>
                 </div>
             </main>
-        </div>
+        </>
     );
 }

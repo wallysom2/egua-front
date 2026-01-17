@@ -87,11 +87,13 @@ export default function MinhasTurmasPage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
+        <>
             <Header
                 variant="dashboard"
                 user={user}
                 onLogout={signOut}
+                customTitle="Minhas Turmas"
+                hideLogo={true}
                 extraActions={
                     <>
                         <BackButton href="/dashboard" />
@@ -106,45 +108,48 @@ export default function MinhasTurmasPage() {
             />
 
             {/* Conteúdo Principal */}
-            <main className="flex-1 flex items-center py-20 pt-32">
+            <main className="flex-1 flex items-center py-12 pt-24">
                 <div className="container mx-auto px-6">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="mb-12 text-center"
-                    >
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
-                            Minhas Turmas
-                        </h1>
-                        <p className="text-slate-600 dark:text-text-secondary">
-                            Continue sua jornada de aprendizado
-                        </p>
-                    </motion.div>
 
                     {/* Grid de Turmas */}
                     {turmas.length === 0 ? (
-                        <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom shadow-sm max-w-2xl mx-auto">
-                            <div className="text-6xl mb-6"><GraduationCap className="w-16 h-16 mx-auto text-slate-400" /></div>
-                            <h3 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-4">
-                                Você ainda não está em nenhuma turma
-                            </h3>
-                            <p className="text-slate-600 dark:text-text-secondary text-lg mb-8 max-w-md mx-auto">
-                                Peça o código de acesso ao seu professor e entre em uma turma para começar a aprender!
-                            </p>
-                            <Link
-                                href="/dashboard/entrar-turma"
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-colors"
-                            >
-                                <KeyRound className="w-5 h-5" /> Entrar em uma Turma
-                            </Link>
-                        </div>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="max-w-lg mx-auto"
+                        >
+                            <div className="bg-white dark:bg-bg-secondary rounded-2xl p-10 shadow-xl border border-slate-200 dark:border-border-custom text-center">
+                                {/* Ícone Animado */}
+                                <motion.div
+                                    initial={{ scale: 0.8, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                                    className="w-24 h-24 bg-gradient-to-br from-brand-500/10 to-brand-600/10 rounded-full flex items-center justify-center mx-auto mb-8"
+                                >
+                                    <GraduationCap className="w-12 h-12 text-brand-500" />
+                                </motion.div>
+
+                                <h3 className="text-2xl font-extrabold text-slate-900 dark:text-text-primary mb-3 tracking-tight">
+                                    Você ainda não está em nenhuma turma
+                                </h3>
+                                <p className="text-slate-500 dark:text-text-secondary text-base mb-8 leading-relaxed">
+                                    Peça o código de acesso ao seu professor e <Link href="/dashboard/entrar-turma" className="text-brand-600 dark:text-brand-500 font-semibold hover:underline">entre em uma turma</Link> para começar a aprender!
+                                </p>
+
+                                <Link
+                                    href="/dashboard/entrar-turma"
+                                    className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl hover:from-brand-600 hover:to-brand-700 transition-all font-bold text-lg shadow-lg shadow-brand-500/20"
+                                >
+                                    <KeyRound className="w-5 h-5" /> Entrar em uma Turma
+                                </Link>
+                            </div>
+                        </motion.div>
                     ) : (
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+                            transition={{ duration: 0.8 }}
+                            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-8 text-center"
                         >
                             {turmas.map((turma, index) => (
                                 <DashboardCard
@@ -152,6 +157,7 @@ export default function MinhasTurmasPage() {
                                     title={turma.nome}
                                     icon={GraduationCap}
                                     color="brand"
+                                    href={`/dashboard/turma/${turma.id}`}
                                     delay={index * 0.1}
                                 >
                                     {/* Overlay de Progresso (Sutil) */}
@@ -178,13 +184,12 @@ export default function MinhasTurmasPage() {
                                             </div>
                                         </div>
 
-                                        {/* Botão de Ação */}
-                                        <Link
-                                            href={`/dashboard/turma/${turma.id}`}
-                                            className="w-full py-3 px-6 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-xl transition-all font-bold text-base shadow-md flex items-center justify-center gap-2"
+                                        {/* Botão de Ação (Visual apenas, card já é Link) */}
+                                        <div
+                                            className="w-full py-3 px-6 bg-gradient-to-r from-brand-500 to-brand-600 group-hover:from-brand-600 group-hover:to-brand-700 text-white rounded-xl transition-all font-bold text-base shadow-md flex items-center justify-center gap-2"
                                         >
                                             {turma.progresso.percentual === 0 ? <><Rocket className="w-4 h-4" /> Começar</> : <><Play className="w-4 h-4" /> Continuar</>}
-                                        </Link>
+                                        </div>
                                     </div>
                                 </DashboardCard>
                             ))}
@@ -192,6 +197,6 @@ export default function MinhasTurmasPage() {
                     )}
                 </div>
             </main>
-        </div>
+        </>
     );
 }

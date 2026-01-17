@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { XCircle, ArrowLeft, Check, Copy, Pencil, Users, FileText, Target, QrCode, X } from 'lucide-react';
+import { XCircle, ArrowLeft, Check, Copy, Pencil, Users, FileText, Target, QrCode, X, Trash2, AlertTriangle } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
@@ -70,6 +70,8 @@ export default function TurmaDetalhesPage() {
     const [editNome, setEditNome] = useState('');
     const [saving, setSaving] = useState(false);
     const [showQrModal, setShowQrModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     const isProfessor = user?.tipo === 'professor';
     const isDesenvolvedor = user?.tipo === 'desenvolvedor';
@@ -100,6 +102,28 @@ export default function TurmaDetalhesPage() {
                 type: 'error',
                 message: 'Erro ao copiar',
             });
+        }
+    };
+
+    const handleDeleteTurma = async () => {
+        if (!turma) return;
+        setDeleting(true);
+        try {
+            await apiClient.delete(`/turmas/${turma.id}`);
+            addToast({
+                type: 'success',
+                message: 'Turma excluída com sucesso!',
+            });
+            router.push('/dashboard/turmas');
+        } catch (error) {
+            console.error('Erro ao desativar turma:', error);
+            addToast({
+                type: 'error',
+                message: 'Erro ao desativar turma',
+            });
+        } finally {
+            setDeleting(false);
+            setShowDeleteModal(false);
         }
     };
 
@@ -191,7 +215,7 @@ export default function TurmaDetalhesPage() {
             />
 
             {/* Conteúdo Principal */}
-            <main className="flex-grow flex items-center py-20 pt-32 relative">
+            <main className="flex-grow flex items-center py-12 pt-24 relative">
                 {/* Código de Acesso e QR - Posicionado no Canto Superior Direito no Desktop */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -223,6 +247,15 @@ export default function TurmaDetalhesPage() {
                             >
                                 <QrCode className="w-4 h-4" />
                             </button>
+                            {canManage && (
+                                <button
+                                    onClick={() => setShowDeleteModal(true)}
+                                    className="p-2 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg transition-all border border-red-200 dark:border-red-700"
+                                    title="Excluir turma"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            )}
                         </div>
                     </div>
                 </motion.div>
@@ -319,9 +352,6 @@ export default function TurmaDetalhesPage() {
                                         <p className="text-slate-600 dark:text-text-secondary mb-2 font-medium">
                                             Turma: <span className="text-brand-600">{turma.nome}</span>
                                         </p>
-                                        <p className="text-sm text-slate-500 dark:text-text-secondary mb-6 leading-relaxed">
-                                            Peça para seus alunos escanearem este QR Code para serem matriculados automaticamente.
-                                        </p>
 
                                         <div className="flex flex-col gap-2">
                                             <div className="py-3 bg-slate-100 dark:bg-bg-tertiary rounded-lg font-mono font-bold text-lg text-slate-900 dark:text-text-primary tracking-widest uppercase">
@@ -369,7 +399,56 @@ export default function TurmaDetalhesPage() {
                 </div>
             </main>
 
-
+            {/* Modal de Confirmação de Exclusão */}
+            <AnimatePresence>
+                {showDeleteModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white dark:bg-bg-secondary rounded-2xl border border-slate-200 dark:border-border-custom p-8 max-w-md w-full shadow-2xl"
+                        >
+                            <div className="text-center">
+                                <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Trash2 className="w-8 h-8 text-red-600 dark:text-red-400" />
+                                </div>
+                                <p className="text-slate-500 dark:text-text-secondary mb-8 leading-relaxed">
+                                    Tem certeza que deseja excluir permanentemente a turma <strong className="text-slate-900 dark:text-text-primary">{turma?.nome}</strong>?
+                                </p>
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => setShowDeleteModal(false)}
+                                        disabled={deleting}
+                                        className="flex-1 px-6 py-3.5 bg-slate-100 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary rounded-xl hover:bg-slate-200 dark:hover:bg-border-hover transition-colors disabled:opacity-50 font-medium"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        onClick={handleDeleteTurma}
+                                        disabled={deleting}
+                                        className="flex-1 px-6 py-3.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 font-medium shadow-lg shadow-red-500/20"
+                                    >
+                                        {deleting ? (
+                                            <>
+                                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                                Excluindo...
+                                            </>
+                                        ) : (
+                                            <><Trash2 className="w-4 h-4" /> Excluir</>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Toast Notifications */}
             <div className="fixed bottom-4 right-4 z-50 space-y-2">

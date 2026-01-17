@@ -27,6 +27,8 @@ interface HeaderProps {
   onLogout?: () => void;
   logoHref?: string;
   logoSize?: 'sm' | 'md' | 'lg';
+  customTitle?: string;
+  hideLogo?: boolean;
 }
 
 export function Header({
@@ -38,6 +40,8 @@ export function Header({
   onLogout,
   logoHref = '/dashboard',
   logoSize = 'md',
+  customTitle,
+  hideLogo = false,
 }: HeaderProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -223,14 +227,16 @@ export function Header({
               className={`${textSize} font-bold text-slate-900 dark:text-text-primary flex items-center gap-2 ${logoSize === 'lg' ? 'gap-3' : 'gap-2'
                 }`}
             >
-              <Image
-                src="/hu.png"
-                alt="Senior Code AI Logo"
-                width={logoWidth}
-                height={logoHeight}
-                className={logoClass}
-              />
-              <span>Senior Code AI</span>
+              {!hideLogo && (
+                <Image
+                  src="/hu.png"
+                  alt="Senior Code AI Logo"
+                  width={logoWidth}
+                  height={logoHeight}
+                  className={logoClass}
+                />
+              )}
+              <span>{customTitle || 'Senior Code AI'}</span>
             </Link>
           </motion.div>
 

@@ -30,7 +30,7 @@ export default function Dashboard() {
       <Header variant="dashboard" user={user} onLogout={signOut} />
 
       {/* Módulos Principais */}
-      <main className="flex-grow flex items-center py-16 pt-32">
+      <main className="flex-grow flex items-center py-12 pt-24">
         <div className="container mx-auto px-6 text-center">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {/* Conteúdo */}
