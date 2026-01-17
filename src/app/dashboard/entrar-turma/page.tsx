@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -21,21 +21,41 @@ interface EntrarTurmaResponse {
 }
 
 export default function EntrarTurmaPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-bg-primary">
+                <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        }>
+            <EntrarTurmaContent />
+        </Suspense>
+    );
+}
+
+function EntrarTurmaContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { isAuthenticated, isLoading: authLoading } = useAuth();
     const [codigo, setCodigo] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<{ turmaId: string; turmaNome: string } | null>(null);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    useEffect(() => {
+        const codigoUrl = searchParams.get('codigo');
+        if (codigoUrl && (codigoUrl.length === 4 || codigoUrl.length === 8) && isAuthenticated) {
+            setCodigo(codigoUrl.toUpperCase());
+            handleJoinTurma(codigoUrl.toUpperCase());
+        }
+    }, [searchParams, isAuthenticated]);
+
+    const handleJoinTurma = async (codigoAcesso: string) => {
         setError(null);
         setLoading(true);
 
         try {
             const response = await apiClient.post<EntrarTurmaResponse>('/turmas/entrar', {
-                codigo_acesso: codigo.toUpperCase().trim(),
+                codigo_acesso: codigoAcesso.toUpperCase().trim(),
             });
 
             if (response.success && response.turma) {
@@ -54,8 +74,13 @@ export default function EntrarTurmaPage() {
         }
     };
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        handleJoinTurma(codigo);
+    };
+
     const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+        const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
         setCodigo(value);
         setError(null);
     };
@@ -186,7 +211,7 @@ export default function EntrarTurmaPage() {
                                                 style={{ letterSpacing: '0.3em' }}
                                             />
                                             <p className="mt-2 text-sm text-slate-500 dark:text-text-secondary text-center">
-                                                {codigo.length}/8 caracteres
+                                                {codigo.length}/4 caracteres
                                             </p>
                                         </div>
 
@@ -204,7 +229,7 @@ export default function EntrarTurmaPage() {
                                         {/* Botão */}
                                         <button
                                             type="submit"
-                                            disabled={loading || codigo.length !== 8}
+                                            disabled={loading || codigo.length !== 4}
                                             className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                         >
                                             {loading ? (
@@ -230,7 +255,7 @@ export default function EntrarTurmaPage() {
                                                 Onde consigo o código?
                                             </p>
                                             <p className="text-blue-600 dark:text-blue-400 text-sm">
-                                                Peça ao seu professor o código de acesso da turma. É um código de 8 caracteres.
+                                                Peça ao seu professor o código de acesso da turma. É um código de 4 caracteres.
                                             </p>
                                         </div>
                                     </div>

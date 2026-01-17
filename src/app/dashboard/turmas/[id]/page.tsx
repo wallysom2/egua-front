@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { XCircle, ArrowLeft, Check, Copy, Pencil, Users, FileText, Target } from 'lucide-react';
+import { XCircle, ArrowLeft, Check, Copy, Pencil, Users, FileText, Target, QrCode, X } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
@@ -68,6 +68,7 @@ export default function TurmaDetalhesPage() {
     const [editMode, setEditMode] = useState(false);
     const [editNome, setEditNome] = useState('');
     const [saving, setSaving] = useState(false);
+    const [showQrModal, setShowQrModal] = useState(false);
 
     const isProfessor = user?.tipo === 'professor';
     const isDesenvolvedor = user?.tipo === 'desenvolvedor';
@@ -258,10 +259,77 @@ export default function TurmaDetalhesPage() {
                                     >
                                         {copiedCode ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                                     </button>
+                                    <button
+                                        onClick={() => setShowQrModal(true)}
+                                        className="p-2 bg-slate-200 dark:bg-bg-secondary hover:bg-slate-300 dark:hover:bg-border-hover text-slate-600 dark:text-text-secondary rounded-lg transition-colors"
+                                        title="Gerar QR Code de Matrícula"
+                                    >
+                                        <QrCode className="w-4 h-4" />
+                                    </button>
                                 </div>
                             </>
                         )}
                     </motion.div>
+
+                    {/* Modal do QR Code */}
+                    <AnimatePresence>
+                        {showQrModal && (
+                            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    className="bg-white dark:bg-bg-secondary rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-200 dark:border-border-custom"
+                                >
+                                    <div className="p-6 text-center">
+                                        <div className="flex justify-between items-center mb-6">
+                                            <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary">
+                                                QR Code de Matrícula
+                                            </h3>
+                                            <button
+                                                onClick={() => setShowQrModal(false)}
+                                                className="p-2 hover:bg-slate-100 dark:hover:bg-bg-tertiary rounded-full transition-colors"
+                                            >
+                                                <X className="w-5 h-5 text-slate-500" />
+                                            </button>
+                                        </div>
+
+                                        <div className="bg-white p-4 rounded-xl inline-block mb-6 shadow-inner">
+                                            {/* Gerando QR Code via API externa para evitar dependências extras */}
+                                            <img
+                                                src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
+                                                    typeof window !== 'undefined'
+                                                        ? `${window.location.origin}/dashboard/entrar-turma?codigo=${turma.codigo_acesso}`
+                                                        : ''
+                                                )}`}
+                                                alt="QR Code de Matrícula"
+                                                className="w-48 h-48 mx-auto"
+                                            />
+                                        </div>
+
+                                        <p className="text-slate-600 dark:text-text-secondary mb-2 font-medium">
+                                            Turma: <span className="text-orange-600">{turma.nome}</span>
+                                        </p>
+                                        <p className="text-sm text-slate-500 dark:text-text-secondary mb-6 leading-relaxed">
+                                            Peça para seus alunos escanearem este QR Code para serem matriculados automaticamente.
+                                        </p>
+
+                                        <div className="flex flex-col gap-2">
+                                            <div className="py-3 bg-slate-100 dark:bg-bg-tertiary rounded-lg font-mono font-bold text-lg text-slate-900 dark:text-text-primary tracking-widest uppercase">
+                                                {turma.codigo_acesso}
+                                            </div>
+                                            <button
+                                                onClick={() => setShowQrModal(false)}
+                                                className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all font-medium"
+                                            >
+                                                Fechar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Cards de Ações - Estilo Dashboard */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -271,7 +339,7 @@ export default function TurmaDetalhesPage() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
-                                className="group bg-white dark:bg-bg-secondary rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-blue-300 dark:hover:border-blue-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
+                                className="group bg-white dark:bg-[#334155] rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-blue-300 dark:hover:border-blue-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
                             >
                                 <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 transition-transform shadow-lg shadow-blue-500/20">
                                     <Users className="w-12 h-12 text-white" />
@@ -288,7 +356,7 @@ export default function TurmaDetalhesPage() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="group bg-white dark:bg-bg-secondary rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-green-300 dark:hover:border-green-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
+                                className="group bg-white dark:bg-[#334155] rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-green-300 dark:hover:border-green-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
                             >
                                 <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 transition-transform shadow-lg shadow-green-500/20">
                                     <FileText className="w-12 h-12 text-white" />
@@ -305,7 +373,7 @@ export default function TurmaDetalhesPage() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
-                                className="group bg-white dark:bg-bg-secondary rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-purple-300 dark:hover:border-purple-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
+                                className="group bg-white dark:bg-[#334155] rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-purple-300 dark:hover:border-purple-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
                             >
                                 <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 transition-transform shadow-lg shadow-purple-500/20">
                                     <Target className="w-12 h-12 text-white" />
