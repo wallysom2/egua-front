@@ -173,7 +173,7 @@ export default function ExerciciosTurmaPage() {
                             <button
                                 onClick={openAddModal}
                                 disabled={exerciciosDisponiveis.length === 0}
-                                className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg flex items-center gap-2 font-medium transition-colors disabled:opacity-50"
+                                className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg flex items-center gap-2 font-medium transition-colors disabled:opacity-50"
                             >
                                 <Plus className="w-5 h-5" /> Adicionar Exercício
                             </button>
@@ -211,7 +211,7 @@ export default function ExerciciosTurmaPage() {
                             {exerciciosDisponiveis.length > 0 ? (
                                 <button
                                     onClick={openAddModal}
-                                    className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-colors flex items-center gap-2 mx-auto"
+                                    className="px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-colors flex items-center gap-2 mx-auto"
                                 >
                                     <Plus className="w-5 h-5" /> Adicionar Primeiro Exercício
                                 </button>
@@ -228,7 +228,7 @@ export default function ExerciciosTurmaPage() {
                                     </Link>
                                 </div>
                             ) : (
-                                <p className="text-green-600 dark:text-green-400 font-medium">
+                                <p className="text-brand-600 dark:text-brand-400 font-medium">
                                     Todos os exercícios disponíveis já foram adicionados a esta turma.
                                 </p>
                             )}
@@ -245,7 +245,7 @@ export default function ExerciciosTurmaPage() {
                                         transition={{ delay: index * 0.05 }}
                                         className="flex items-center gap-4 p-5 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom shadow-sm hover:shadow-md transition-shadow"
                                     >
-                                        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
                                             {te.ordem}
                                         </div>
                                         <div className="flex-1">
@@ -271,7 +271,7 @@ export default function ExerciciosTurmaPage() {
                                         </div>
                                         <Link
                                             href={`/dashboard/licoes/${te.exercicio_id}`}
-                                            className="px-4 py-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
+                                            className="px-4 py-2 text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
                                         >
                                             <Eye className="w-4 h-4" /> Ver
                                         </Link>
@@ -367,7 +367,7 @@ export default function ExerciciosTurmaPage() {
                                 <button
                                     onClick={handleAddExercicio}
                                     disabled={saving}
-                                    className="flex-1 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-colors disabled:opacity-50"
+                                    className="flex-1 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-colors disabled:opacity-50"
                                 >
                                     {saving ? 'Adicionando...' : 'Adicionar'}
                                 </button>

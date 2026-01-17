@@ -169,7 +169,7 @@ export default function TurmaDetalhesPage() {
                     <p className="text-slate-600 dark:text-text-secondary mb-6">{error}</p>
                     <Link
                         href="/dashboard/turmas"
-                        className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors inline-flex items-center gap-2"
+                        className="px-6 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors inline-flex items-center gap-2"
                     >
                         <ArrowLeft className="w-5 h-5" /> Voltar para Turmas
                     </Link>
@@ -179,7 +179,7 @@ export default function TurmaDetalhesPage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
+        <>
             <Header
                 variant="dashboard"
                 user={user}
@@ -235,7 +235,7 @@ export default function TurmaDetalhesPage() {
                                     {canManage && (
                                         <button
                                             onClick={() => setEditMode(true)}
-                                            className="p-2 text-slate-400 hover:text-orange-600 transition-colors"
+                                            className="p-2 text-slate-400 hover:text-brand-600 transition-colors"
                                             title="Editar nome"
                                         >
                                             <Pencil className="w-5 h-5" />
@@ -308,7 +308,7 @@ export default function TurmaDetalhesPage() {
                                         </div>
 
                                         <p className="text-slate-600 dark:text-text-secondary mb-2 font-medium">
-                                            Turma: <span className="text-orange-600">{turma.nome}</span>
+                                            Turma: <span className="text-brand-600">{turma.nome}</span>
                                         </p>
                                         <p className="text-sm text-slate-500 dark:text-text-secondary mb-6 leading-relaxed">
                                             Peça para seus alunos escanearem este QR Code para serem matriculados automaticamente.
@@ -320,7 +320,7 @@ export default function TurmaDetalhesPage() {
                                             </div>
                                             <button
                                                 onClick={() => setShowQrModal(false)}
-                                                className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all font-medium"
+                                                className="w-full py-3 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg transition-all font-medium"
                                             >
                                                 Fechar
                                             </button>
@@ -331,17 +331,17 @@ export default function TurmaDetalhesPage() {
                         )}
                     </AnimatePresence>
 
-                    {/* Cards de Ações - Estilo Dashboard */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    {/* Cards de Ação */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                         {/* Gerenciar Alunos */}
                         <Link href={`/dashboard/turmas/${turma.id}/alunos`}>
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
-                                className="group bg-white dark:bg-[#334155] rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-blue-300 dark:hover:border-blue-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
+                                className="group bg-white dark:bg-[#334155] rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-brand-400 dark:hover:border-brand-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
                             >
-                                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 transition-transform shadow-lg shadow-blue-500/20">
+                                <div className="w-24 h-24 bg-gradient-to-br from-brand-400 to-brand-500 rounded-2xl flex items-center justify-center mb-6 transition-transform shadow-lg shadow-brand-500/20">
                                     <Users className="w-12 h-12 text-white" />
                                 </div>
                                 <h3 className="text-2xl font-bold text-slate-900 dark:text-text-primary text-center">
@@ -356,9 +356,9 @@ export default function TurmaDetalhesPage() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="group bg-white dark:bg-[#334155] rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-green-300 dark:hover:border-green-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
+                                className="group bg-white dark:bg-[#334155] rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-brand-400 dark:hover:border-brand-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
                             >
-                                <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 transition-transform shadow-lg shadow-green-500/20">
+                                <div className="w-24 h-24 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl flex items-center justify-center mb-6 transition-transform shadow-lg shadow-brand-600/20">
                                     <FileText className="w-12 h-12 text-white" />
                                 </div>
                                 <h3 className="text-2xl font-bold text-slate-900 dark:text-text-primary text-center">
@@ -373,9 +373,9 @@ export default function TurmaDetalhesPage() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
-                                className="group bg-white dark:bg-[#334155] rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-purple-300 dark:hover:border-purple-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
+                                className="group bg-white dark:bg-[#334155] rounded-2xl p-10 shadow-lg border border-slate-200 dark:border-border-custom hover:border-brand-500 dark:hover:border-brand-500/50 transition-all hover:shadow-2xl cursor-pointer flex flex-col items-center justify-center min-h-[280px]"
                             >
-                                <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 transition-transform shadow-lg shadow-purple-500/20">
+                                <div className="w-24 h-24 bg-gradient-to-br from-brand-600 to-brand-700 rounded-2xl flex items-center justify-center mb-6 transition-transform shadow-lg shadow-brand-700/20">
                                     <Target className="w-12 h-12 text-white" />
                                 </div>
                                 <h3 className="text-2xl font-bold text-slate-900 dark:text-text-primary text-center">
@@ -387,14 +387,7 @@ export default function TurmaDetalhesPage() {
                 </div>
             </main>
 
-            {/* Footer */}
-            <footer className="py-8 border-t border-slate-200 dark:footer-border-custom bg-slate-50/30 footer-bg mt-auto">
-                <div className="container mx-auto px-6 text-center">
-                    <p className="text-slate-600 dark:text-text-secondary">
-                        Senior Code AI
-                    </p>
-                </div>
-            </footer>
+
 
             {/* Toast Notifications */}
             <div className="fixed bottom-4 right-4 z-50 space-y-2">
@@ -428,7 +421,6 @@ export default function TurmaDetalhesPage() {
                     ))}
                 </AnimatePresence>
             </div>
-        </div>
+        </>
     );
 }
-

@@ -24,7 +24,7 @@ export default function EntrarTurmaPage() {
     return (
         <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-bg-primary">
-                <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
         }>
             <EntrarTurmaContent />
@@ -88,7 +88,7 @@ function EntrarTurmaContent() {
     if (authLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-bg-primary">
-                <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
     }
@@ -144,7 +144,7 @@ function EntrarTurmaContent() {
                                 className="text-center"
                             >
                                 <div className="bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom">
-                                    <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white">
+                                    <div className="w-24 h-24 bg-gradient-to-br from-brand-500 to-brand-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white">
                                         <Check className="w-12 h-12" />
                                     </div>
                                     <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
@@ -156,7 +156,7 @@ function EntrarTurmaContent() {
                                     <div className="flex flex-col gap-3">
                                         <Link
                                             href={`/dashboard/turma/${success.turmaId}`}
-                                            className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg font-medium transition-colors"
+                                            className="w-full py-3 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg font-medium transition-colors"
                                         >
                                             <Rocket className="w-5 h-5" /> Começar a Estudar
                                         </Link>
@@ -178,7 +178,7 @@ function EntrarTurmaContent() {
                             >
                                 {/* Header */}
                                 <div className="text-center mb-8">
-                                    <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-white text-3xl shadow-lg">
+                                    <div className="w-20 h-20 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-white text-3xl shadow-lg">
                                         <KeyRound className="w-10 h-10" />
                                     </div>
                                     <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
@@ -207,7 +207,7 @@ function EntrarTurmaContent() {
                                                 onChange={handleCodeChange}
                                                 placeholder="XXXXXXXX"
                                                 required
-                                                className="w-full px-4 py-4 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary placeholder-slate-400 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-center text-2xl font-mono tracking-[0.5em] uppercase"
+                                                className="w-full px-4 py-4 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary placeholder-slate-400 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-center text-2xl font-mono tracking-[0.5em] uppercase"
                                                 style={{ letterSpacing: '0.3em' }}
                                             />
                                             <p className="mt-2 text-sm text-slate-500 dark:text-text-secondary text-center">
@@ -230,7 +230,7 @@ function EntrarTurmaContent() {
                                         <button
                                             type="submit"
                                             disabled={loading || codigo.length !== 4}
-                                            className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                            className="w-full py-4 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                         >
                                             {loading ? (
                                                 <>

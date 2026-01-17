@@ -66,7 +66,7 @@ export function Header({
                   className="w-9 h-9 rounded-full object-cover border-2 border-blue-400"
                 />
               ) : (
-                <div className="w-9 h-9 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center">
+                <div className="w-9 h-9 bg-gradient-to-r from-blue-500 to-brand-500 rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold text-sm">
                     {user?.nome?.charAt(0).toUpperCase() || 'U'}
                   </span>
@@ -183,7 +183,7 @@ export function Header({
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Link
               href="/login"
-              className="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 transition-all flex items-center gap-2 shadow-lg text-white"
+              className="px-6 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-brand-500 hover:from-blue-600 hover:to-brand-600 transition-all flex items-center gap-2 shadow-lg text-white"
             >
               <LogIn className="w-5 h-5" />
               Entrar

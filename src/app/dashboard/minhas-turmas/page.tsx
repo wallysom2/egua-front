@@ -114,7 +114,7 @@ export default function MinhasTurmasPage() {
                             <ThemeToggle />
                             <Link
                                 href="/dashboard/entrar-turma"
-                                className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
+                                className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
                             >
                                 <KeyRound className="w-5 h-5" /> Entrar em Turma
                             </Link>
@@ -152,7 +152,7 @@ export default function MinhasTurmasPage() {
                             </p>
                             <Link
                                 href="/dashboard/entrar-turma"
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-colors"
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-colors"
                             >
                                 <KeyRound className="w-5 h-5" /> Entrar em uma Turma
                             </Link>
@@ -170,10 +170,10 @@ export default function MinhasTurmasPage() {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1 }}
-                                    className="group bg-white dark:bg-bg-secondary rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-border-custom hover:border-green-300 dark:hover:border-green-500/50 transition-all hover:shadow-xl"
+                                    className="group bg-white dark:bg-bg-secondary rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-border-custom hover:border-brand-300 dark:hover:border-brand-500/50 transition-all hover:shadow-xl"
                                 >
                                     {/* Header com Progresso */}
-                                    <div className="relative h-24 bg-gradient-to-r from-green-500 to-emerald-600">
+                                    <div className="relative h-24 bg-gradient-to-r from-brand-500 to-brand-600">
                                         <div className="absolute inset-0 flex items-center justify-center">
                                             <div className="text-center text-white">
                                                 <p className="text-4xl font-bold">{turma.progresso.percentual}%</p>
@@ -210,7 +210,7 @@ export default function MinhasTurmasPage() {
                                                 <BookOpen className="w-4 h-4" />
                                                 <span>{turma._count.trilha_modulo} módulos</span>
                                             </div>
-                                            <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                                            <div className="flex items-center gap-1 text-brand-600 dark:text-brand-400">
                                                 <CheckCircle className="w-4 h-4" />
                                                 <span>{turma.progresso.completadas}/{turma.progresso.total}</span>
                                             </div>
@@ -219,7 +219,7 @@ export default function MinhasTurmasPage() {
                                         {/* Botão */}
                                         <Link
                                             href={`/dashboard/turma/${turma.id}`}
-                                            className="block w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg text-center font-medium transition-colors"
+                                            className="block w-full py-3 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg text-center font-medium transition-colors"
                                         >
                                             {turma.progresso.percentual === 0 ? <><Rocket className="w-4 h-4" /> Começar</> : <><Play className="w-4 h-4" /> Continuar</>}
                                         </Link>

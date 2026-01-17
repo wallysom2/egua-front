@@ -144,7 +144,7 @@ export default function TurmasPage() {
                     <p className="text-slate-600 dark:text-text-secondary mb-6">{error}</p>
                     <button
                         onClick={() => window.location.reload()}
-                        className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center gap-2 mx-auto"
+                        className="px-6 py-3 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors flex items-center gap-2 mx-auto"
                     >
                         <RefreshCw className="w-5 h-5" /> Tentar Novamente
                     </button>
@@ -154,7 +154,7 @@ export default function TurmasPage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
+        <>
             <Header
                 variant="dashboard"
                 user={user}
@@ -164,7 +164,7 @@ export default function TurmasPage() {
                         <BackButton href="/dashboard" />
                         <Link
                             href="/dashboard/turmas/criar"
-                            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
+                            className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
                         >
                             <Plus className="w-5 h-5" /> Nova Turma
                         </Link>
@@ -183,7 +183,7 @@ export default function TurmasPage() {
                             className="max-w-md mx-auto"
                         >
                             <div className="bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom text-center">
-                                <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <div className="w-20 h-20 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                                     <Users className="w-10 h-10 text-white" />
                                 </div>
                                 <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-text-primary">
@@ -194,7 +194,7 @@ export default function TurmasPage() {
                                 </p>
                                 <Link
                                     href="/dashboard/turmas/criar"
-                                    className="inline-flex items-center gap-2 w-full py-4 px-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all font-medium text-lg justify-center"
+                                    className="inline-flex items-center gap-2 w-full py-4 px-6 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg transition-all font-medium text-lg justify-center"
                                 >
                                     <Plus className="w-5 h-5" /> Criar Primeira Turma
                                 </Link>
@@ -208,11 +208,11 @@ export default function TurmasPage() {
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: index * 0.1 }}
-                                        className="group bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom hover:border-orange-300 dark:hover:border-orange-500/50 transition-all hover:shadow-2xl cursor-pointer h-full"
+                                        className="group bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom hover:border-brand-300 dark:hover:border-brand-500/50 transition-all hover:shadow-2xl cursor-pointer h-full"
                                     >
                                         <div className="text-center">
                                             {/* Ícone */}
-                                            <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                                            <div className="w-20 h-20 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                                                 <Users className="w-10 h-10 text-white" />
                                             </div>
 
@@ -223,7 +223,7 @@ export default function TurmasPage() {
 
                                             {/* Código de Acesso */}
                                             <div
-                                                className="inline-flex items-center gap-2 px-3 py-2 bg-slate-100 dark:bg-bg-tertiary rounded-lg mb-8"
+                                                className="inline-flex items-center gap-2 px-3 py-4 bg-slate-100 dark:bg-bg-tertiary rounded-lg mt-8 mb-6"
                                                 onClick={(e) => e.stopPropagation()}
                                             >
                                                 <span className="font-mono font-bold text-slate-900 dark:text-text-primary tracking-wider">
@@ -245,10 +245,7 @@ export default function TurmasPage() {
                                                 </button>
                                             </div>
 
-                                            {/* Botão Visual */}
-                                            <div className="w-full py-4 px-6 bg-gradient-to-r from-orange-500 to-orange-600 group-hover:from-orange-600 group-hover:to-orange-700 text-white rounded-lg transition-all font-medium text-lg">
-                                                Gerenciar Turma
-                                            </div>
+
                                         </div>
                                     </motion.div>
                                 </Link>
@@ -258,14 +255,7 @@ export default function TurmasPage() {
                 </div>
             </main>
 
-            {/* Footer */}
-            <footer className="py-8 border-t border-slate-200 dark:footer-border-custom bg-slate-50/30 footer-bg mt-auto">
-                <div className="container mx-auto px-6 text-center">
-                    <p className="text-slate-600 dark:text-text-secondary">
-                        Senior Code AI
-                    </p>
-                </div>
-            </footer>
+
 
             {/* Modal de Confirmação de Exclusão */}
             <AnimatePresence>
@@ -357,7 +347,7 @@ export default function TurmasPage() {
                     ))}
                 </AnimatePresence>
             </div>
-        </div>
+        </>
     );
 }
 

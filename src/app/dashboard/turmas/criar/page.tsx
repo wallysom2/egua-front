@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Users, Check } from 'lucide-react';
+import { Plus, Check } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { BackButton } from '@/components/BackButton';
 import { useAuth } from '@/contexts/AuthContext';
@@ -43,7 +43,7 @@ export default function CriarTurmaPage() {
     if (authLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-bg-primary">
-                <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
     }
@@ -54,76 +54,61 @@ export default function CriarTurmaPage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
+        <>
             <Header
                 variant="dashboard"
                 user={user}
                 onLogout={signOut}
-                extraActions={
-                    <BackButton href="/dashboard/turmas" />
-                }
+                extraActions={<BackButton href="/dashboard/turmas" />}
             />
 
-            {/* Conteúdo Principal */}
-            <main className="flex-grow py-16 pt-32 flex items-center justify-center">
-                <div className="container mx-auto px-6 max-w-md">
+            <main className="flex-grow py-16 pt-32 flex flex-col justify-center">
+                <div className="container mx-auto px-6">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
+                        className="max-w-xl mx-auto"
                     >
-                        {/* Card */}
-                        <div className="bg-white dark:bg-bg-secondary rounded-xl p-8 shadow-lg border border-slate-200 dark:border-border-custom">
-                            {/* Header do Card */}
-                            <div className="text-center mb-8">
-                                <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                    <Users className="w-10 h-10 text-white" />
+                        <div className="bg-white dark:bg-bg-secondary rounded-2xl p-8 md:p-12 shadow-xl border border-slate-200 dark:border-border-custom">
+                            <div className="text-center mb-10">
+                                <div className="w-20 h-20 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-brand-500/20">
+                                    <Plus className="w-10 h-10 text-white" />
                                 </div>
-                                <h1 className="text-2xl font-bold text-slate-900 dark:text-text-primary">
+                                <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-3">
                                     Nova Turma
                                 </h1>
+                                <p className="text-slate-600 dark:text-text-secondary text-lg">
+                                    Preencha o nome da sua nova turma abaixo.
+                                </p>
                             </div>
 
-                            {/* Formulário */}
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                {/* Nome da Turma */}
+                            <form onSubmit={handleSubmit} className="space-y-8">
                                 <div>
                                     <label
                                         htmlFor="nome"
-                                        className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2"
+                                        className="block text-sm font-semibold text-slate-700 dark:text-text-secondary mb-3 uppercase tracking-wider"
                                     >
                                         Nome da Turma
                                     </label>
                                     <input
-                                        id="nome"
                                         type="text"
+                                        id="nome"
                                         value={nome}
                                         onChange={(e) => setNome(e.target.value)}
-                                        placeholder="Ex: Lógica de Programação 2024"
+                                        placeholder="Ex: 9º Ano A - Pensamento Computacional"
+                                        className="w-full px-6 py-4 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-lg"
                                         required
-                                        minLength={3}
-                                        maxLength={255}
-                                        autoFocus
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                                     />
                                 </div>
 
-                                {/* Erro */}
-                                {error && (
-                                    <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg">
-                                        <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
-                                    </div>
-                                )}
-
-                                {/* Botão */}
                                 <button
                                     type="submit"
-                                    disabled={loading || nome.length < 3}
-                                    className="w-full py-4 px-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-all font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    disabled={loading}
+                                    className="w-full py-4 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-xl font-bold text-lg shadow-lg shadow-brand-500/25 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
                                 >
                                     {loading ? (
                                         <>
-                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                            <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
                                             Criando...
                                         </>
                                     ) : (
@@ -137,16 +122,6 @@ export default function CriarTurmaPage() {
                     </motion.div>
                 </div>
             </main>
-
-            {/* Footer */}
-            <footer className="py-8 border-t border-slate-200 dark:footer-border-custom bg-slate-50/30 footer-bg mt-auto">
-                <div className="container mx-auto px-6 text-center">
-                    <p className="text-slate-600 dark:text-text-secondary">
-                        Senior Code AI
-                    </p>
-                </div>
-            </footer>
-        </div>
+        </>
     );
 }
-

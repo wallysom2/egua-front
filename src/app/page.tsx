@@ -44,7 +44,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-      
+
               <motion.span
                 className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent"
                 animate={{
@@ -240,18 +240,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 border-t border-slate-200 dark:footer-border-custom bg-slate-50/30 footer-bg">
-        <div className="container mx-auto px-6 text-center">
-          <motion.p
-            className="text-slate-600 dark:text-slate-300 flex items-center justify-center gap-2"
-            whileHover={{ scale: 1.02 }}
-          >
-            <Building2 className="w-4 h-4" />
-            Senior Code AI - Aprenda programação passo a passo
-          </motion.p>
-        </div>
-      </footer>
+
     </div>
   );
 }

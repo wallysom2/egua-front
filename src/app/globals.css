@@ -6,7 +6,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-  
+
   /* Cores do tema claro */
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #fcf8fa;
@@ -22,27 +22,66 @@
   --color-footer-bg: rgba(248, 250, 252, 0.3);
   --color-footer-bg-opacity: rgba(248, 250, 252, 0.3);
   --color-footer-border: #e2e8f0;
+
+  /* Cor de destaque (Brand) - Mude aqui para alterar o tema principal */
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-200: #a7f3d0;
+  --color-brand-300: #6ee7b7;
+  --color-brand-400: #34d399;
+  --color-brand-500: #10b981;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+  --color-brand-900: #064e3b;
 }
 
 .dark {
   /* Cores do tema escuro - ALTERE AQUI PARA MUDAR AS CORES GLOBALMENTE */
-  --color-bg-primary: #0f172a;      /* Fundo principal escuro (slate-900) */
-  --color-bg-secondary: #1e293b;    /* Fundo secundário escuro (slate-800) - melhor contraste para cards */
-  --color-bg-tertiary: #334155;     /* Fundo terciário escuro (slate-700) - inputs e elementos interativos */
-  --color-text-primary: #f8fafc;    /* Texto principal claro (slate-50) - melhor contraste */
-  --color-text-secondary: #e2e8f0;  /* Texto secundário claro (slate-200) - melhor legibilidade */
-  --color-text-tertiary: #cbd5e1;   /* Texto terciário claro (slate-300) - melhor visibilidade */
-  --color-border: #475569;          /* Borda escura (slate-600) - contraste adequado */
-  --color-border-hover: #64748b;    /* Borda hover escura (slate-500) - hover states */
-  --color-header-bg: #0f172a;       /* Background do header (slate-900) */
-  --color-header-bg-opacity: rgba(15, 23, 42, 0.95); /* Header com opacidade */
-  --color-header-border: rgba(30, 41, 59, 0.8);   /* Borda do header (slate-800) com opacidade */
-  --color-footer-bg: rgba(15, 23, 42, 0.95); /* Background do footer (slate-900 com opacidade) */
-  --color-footer-bg-opacity: rgba(15, 23, 42, 0.95); /* Footer com opacidade */
-  --color-footer-border: rgba(30, 41, 59, 0.8);   /* Borda do footer (slate-800) com opacidade */
-  
+  --color-bg-primary: #0f172a;
+  /* Fundo principal escuro (slate-900) */
+  --color-bg-secondary: #1e293b;
+  /* Fundo secundário escuro (slate-800) - melhor contraste para cards */
+  --color-bg-tertiary: #334155;
+  /* Fundo terciário escuro (slate-700) - inputs e elementos interativos */
+  --color-text-primary: #f8fafc;
+  /* Texto principal claro (slate-50) - melhor contraste */
+  --color-text-secondary: #e2e8f0;
+  /* Texto secundário claro (slate-200) - melhor legibilidade */
+  --color-text-tertiary: #cbd5e1;
+  /* Texto terciário claro (slate-300) - melhor visibilidade */
+  --color-border: #475569;
+  /* Borda escura (slate-600) - contraste adequado */
+  --color-border-hover: #64748b;
+  /* Borda hover escura (slate-500) - hover states */
+  --color-header-bg: #0f172a;
+  /* Background do header (slate-900) */
+  --color-header-bg-opacity: rgba(15, 23, 42, 0.95);
+  /* Header com opacidade */
+  --color-header-border: rgba(30, 41, 59, 0.8);
+  /* Borda do header (slate-800) com opacidade */
+  --color-footer-bg: rgba(15, 23, 42, 0.95);
+  /* Background do footer (slate-900 com opacidade) */
+  --color-footer-bg-opacity: rgba(15, 23, 42, 0.95);
+  /* Footer com opacidade */
+  --color-footer-border: rgba(30, 41, 59, 0.8);
+  /* Borda do footer (slate-800) com opacidade */
+
   /* Variáveis adicionais para melhor contraste em cards com opacidade */
-  --color-card-bg: rgba(30, 41, 59, 0.9); /* Card background com maior opacidade para melhor contraste */
+  --color-card-bg: rgba(30, 41, 59, 0.9);
+  /* Card background com maior opacidade para melhor contraste */
+
+  /* Cor de destaque (Brand) no tema escuro */
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-200: #a7f3d0;
+  --color-brand-300: #6ee7b7;
+  --color-brand-400: #34d399;
+  --color-brand-500: #10b981;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+  --color-brand-900: #064e3b;
 }
 
 @theme inline {
@@ -62,12 +101,9 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
+  background: linear-gradient(to bottom,
       transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
   font-family: var(--font-geist-sans, Arial, Helvetica, sans-serif);
 }
 
@@ -77,6 +113,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -87,6 +124,7 @@ body {
   from {
     transform: translateX(-100%);
   }
+
   to {
     transform: translateX(0);
   }
@@ -97,6 +135,7 @@ body {
     transform: scale(0.9);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -107,9 +146,11 @@ body {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -219,15 +260,15 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-  
+
   .footer-bg {
     background-color: var(--color-footer-bg-opacity);
   }
-  
+
   .dark .header-border-custom {
     border-color: var(--color-header-border) !important;
   }
-  
+
   .dark .footer-border-custom {
     border-color: var(--color-footer-border) !important;
   }
@@ -267,14 +308,14 @@ body {
   position: relative;
 }
 
-.google-login-wrapper > div {
+.google-login-wrapper>div {
   width: 100% !important;
   max-width: 100% !important;
   display: flex !important;
   justify-content: center !important;
 }
 
-.google-login-wrapper > div > div {
+.google-login-wrapper>div>div {
   width: 100% !important;
   max-width: 400px !important;
   min-height: 3rem !important;
