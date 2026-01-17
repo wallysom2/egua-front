@@ -1,4 +1,5 @@
-import { createBrowserClient, SupabaseClient } from '@supabase/ssr'
+import { createBrowserClient } from '@supabase/ssr'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 // Valores padrão para evitar erro durante SSG/build
 // Em runtime no browser, as variáveis de ambiente reais serão usadas
