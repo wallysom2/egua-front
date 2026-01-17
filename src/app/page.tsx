@@ -3,9 +3,10 @@
 import { Header } from '@/components/Header';
 import { GradientButton } from '@/components/GradientButton';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { ScrollProgress } from '@/components/ScrollProgress';
 import { BookOpen, Code, Rocket, Hand, Clock, Users, Target, Building2 } from 'lucide-react';
+import { API_BASE_URL } from '@/config/api';
 
 export default function Home() {
   const containerRef = useRef(null);
@@ -16,6 +17,17 @@ export default function Home() {
 
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.8]);
+
+  // Wake-up silencioso do backend para evitar cold start do Render
+  useEffect(() => {
+    // Fire-and-forget: não bloqueia a UI nem mostra erros ao usuário
+    fetch(`${API_BASE_URL}/health`, {
+      method: 'GET',
+      mode: 'cors',
+    }).catch(() => {
+      // Silently ignore errors - this is just a wake-up call
+    });
+  }, []);
 
   return (
     <div
