@@ -215,12 +215,12 @@ export default function TurmaDetalhesPage() {
             />
 
             {/* Conteúdo Principal */}
-            <main className="flex-grow flex items-center py-12 pt-24 relative">
+            <main className="flex-grow flex flex-col items-center py-8 sm:py-12 pt-20 sm:pt-24 relative">
                 {/* Código de Acesso e QR - Posicionado no Canto Superior Direito no Desktop */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="lg:absolute lg:top-36 lg:right-10 mb-8 lg:mb-0 text-center lg:text-right z-10 w-full lg:w-auto px-6 lg:px-0"
+                    className="lg:absolute lg:top-28 lg:right-10 mb-6 lg:mb-0 text-center lg:text-right z-10 w-full lg:w-auto px-4 sm:px-6 lg:px-0"
                 >
                     <div className="inline-flex items-center gap-3 px-4 py-2 bg-white dark:bg-bg-secondary border border-slate-200 dark:border-border-custom rounded-xl shadow-sm">
                         <div className="flex flex-col items-start pr-3 border-r border-slate-200 dark:border-border-custom">
@@ -297,7 +297,7 @@ export default function TurmaDetalhesPage() {
                             </div>
                         ) : (
                             <div className="flex items-center justify-center gap-3">
-                                <h1 className="text-4xl font-extrabold text-slate-900 dark:text-text-primary tracking-tight">
+                                <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-text-primary tracking-tight">
                                     {turma.nome}
                                 </h1>
                                 {canManage && (

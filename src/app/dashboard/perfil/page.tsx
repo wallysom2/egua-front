@@ -9,6 +9,7 @@ import { Camera, Check, Code, GraduationCap, UserCog } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
+import { Header } from '@/components/Header';
 import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 
@@ -20,7 +21,7 @@ interface ToastNotification {
 
 export default function PerfilPage() {
     const router = useRouter();
-    const { user, isAuthenticated, isLoading: authLoading, refreshUser } = useAuth();
+    const { user, signOut, isAuthenticated, isLoading: authLoading, refreshUser } = useAuth();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [loading, setLoading] = useState(false);
@@ -167,33 +168,15 @@ export default function PerfilPage() {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
-            {/* Navbar */}
-            <motion.div
-                initial={{ y: -100 }}
-                animate={{ y: 0 }}
-                className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary backdrop-blur-sm"
-            >
-                <div className="container mx-auto px-4">
-                    <div className="flex justify-between items-center">
-                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                            <Link
-                                href="/dashboard"
-                                className="text-2xl font-bold text-slate-900 dark:text-text-primary flex items-center gap-2"
-                            >
-                                <Image src="/hu.png" alt="Logo" width={32} height={32} className="w-8 h-8" />
-                                <span>Senior Code AI</span>
-                            </Link>
-                        </motion.div>
-                        <div className="flex items-center gap-3">
-                            <BackButton href="/dashboard" />
-                            <ThemeToggle />
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
+            <Header
+                variant="dashboard"
+                user={user}
+                onLogout={signOut}
+                extraActions={<BackButton href="/dashboard" />}
+            />
 
             {/* Conteúdo Principal */}
-            <main className="flex-1 py-16 pt-32 flex items-center justify-center">
+            <main className="flex-1 py-8 sm:py-16 pt-20 sm:pt-32 flex items-center justify-center">
                 <div className="container mx-auto px-6 max-w-lg">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}

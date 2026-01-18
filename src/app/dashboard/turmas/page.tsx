@@ -166,16 +166,16 @@ export default function TurmasPage() {
                         <BackButton href="/dashboard" />
                         <Link
                             href="/dashboard/turmas/criar"
-                            className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
+                            className="px-3 sm:px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg transition-colors flex items-center gap-2 font-medium"
                         >
-                            <Plus className="w-5 h-5" /> Nova Turma
+                            <Plus className="w-5 h-5" /> <span className="hidden sm:inline">Nova Turma</span>
                         </Link>
                     </>
                 }
             />
 
             {/* Conteúdo Principal */}
-            <main className="flex-grow flex items-center py-12 pt-24">
+            <main className="flex-grow flex items-center py-8 sm:py-12 pt-20 sm:pt-24">
                 <div className="container mx-auto px-6">
                     {/* Grid de Turmas */}
                     {turmas.length === 0 ? (

@@ -54,10 +54,12 @@ export function Header({
     // Dashboard variant - mostra menu do usuário completo
     if (variant === 'dashboard' && user) {
       return (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           {extraActions}
-          <ThemeToggle />
-          <div className="w-px h-6 bg-slate-300 dark:bg-border-custom"></div>
+          <div className="flex items-center">
+            <ThemeToggle />
+          </div>
+          <div className="hidden sm:block w-px h-6 bg-slate-300 dark:bg-border-custom px-0 mx-1"></div>
           <div className="relative">
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -220,8 +222,12 @@ export function Header({
         }}
       >
         <div className="container mx-auto px-4 flex justify-between items-center">
-          {/* Logo */}
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+          {/* Logo - Hidden on mobile for dashboard variant */}
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={variant === 'dashboard' ? 'hidden sm:block' : ''}
+          >
             <Link
               href={logoHref}
               className={`${textSize} font-bold text-slate-900 dark:text-text-primary flex items-center gap-2 ${logoSize === 'lg' ? 'gap-3' : 'gap-2'
@@ -236,12 +242,12 @@ export function Header({
                   className={logoClass}
                 />
               )}
-              <span>{customTitle || 'Senior Code AI'}</span>
+              <span className={variant === 'dashboard' ? 'hidden md:inline' : ''}>{customTitle || 'Senior Code AI'}</span>
             </Link>
           </motion.div>
 
-          {/* Right Actions */}
-          <div className="flex items-center gap-4">
+          {/* Right Actions - Aligned to the right */}
+          <div className="flex items-center gap-1 sm:gap-4 ml-auto">
             {renderRightActions()}
           </div>
         </div>

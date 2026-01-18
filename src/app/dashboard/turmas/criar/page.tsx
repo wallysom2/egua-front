@@ -62,7 +62,7 @@ export default function CriarTurmaPage() {
                 extraActions={<BackButton href="/dashboard/turmas" />}
             />
 
-            <main className="flex-grow py-16 pt-32 flex flex-col justify-center">
+            <main className="flex-grow py-8 sm:py-16 pt-20 sm:pt-28 flex flex-col justify-center">
                 <div className="container mx-auto px-6">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}

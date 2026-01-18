@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Users, Search, Filter, Trash2, ShieldCheck, GraduationCap, UserCog, UserCircle, Mail, Calendar, MoreHorizontal, ChevronRight } from 'lucide-react';
+import { Header } from '@/components/Header';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
 import { useAuth } from '@/contexts/AuthContext';
@@ -118,84 +118,96 @@ export default function GerenciarUsuarios() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white transition-colors">
-            {/* Navbar */}
-            <div className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/50 backdrop-blur-sm">
-                <div className="container mx-auto px-4 flex justify-between items-center">
-                    <Link
-                        href="/dashboard"
-                        className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3"
-                    >
-                        <Image
-                            src="/hu.png"
-                            alt="Senior Code AI Logo"
-                            width={40}
-                            height={40}
-                            className="w-10 h-10"
-                        />
-                        Senior Code AI
-                    </Link>
-                    <div className="flex items-center gap-3">
-                        <BackButton href="/dashboard" />
-                        <ThemeToggle />
-                    </div>
-                </div>
-            </div>
+            <Header
+                variant="dashboard"
+                user={user}
+                onLogout={() => router.push('/logout')}
+                extraActions={<BackButton href="/dashboard" />}
+            />
 
             {/* Conteúdo */}
-            <div className="container mx-auto px-4 pt-24 pb-12">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="max-w-6xl mx-auto"
-                >
-                    {/* Header */}
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-                        <div>
-                            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+            <main className="flex-grow py-8 sm:py-12 pt-20 sm:pt-24 bg-slate-50 dark:bg-bg-primary">
+                <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                    >
+                        {/* Header */}
+                        <div className="mb-10 text-center md:text-left">
+                            <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-text-primary tracking-tight mb-2">
                                 Gerenciar Usuários
                             </h1>
-                            <p className="text-slate-600 dark:text-slate-400 mt-1">
-                                Total: {usuarios.length} usuários cadastrados
+                            <p className="text-slate-600 dark:text-text-secondary">
+                                Total de <span className="font-bold text-brand-600 dark:text-brand-500">{usuarios.length}</span> usuários cadastrados na plataforma.
                             </p>
                         </div>
 
-                        {/* Estatísticas */}
-                        <div className="flex gap-4">
-                            <div className="bg-green-100 dark:bg-green-900/30 px-4 py-2 rounded-lg">
-                                <span className="text-green-700 dark:text-green-300 font-medium">
-                                    {usuarios.filter(u => u.tipo === 'aluno').length} Alunos
-                                </span>
-                            </div>
-                            <div className="bg-blue-100 dark:bg-blue-900/30 px-4 py-2 rounded-lg">
-                                <span className="text-blue-700 dark:text-blue-300 font-medium">
-                                    {usuarios.filter(u => u.tipo === 'professor').length} Professores
-                                </span>
-                            </div>
-                            <div className="bg-purple-100 dark:bg-purple-900/30 px-4 py-2 rounded-lg">
-                                <span className="text-purple-700 dark:text-purple-300 font-medium">
-                                    {usuarios.filter(u => u.tipo === 'desenvolvedor').length} Devs
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                        {/* Estatísticas - Grid responsivo */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                            <motion.div
+                                whileHover={{ y: -4 }}
+                                className="bg-white dark:bg-bg-secondary p-5 rounded-2xl border border-slate-200 dark:border-border-custom shadow-sm flex items-center gap-4"
+                            >
+                                <div className="p-3 bg-brand-500/10 rounded-xl">
+                                    <GraduationCap className="w-6 h-6 text-brand-600 dark:text-brand-500" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-slate-500 dark:text-text-tertiary">Alunos</p>
+                                    <p className="text-2xl font-bold text-slate-900 dark:text-text-primary">
+                                        {usuarios.filter(u => u.tipo === 'aluno').length}
+                                    </p>
+                                </div>
+                            </motion.div>
 
-                    {/* Filtros */}
-                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 mb-6">
-                        <div className="flex flex-col md:flex-row gap-4">
-                            <div className="flex-1">
+                            <motion.div
+                                whileHover={{ y: -4 }}
+                                className="bg-white dark:bg-bg-secondary p-5 rounded-2xl border border-slate-200 dark:border-border-custom shadow-sm flex items-center gap-4"
+                            >
+                                <div className="p-3 bg-blue-500/10 rounded-xl">
+                                    <UserCog className="w-6 h-6 text-blue-600 dark:text-blue-500" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-slate-500 dark:text-text-tertiary">Professores</p>
+                                    <p className="text-2xl font-bold text-slate-900 dark:text-text-primary">
+                                        {usuarios.filter(u => u.tipo === 'professor').length}
+                                    </p>
+                                </div>
+                            </motion.div>
+
+                            <motion.div
+                                whileHover={{ y: -4 }}
+                                className="bg-white dark:bg-bg-secondary p-5 rounded-2xl border border-slate-200 dark:border-border-custom shadow-sm flex items-center gap-4"
+                            >
+                                <div className="p-3 bg-purple-500/10 rounded-xl">
+                                    <ShieldCheck className="w-6 h-6 text-purple-600 dark:text-purple-500" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-slate-500 dark:text-text-tertiary">Desenvolvedores</p>
+                                    <p className="text-2xl font-bold text-slate-900 dark:text-text-primary">
+                                        {usuarios.filter(u => u.tipo === 'desenvolvedor').length}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        </div>
+
+                        {/* Barra de Busca e Filtro */}
+                        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                            <div className="relative flex-grow">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                 <input
                                     type="text"
                                     placeholder="Buscar por nome ou email..."
                                     value={busca}
                                     onChange={(e) => setBusca(e.target.value)}
-                                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-bg-secondary border border-slate-200 dark:border-border-custom rounded-2xl text-slate-900 dark:text-text-primary placeholder-slate-400 focus:ring-2 focus:ring-brand-500 outline-none transition-all shadow-sm"
                                 />
                             </div>
-                            <div>
+                            <div className="relative min-w-[200px]">
+                                <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                 <select
                                     value={filtroTipo}
                                     onChange={(e) => setFiltroTipo(e.target.value)}
-                                    className="px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-bg-secondary border border-slate-200 dark:border-border-custom rounded-2xl text-slate-900 dark:text-text-primary outline-none focus:ring-2 focus:ring-brand-500 appearance-none cursor-pointer transition-all shadow-sm"
                                 >
                                     <option value="todos">Todos os tipos</option>
                                     <option value="aluno">Alunos</option>
@@ -204,122 +216,122 @@ export default function GerenciarUsuarios() {
                                 </select>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Erro */}
-                    {error && (
-                        <div className="bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg mb-6">
-                            {error}
-                            <button
-                                onClick={() => setError(null)}
-                                className="ml-2 text-red-500 hover:text-red-700"
-                            >
-                                ✕
-                            </button>
-                        </div>
-                    )}
+                        {/* Erro */}
+                        {error && (
+                            <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-6 py-4 rounded-2xl mb-8 flex items-center justify-between">
+                                <span className="font-medium">{error}</span>
+                                <button
+                                    onClick={() => setError(null)}
+                                    className="p-1 hover:bg-black/5 rounded-full transition-colors"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        )}
 
-                    {/* Tabela de Usuários */}
-                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-slate-50 dark:bg-slate-800">
-                                    <tr>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700 dark:text-slate-300">
-                                            Usuário
-                                        </th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700 dark:text-slate-300">
-                                            Email
-                                        </th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700 dark:text-slate-300">
-                                            Tipo
-                                        </th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700 dark:text-slate-300">
-                                            Cadastro
-                                        </th>
-                                        <th className="px-6 py-4 text-right text-sm font-semibold text-slate-700 dark:text-slate-300">
-                                            Ações
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                                    {usuariosFiltrados.map((usuario) => (
-                                        <tr
-                                            key={usuario.id}
-                                            className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
-                                        >
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-medium">
-                                                        {usuario.nome.charAt(0).toUpperCase()}
-                                                    </div>
-                                                    <span className="font-medium text-slate-900 dark:text-white">
-                                                        {usuario.nome}
-                                                    </span>
+                        {/* Lista de Usuários - Grid de Cards responsivos */}
+                        <div className="grid grid-cols-1 gap-4">
+                            {usuariosFiltrados.map((usuario, index) => (
+                                <motion.div
+                                    key={usuario.id}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.05 }}
+                                    className="bg-white dark:bg-bg-secondary rounded-2xl border border-slate-200 dark:border-border-custom p-5 shadow-sm hover:shadow-md transition-all group"
+                                >
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-white text-xl font-bold shadow-sm group-hover:scale-105 transition-transform">
+                                                {usuario.nome.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <h3 className="font-bold text-lg text-slate-900 dark:text-text-primary group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                                                    {usuario.nome}
+                                                </h3>
+                                                <div className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-text-secondary">
+                                                    <Mail className="w-3.5 h-3.5" />
+                                                    {usuario.email}
                                                 </div>
-                                            </td>
-                                            <td className="px-6 py-4 text-slate-600 dark:text-slate-400">
-                                                {usuario.email}
-                                            </td>
-                                            <td className="px-6 py-4">
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-wrap items-center gap-3 ml-0 sm:ml-auto">
+                                            {/* Data de Cadastro - Hidden mobile short, shown desktop */}
+                                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-bg-tertiary rounded-xl text-xs font-medium text-slate-500 dark:text-text-secondary border border-transparent dark:border-border-custom">
+                                                <Calendar className="w-3.5 h-3.5" />
+                                                <span className="hidden sm:inline">Cadastrado em:</span> {new Date(usuario.created_at).toLocaleDateString('pt-BR')}
+                                            </div>
+
+                                            {/* Selector de Tipo */}
+                                            <div className="relative">
                                                 <select
                                                     value={usuario.tipo}
                                                     onChange={(e) => handleAlterarTipo(usuario.id, e.target.value)}
                                                     disabled={alterandoTipo === usuario.id || usuario.id === user?.id}
-                                                    className={`px-3 py-1 rounded-full text-sm font-medium ${getTipoBadgeColor(usuario.tipo)} border-0 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50`}
+                                                    className={`pl-3 pr-8 py-1.5 rounded-xl text-sm font-semibold border-none ring-1 ring-inset ring-slate-200 dark:ring-border-custom cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 appearance-none shadow-sm ${getTipoBadgeColor(usuario.tipo)}`}
                                                 >
                                                     <option value="aluno">Aluno</option>
                                                     <option value="professor">Professor</option>
                                                     <option value="desenvolvedor">Desenvolvedor</option>
                                                 </select>
-                                            </td>
-                                            <td className="px-6 py-4 text-slate-600 dark:text-slate-400 text-sm">
-                                                {new Date(usuario.created_at).toLocaleDateString('pt-BR')}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex justify-end gap-2">
-                                                    {confirmDelete === usuario.id ? (
-                                                        <>
-                                                            <button
-                                                                onClick={() => handleDeleteUsuario(usuario.id)}
-                                                                disabled={deletando === usuario.id}
-                                                                className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50"
-                                                            >
-                                                                {deletando === usuario.id ? 'Excluindo...' : 'Confirmar'}
-                                                            </button>
-                                                            <button
-                                                                onClick={() => setConfirmDelete(null)}
-                                                                className="px-3 py-1 text-sm bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg transition-colors"
-                                                            >
-                                                                Cancelar
-                                                            </button>
-                                                        </>
-                                                    ) : (
-                                                        <button
-                                                            onClick={() => setConfirmDelete(usuario.id)}
-                                                            disabled={usuario.id === user?.id}
-                                                            className="px-3 py-1 text-sm bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                                            title={usuario.id === user?.id ? 'Você não pode excluir sua própria conta' : 'Excluir usuário'}
-                                                        >
-                                                            Excluir
-                                                        </button>
-                                                    )}
+                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                                    <ChevronRight className="w-4 h-4 rotate-90" />
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                            </div>
+
+                                            {/* Botão Excluir / Confirmar */}
+                                            <div className="flex items-center gap-2">
+                                                {confirmDelete === usuario.id ? (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleDeleteUsuario(usuario.id)}
+                                                            disabled={deletando === usuario.id}
+                                                            className="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-red-500/20 transition-all flex items-center gap-2"
+                                                        >
+                                                            {deletando === usuario.id ? (
+                                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                            ) : (
+                                                                <Trash2 className="w-4 h-4" />
+                                                            )}
+                                                            Confirmar
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setConfirmDelete(null)}
+                                                            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-text-secondary transition-colors"
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => setConfirmDelete(usuario.id)}
+                                                        disabled={usuario.id === user?.id}
+                                                        className="p-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                                                        title={usuario.id === user?.id ? 'Você não pode excluir sua própria conta' : 'Excluir usuário'}
+                                                    >
+                                                        <Trash2 className="w-5 h-5" />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
 
                             {usuariosFiltrados.length === 0 && (
-                                <div className="text-center py-12 text-slate-500 dark:text-slate-400">
-                                    Nenhum usuário encontrado
+                                <div className="text-center py-20 bg-white dark:bg-bg-secondary rounded-3xl border-2 border-dashed border-slate-200 dark:border-border-custom">
+                                    <div className="w-20 h-20 bg-slate-50 dark:bg-bg-tertiary rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Users className="w-10 h-10 text-slate-300" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-1">Nenhum registro</h3>
+                                    <p className="text-slate-500 dark:text-text-secondary">Não encontramos usuários com os critérios informados.</p>
                                 </div>
                             )}
                         </div>
-                    </div>
-                </motion.div>
-            </div>
+                    </motion.div>
+                </div>
+            </main>
         </div>
     );
 }

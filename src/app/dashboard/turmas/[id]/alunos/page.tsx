@@ -136,8 +136,8 @@ export default function AlunosTurmaPage() {
                 }
             />
 
-            <main className="flex-grow flex items-center py-12 pt-24">
-                <div className="container mx-auto px-6 max-w-5xl">
+            <main className="flex-grow flex items-center py-8 sm:py-12 pt-20 sm:pt-24">
+                <div className="container mx-auto px-4 sm:px-6 max-w-5xl">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -146,7 +146,7 @@ export default function AlunosTurmaPage() {
                         <div className="inline-flex items-center justify-center p-3 bg-brand-500/10 rounded-2xl mb-4">
                             <Users className="w-8 h-8 text-brand-600 dark:text-brand-500" />
                         </div>
-                        <h1 className="text-4xl font-extrabold text-slate-900 dark:text-text-primary tracking-tight mb-2">
+                        <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-text-primary tracking-tight mb-2">
                             Alunos da Turma
                         </h1>
                         <p className="text-slate-600 dark:text-text-secondary text-lg">
