@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { XCircle, ArrowLeft, Check, Copy, Pencil, Users, FileText, Target, QrCode, X, Trash2, AlertTriangle } from 'lucide-react';
+import { XCircle, ArrowLeft, Check, Copy, Pencil, Users, FileText, TrendingUp, QrCode, X, Trash2, AlertTriangle } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
@@ -390,7 +390,7 @@ export default function TurmaDetalhesPage() {
 
                         <DashboardCard
                             title="Trilha"
-                            icon={Target}
+                            icon={TrendingUp}
                             color="brand"
                             href={`/dashboard/turmas/${turma.id}/trilha`}
                             delay={0.3}

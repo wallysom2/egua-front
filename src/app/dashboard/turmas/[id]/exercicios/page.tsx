@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, FileText, ClipboardList, Eye, Trash2 } from 'lucide-react';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { Plus, FileText, ClipboardList, Eye, Trash2, ChevronRight, BookOpen, AlertCircle, Loader } from 'lucide-react';
+import { Header } from '@/components/Header';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
 import { useAuth } from '@/contexts/AuthContext';
@@ -32,15 +31,16 @@ interface TurmaExercicio {
 
 interface ToastNotification {
     id: string;
-    type: 'success' | 'error';
+    type: 'success' | 'error' | 'warning' | 'info';
     message: string;
+    description?: string;
 }
 
 export default function ExerciciosTurmaPage() {
     const router = useRouter();
     const params = useParams();
     const turmaId = params.id as string;
-    const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+    const { user, signOut, isAuthenticated, isLoading: authLoading } = useAuth();
 
     const [exerciciosTurma, setExerciciosTurma] = useState<TurmaExercicio[]>([]);
     const [todosExercicios, setTodosExercicios] = useState<Exercicio[]>([]);
@@ -49,13 +49,15 @@ export default function ExerciciosTurmaPage() {
     const [showModal, setShowModal] = useState(false);
     const [addForm, setAddForm] = useState({ exercicio_id: 0, ordem: 1, obrigatorio: true });
     const [saving, setSaving] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState<number | null>(null);
 
     const canManage = user?.tipo === 'professor' || user?.tipo === 'desenvolvedor';
 
-    const addToast = (type: 'success' | 'error', message: string) => {
+    const addToast = (toast: Omit<ToastNotification, 'id'>) => {
         const id = Math.random().toString(36).substr(2, 9);
-        setToasts((prev) => [...prev, { id, type, message }]);
-        setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 4000);
+        const newToast = { ...toast, id };
+        setToasts((prev) => [...prev, newToast]);
+        setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 5000);
     };
 
     useEffect(() => {
@@ -81,7 +83,11 @@ export default function ExerciciosTurmaPage() {
                 setTodosExercicios(todosEx);
             } catch (error) {
                 console.error('Erro ao carregar exercícios:', error);
-                addToast('error', 'Erro ao carregar exercícios');
+                addToast({
+                    type: 'error',
+                    message: 'Erro ao carregar exercícios',
+                    description: 'Tente novamente mais tarde'
+                });
             } finally {
                 setLoading(false);
             }
@@ -96,7 +102,7 @@ export default function ExerciciosTurmaPage() {
 
     const handleAddExercicio = async () => {
         if (!addForm.exercicio_id) {
-            addToast('error', 'Selecione um exercício');
+            addToast({ type: 'error', message: 'Selecione um exercício' });
             return;
         }
 
@@ -115,23 +121,44 @@ export default function ExerciciosTurmaPage() {
             ]);
             setShowModal(false);
             setAddForm({ exercicio_id: 0, ordem: exerciciosTurma.length + 2, obrigatorio: true });
-            addToast('success', 'Exercício adicionado!');
+            addToast({
+                type: 'success',
+                message: 'Exercício adicionado!',
+                description: 'O exercício agora está disponível para a turma.'
+            });
         } catch (error: any) {
-            addToast('error', error.message || 'Erro ao adicionar exercício');
+            addToast({
+                type: 'error',
+                message: 'Erro ao adicionar exercício',
+                description: error.message || 'Tente novamente'
+            });
         } finally {
             setSaving(false);
         }
     };
 
-    const handleRemoveExercicio = async (exercicioId: number) => {
-        if (!confirm('Tem certeza que deseja remover este exercício da turma?')) return;
+    const handleRemoveExercicio = async () => {
+        if (showDeleteModal === null) return;
 
+        const exercicioId = showDeleteModal;
+        setSaving(true);
         try {
             await apiClient.delete(`/turmas/${turmaId}/exercicios/${exercicioId}`);
             setExerciciosTurma(exerciciosTurma.filter((te) => te.exercicio_id !== exercicioId));
-            addToast('success', 'Exercício removido!');
+            addToast({
+                type: 'success',
+                message: 'Exercício removido!',
+                description: 'O exercício foi removido da turma.'
+            });
         } catch (error: any) {
-            addToast('error', error.message || 'Erro ao remover exercício');
+            addToast({
+                type: 'error',
+                message: 'Erro ao remover exercício',
+                description: error.message || 'Tente novamente'
+            });
+        } finally {
+            setSaving(false);
+            setShowDeleteModal(null);
         }
     };
 
@@ -149,139 +176,132 @@ export default function ExerciciosTurmaPage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-bg-primary dark:via-bg-secondary dark:to-bg-primary text-slate-900 dark:text-text-primary transition-colors">
-            {/* Navbar */}
-            <motion.div
-                initial={{ y: -100 }}
-                animate={{ y: 0 }}
-                className="fixed w-full z-40 py-4 border-b border-slate-200 dark:border-border-custom bg-white/80 dark:bg-bg-secondary backdrop-blur-sm"
-            >
-                <div className="container mx-auto px-4">
-                    <div className="flex justify-between items-center">
-                        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                            <Link
-                                href="/dashboard"
-                                className="text-2xl font-bold text-slate-900 dark:text-text-primary flex items-center gap-2"
-                            >
-                                <Image src="/hu.png" alt="Logo" width={32} height={32} className="w-8 h-8" />
-                                <span>Senior Code AI</span>
-                            </Link>
-                        </motion.div>
-                        <div className="flex items-center gap-3">
-                            <BackButton href={`/dashboard/turmas/${turmaId}`} />
-                            <ThemeToggle />
-                            <button
-                                onClick={openAddModal}
-                                disabled={exerciciosDisponiveis.length === 0}
-                                className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg flex items-center gap-2 font-medium transition-colors disabled:opacity-50"
-                            >
-                                <Plus className="w-5 h-5" /> Adicionar Exercício
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
+        <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-bg-primary text-slate-900 dark:text-text-primary transition-colors">
+            <Header
+                variant="dashboard"
+                user={user}
+                onLogout={signOut}
+                extraActions={
+                    <>
+                        <BackButton href={`/dashboard/turmas/${turmaId}`} />
+                        <button
+                            onClick={openAddModal}
+                            disabled={exerciciosDisponiveis.length === 0}
+                            className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-lg flex items-center gap-2 font-medium transition-all shadow-lg shadow-brand-500/20 disabled:opacity-50"
+                        >
+                            <Plus className="w-5 h-5" /> <span className="hidden sm:inline">Adicionar</span>
+                        </button>
+                    </>
+                }
+            />
 
-            {/* Conteúdo Principal */}
-            <main className="flex-1 py-16 pt-32">
-                <div className="container mx-auto px-6 max-w-4xl">
+            <main className="flex-grow flex items-center py-12 pt-24">
+                <div className="container mx-auto px-6 max-w-5xl">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mb-8"
+                        className="mb-12 text-center"
                     >
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-text-primary mb-2">
-                            <FileText className="w-8 h-8 inline mr-2" /> Exercícios da Turma
+                        <div className="inline-flex items-center justify-center p-3 bg-blue-500/10 rounded-2xl mb-4">
+                            <ClipboardList className="w-8 h-8 text-blue-600 dark:text-blue-500" />
+                        </div>
+                        <h1 className="text-4xl font-extrabold text-slate-900 dark:text-text-primary tracking-tight mb-2">
+                            Exercícios da Turma
                         </h1>
-                        <p className="text-slate-600 dark:text-text-secondary">
+                        <p className="text-slate-600 dark:text-text-secondary text-lg">
                             {exerciciosTurma.length} exercício{exerciciosTurma.length !== 1 ? 's' : ''} associado{exerciciosTurma.length !== 1 ? 's' : ''}
                         </p>
                     </motion.div>
 
-                    {/* Lista de Exercícios */}
                     {exerciciosTurma.length === 0 ? (
-                        <div className="text-center py-16 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom shadow-sm">
-                            <div className="text-6xl mb-6"><ClipboardList className="w-16 h-16 mx-auto text-slate-400" /></div>
-                            <h3 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-4">
-                                Nenhum exercício adicionado
-                            </h3>
-                            <p className="text-slate-600 dark:text-text-secondary mb-8 max-w-md mx-auto">
-                                Adicione exercícios para os alunos desta turma praticarem
-                            </p>
-                            {exerciciosDisponiveis.length > 0 ? (
-                                <button
-                                    onClick={openAddModal}
-                                    className="px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-colors flex items-center gap-2 mx-auto"
-                                >
-                                    <Plus className="w-5 h-5" /> Adicionar Primeiro Exercício
-                                </button>
-                            ) : todosExercicios.length === 0 ? (
-                                <div className="space-y-4">
-                                    <p className="text-amber-600 dark:text-amber-400 font-medium">
-                                        Nenhum exercício cadastrado no sistema ainda.
-                                    </p>
-                                    <Link
-                                        href="/dashboard/licoes/criar/exercicio"
-                                        className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors"
-                                    >
-                                        <Plus className="w-5 h-5" /> Criar Novo Exercício
-                                    </Link>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="max-w-md mx-auto"
+                        >
+                            <div className="bg-white dark:bg-bg-secondary rounded-2xl p-10 shadow-xl border border-slate-200 dark:border-border-custom text-center">
+                                <div className="w-20 h-20 bg-slate-100 dark:bg-bg-tertiary rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <ClipboardList className="w-10 h-10 text-slate-400" />
                                 </div>
-                            ) : (
-                                <p className="text-brand-600 dark:text-brand-400 font-medium">
-                                    Todos os exercícios disponíveis já foram adicionados a esta turma.
+                                <h3 className="text-2xl font-bold mb-4 text-slate-900 dark:text-text-primary">
+                                    Nenhum exercício
+                                </h3>
+                                <p className="text-slate-600 dark:text-text-secondary mb-8 leading-relaxed">
+                                    Adicione exercícios para que seus alunos possam praticar o que aprenderam.
                                 </p>
-                            )}
-                        </div>
+                                {exerciciosDisponiveis.length > 0 ? (
+                                    <button
+                                        onClick={openAddModal}
+                                        className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl transition-all font-medium shadow-lg shadow-brand-500/20"
+                                    >
+                                        <Plus className="w-5 h-5" /> Adicionar Primeiro Exercício
+                                    </button>
+                                ) : (
+                                    <Link
+                                        href="/dashboard/licoes"
+                                        className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary rounded-xl hover:bg-slate-200 dark:hover:bg-border-hover transition-all font-medium"
+                                    >
+                                        Ir para Banco de Questões <ChevronRight className="w-4 h-4" />
+                                    </Link>
+                                )}
+                            </div>
+                        </motion.div>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="space-y-4 max-w-4xl mx-auto">
                             {exerciciosTurma
                                 .sort((a, b) => a.ordem - b.ordem)
                                 .map((te, index) => (
                                     <motion.div
                                         key={te.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.05 }}
-                                        className="flex items-center gap-4 p-5 bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom shadow-sm hover:shadow-md transition-shadow"
+                                        className="group bg-white dark:bg-bg-secondary rounded-2xl p-4 md:p-6 border border-slate-200 dark:border-border-custom shadow-sm hover:shadow-md hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-all flex flex-col md:flex-row items-center gap-4"
                                     >
-                                        <div className="w-12 h-12 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-sm group-hover:scale-105 transition-transform">
                                             {te.ordem}
                                         </div>
-                                        <div className="flex-1">
-                                            <h3 className="font-bold text-slate-900 dark:text-text-primary">
+
+                                        <div className="flex-1 text-center md:text-left">
+                                            <h3 className="font-bold text-lg text-slate-900 dark:text-text-primary group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                                 {te.exercicio.titulo}
                                             </h3>
-                                            <div className="flex items-center gap-3 mt-1 text-sm">
+                                            <div className="flex items-center justify-center md:justify-start gap-3 mt-1 text-sm">
                                                 {te.exercicio.linguagem && (
-                                                    <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded">
+                                                    <span className="px-2.5 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg font-medium flex items-center gap-1.5 border border-blue-200/50 dark:border-blue-700/50">
+                                                        <BookOpen className="w-3.5 h-3.5" />
                                                         {te.exercicio.linguagem.nome}
                                                     </span>
                                                 )}
                                                 {te.obrigatorio ? (
-                                                    <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded">
+                                                    <span className="px-2.5 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg font-medium flex items-center gap-1.5 border border-red-200/50 dark:border-red-700/50">
+                                                        <AlertCircle className="w-3.5 h-3.5" />
                                                         Obrigatório
                                                     </span>
                                                 ) : (
-                                                    <span className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded">
+                                                    <span className="px-2.5 py-1 bg-slate-100 dark:bg-bg-tertiary text-slate-600 dark:text-text-tertiary rounded-lg font-medium">
                                                         Opcional
                                                     </span>
                                                 )}
                                             </div>
                                         </div>
-                                        <Link
-                                            href={`/dashboard/licoes/${te.exercicio_id}`}
-                                            className="px-4 py-2 text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
-                                        >
-                                            <Eye className="w-4 h-4" /> Ver
-                                        </Link>
-                                        <button
-                                            onClick={() => handleRemoveExercicio(te.exercicio_id)}
-                                            className="p-2 text-slate-400 hover:text-red-600 transition-colors"
-                                            title="Remover exercício"
-                                        >
-                                            <Trash2 className="w-5 h-5" />
-                                        </button>
+
+                                        <div className="flex items-center gap-2">
+                                            <Link
+                                                href={`/dashboard/licoes/${te.exercicio_id}`}
+                                                className="p-3 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all border border-transparent hover:border-blue-200 dark:hover:border-blue-800"
+                                                title="Visualizar exercício"
+                                            >
+                                                <Eye className="w-5 h-5" />
+                                            </Link>
+                                            <button
+                                                onClick={() => setShowDeleteModal(te.exercicio_id)}
+                                                className="p-3 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all border border-transparent hover:border-red-200 dark:hover:border-red-800"
+                                                title="Remover exercício"
+                                            >
+                                                <Trash2 className="w-5 h-5" />
+                                            </button>
+                                        </div>
                                     </motion.div>
                                 ))}
                         </div>
@@ -302,23 +322,23 @@ export default function ExerciciosTurmaPage() {
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="bg-white dark:bg-bg-secondary rounded-xl border border-slate-200 dark:border-border-custom p-6 max-w-md w-full shadow-2xl"
+                            className="bg-white dark:bg-bg-secondary rounded-2xl border border-slate-200 dark:border-border-custom p-8 max-w-md w-full shadow-2xl"
                         >
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-6">
-                                <Plus className="w-5 h-5 inline mr-1" /> Adicionar Exercício
+                            <h3 className="text-2xl font-bold text-slate-900 dark:text-text-primary mb-6 flex items-center gap-2">
+                                <Plus className="w-6 h-6 text-brand-600" /> Adicionar Exercício
                             </h3>
 
-                            <div className="space-y-4">
+                            <div className="space-y-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
-                                        Exercício *
+                                    <label className="block text-sm font-bold text-slate-700 dark:text-text-secondary uppercase tracking-wider mb-2">
+                                        Selecione o Exercício
                                     </label>
                                     <select
                                         value={addForm.exercicio_id}
                                         onChange={(e) => setAddForm({ ...addForm, exercicio_id: parseInt(e.target.value) })}
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary"
+                                        className="w-full px-4 py-3.5 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all appearance-none cursor-pointer"
                                     >
-                                        <option value={0}>Selecione um exercício...</option>
+                                        <option value={0}>Selecione...</option>
                                         {exerciciosDisponiveis.map((ex) => (
                                             <option key={ex.id} value={ex.id}>
                                                 {ex.titulo}
@@ -330,7 +350,7 @@ export default function ExerciciosTurmaPage() {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
+                                        <label className="block text-sm font-bold text-slate-700 dark:text-text-secondary uppercase tracking-wider mb-2">
                                             Ordem
                                         </label>
                                         <input
@@ -338,17 +358,17 @@ export default function ExerciciosTurmaPage() {
                                             value={addForm.ordem}
                                             onChange={(e) => setAddForm({ ...addForm, ordem: parseInt(e.target.value) || 1 })}
                                             min={1}
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary"
+                                            className="w-full px-4 py-3.5 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 dark:text-text-secondary mb-2">
+                                        <label className="block text-sm font-bold text-slate-700 dark:text-text-secondary uppercase tracking-wider mb-2">
                                             Tipo
                                         </label>
                                         <select
                                             value={addForm.obrigatorio ? 'true' : 'false'}
                                             onChange={(e) => setAddForm({ ...addForm, obrigatorio: e.target.value === 'true' })}
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-bg-tertiary border border-slate-300 dark:border-border-custom rounded-lg text-slate-900 dark:text-text-primary"
+                                            className="w-full px-4 py-3.5 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl text-slate-900 dark:text-text-primary focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none transition-all cursor-pointer"
                                         >
                                             <option value="true">Obrigatório</option>
                                             <option value="false">Opcional</option>
@@ -357,20 +377,74 @@ export default function ExerciciosTurmaPage() {
                                 </div>
                             </div>
 
-                            <div className="flex gap-3 mt-6">
+                            <div className="flex gap-3 mt-8">
                                 <button
                                     onClick={() => setShowModal(false)}
-                                    className="flex-1 py-3 bg-slate-200 dark:bg-bg-tertiary text-slate-900 dark:text-text-primary rounded-lg hover:bg-slate-300 dark:hover:bg-border-hover transition-colors"
+                                    className="flex-1 py-4 bg-slate-100 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary rounded-xl hover:bg-slate-200 dark:hover:bg-border-hover transition-all font-medium"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     onClick={handleAddExercicio}
                                     disabled={saving}
-                                    className="flex-1 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-lg hover:from-brand-600 hover:to-brand-700 transition-colors disabled:opacity-50"
+                                    className="flex-1 py-4 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl hover:from-brand-600 hover:to-brand-700 transition-all font-medium shadow-lg shadow-brand-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
-                                    {saving ? 'Adicionando...' : 'Adicionar'}
+                                    {saving ? <><Loader className="w-5 h-5 animate-spin" /> Salvando...</> : 'Adicionar'}
                                 </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Modal de Confirmação de Remoção */}
+            <AnimatePresence>
+                {showDeleteModal !== null && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white dark:bg-bg-secondary rounded-2xl border border-slate-200 dark:border-border-custom p-8 max-w-md w-full shadow-2xl"
+                        >
+                            <div className="text-center">
+                                <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Trash2 className="w-8 h-8 text-red-600 dark:text-red-400" />
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-text-primary mb-2">
+                                    Remover Exercício
+                                </h3>
+                                <p className="text-slate-500 dark:text-text-secondary mb-8 leading-relaxed">
+                                    Tem certeza que deseja remover este exercício da turma? Os alunos não poderão mais resolvê-lo através desta turma.
+                                </p>
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => setShowDeleteModal(null)}
+                                        disabled={saving}
+                                        className="flex-1 px-6 py-3.5 bg-slate-100 dark:bg-bg-tertiary text-slate-700 dark:text-text-secondary rounded-xl hover:bg-slate-200 dark:hover:bg-border-hover transition-colors disabled:opacity-50 font-medium"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        onClick={handleRemoveExercicio}
+                                        disabled={saving}
+                                        className="flex-1 px-6 py-3.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 font-medium shadow-lg shadow-red-500/20"
+                                    >
+                                        {saving ? (
+                                            <>
+                                                <Loader className="w-4 h-4 animate-spin" />
+                                                Removendo...
+                                            </>
+                                        ) : (
+                                            <><Trash2 className="w-4 h-4" /> Remover</>
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
                     </motion.div>
@@ -387,11 +461,30 @@ export default function ExerciciosTurmaPage() {
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, x: 50, scale: 0.9 }}
                             className={`p-4 rounded-lg shadow-lg border ${toast.type === 'success'
-                                ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700 text-green-800 dark:text-green-300'
-                                : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700 text-red-800 dark:text-red-300'
+                                ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700'
+                                : toast.type === 'error'
+                                    ? 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700'
+                                    : 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700'
                                 }`}
                         >
-                            {toast.message}
+                            <p className={`font-medium ${toast.type === 'success'
+                                ? 'text-green-800 dark:text-green-300'
+                                : toast.type === 'error'
+                                    ? 'text-red-800 dark:text-red-300'
+                                    : 'text-blue-800 dark:text-blue-300'
+                                }`}>
+                                {toast.message}
+                            </p>
+                            {toast.description && (
+                                <p className={`text-sm ${toast.type === 'success'
+                                    ? 'text-green-600 dark:text-green-400'
+                                    : toast.type === 'error'
+                                        ? 'text-red-600 dark:text-red-400'
+                                        : 'text-blue-600 dark:text-blue-400'
+                                    }`}>
+                                    {toast.description}
+                                </p>
+                            )}
                         </motion.div>
                     ))}
                 </AnimatePresence>
