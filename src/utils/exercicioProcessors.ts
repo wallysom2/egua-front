@@ -60,8 +60,6 @@ function normalizarRespostaCorreta(resposta: any, opcoes: Opcao[]): string | und
 export function processarExercicioComQuestoes(
   data: ExercicioComQuestoes,
 ): Exercicio {
-  console.log('Processando exercício com questões:', data);
-
   const questoes: Questao[] = data.exercicio_questao
     .map((eq) => {
       const opcoes = normalizarOpcoes(eq.questao.opcoes);
@@ -79,8 +77,6 @@ export function processarExercicioComQuestoes(
     })
     .sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
 
-  console.log('Questões processadas:', questoes);
-
   return {
     id: data.id,
     titulo: data.titulo,
@@ -94,8 +90,6 @@ export function processarExercicioComQuestoes(
 export function processarExercicioComConteudo(
   data: ExercicioComConteudo,
 ): Exercicio {
-  console.log('Processando exercício com conteúdo:', data);
-
   const questoes: Questao[] = data.conteudo.questoes
     .map((questao, index) => {
       const opcoes = normalizarOpcoes(questao.opcoes);
@@ -113,8 +107,6 @@ export function processarExercicioComConteudo(
     })
     .sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
 
-  console.log('Questões processadas:', questoes);
-
   return {
     id: data.id,
     titulo: data.titulo,
@@ -126,11 +118,9 @@ export function processarExercicioComConteudo(
 
 // Processador para formato simples (array de questões direto)
 export function processarQuestoesSimples(questoes: any[]): Questao[] {
-  console.log('Processando questões simples:', questoes);
-
   return questoes.map((questao, index) => {
     const opcoes = normalizarOpcoes(questao.opcoes);
-    const questaoProcessada = {
+    return {
       id: questao.id,
       conteudo_id: questao.conteudo_id,
       enunciado: questao.enunciado,
@@ -141,15 +131,11 @@ export function processarQuestoesSimples(questoes: any[]): Questao[] {
       exemplo_resposta: questao.exemplo_resposta,
       ordem: questao.ordem !== undefined ? questao.ordem : index,
     };
-    console.log(`Questão ${index + 1} processada:`, questaoProcessada);
-    return questaoProcessada;
   });
 }
 
 // Função principal para detectar o formato e processar adequadamente
 export function processarExercicio(data: any): Exercicio {
-  console.log('Dados recebidos da API:', data);
-
   // Verificar se tem exercicio_questao (formato atual do quiz)
   if (data.exercicio_questao && Array.isArray(data.exercicio_questao)) {
     return processarExercicioComQuestoes(data as ExercicioComQuestoes);

@@ -310,33 +310,7 @@ export default function Licoes() {
           apiClient.get<{ id: number; nome: string }[]>('/linguagens'),
         ]);
 
-        if (Array.isArray(exerciciosData)) {
-          // Inferir e normalizar tipos dos exercícios baseado nas questões
-          const exerciciosNormalizados = exerciciosData.map((ex) => {
-            const tipoInferido = inferirTipoExercicio(ex);
-            return {
-              ...ex,
-              tipo: tipoInferido,
-            };
-          });
-
-          // Log para debug - verificar tipos dos exercícios
-          console.log('Exercícios carregados (antes normalização):', exerciciosData.map((ex: any) => ({
-            id: ex.id,
-            titulo: ex.titulo,
-            tipo: ex.tipo,
-            tipoRaw: typeof ex.tipo,
-            temQuestoes: !!ex.exercicio_questao,
-            tiposQuestoes: ex.exercicio_questao?.map((eq: any) => eq.questao?.tipo) || []
-          })));
-          console.log('Exercícios carregados (após normalização):', exerciciosNormalizados.map(ex => ({
-            id: ex.id,
-            titulo: ex.titulo,
-            tipo: ex.tipo,
-          })));
-
-          setExercicios(exerciciosNormalizados);
-        }
+        setExercicios(exerciciosData);
 
         if (Array.isArray(linguagensData)) {
           const map = new Map<number, string>();

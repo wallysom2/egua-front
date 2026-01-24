@@ -2,8 +2,6 @@ import { type Exercicio, type Questao } from '@/types/exercicio';
 
 // Processador para exercícios práticos com questões de código
 export function processarExercicioPratico(data: any): Exercicio {
-  console.log('Processando exercício prático:', data);
-
   // Verificar se tem questões de código específicas
   let questoes: Questao[] = [];
 

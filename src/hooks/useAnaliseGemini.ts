@@ -57,12 +57,12 @@ export function useAnaliseGemini({
       if (response.ok) {
         const data = await response.json();
         setAnalise(data);
-        console.log('Análise recebida:', data);
+
       } else if (response.status === 404) {
         setError(
           'Análise ainda não está disponível. A IA está processando seu código...',
         );
-        console.log('Análise ainda não disponível para resposta:', respostaId);
+
       } else {
         throw new Error(`Erro ${response.status}: ${response.statusText}`);
       }
@@ -84,7 +84,7 @@ export function useAnaliseGemini({
   // Effect para buscar análise quando respostaId muda
   useEffect(() => {
     if (respostaId) {
-      console.log('Iniciando busca de análise para resposta:', respostaId);
+
       buscarAnalise();
     } else {
       setAnalise(null);
@@ -110,18 +110,18 @@ export function useAnaliseGemini({
     const shouldPoll = analise && !analise.analise_disponivel;
     if (!shouldPoll && !loading) return;
 
-    console.log('Configurando polling para análise da resposta:', respostaId);
+
     intervalRef.current = setInterval(() => {
       // Só fazer requisição se não houver uma em andamento
       if (!isRequestingRef.current && (!analise || !analise.analise_disponivel)) {
-        console.log('Polling: verificando análise...');
+
         buscarAnalise();
       }
     }, refreshInterval);
 
     return () => {
       if (intervalRef.current) {
-        console.log('Limpando polling de análise');
+
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }

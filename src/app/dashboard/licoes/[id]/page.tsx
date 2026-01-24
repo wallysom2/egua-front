@@ -64,50 +64,46 @@ export default function ExercicioDetalhes({
     }
 
     const fetchExercicio = async () => {
+      let exercicioProcessado;
       try {
         // Buscar exercício
         const exercicioData = await apiClient.get(`/exercicios/${resolvedParams.id}`);
-        console.log('Dados do exercício recebidos:', exercicioData);
+
 
         // Processar exercício usando o novo sistema
-        const exercicioProcessado = processarExercicio(exercicioData);
+        exercicioProcessado = processarExercicio(exercicioData);
 
         // Se não há questões no exercício processado, tentar buscar separadamente
-        if (exercicioProcessado.questoes.length === 0) {
-          console.log(
-            'Nenhuma questão encontrada no exercício, buscando separadamente...',
+
+
+        // Buscar questões do exercício separadamente
+        try {
+          const questoesData = await apiClient.get(`/exercicios/${resolvedParams.id}/questoes`);
+          const questoesProcessadas = processarQuestoesDoEndpoint(
+            Array.isArray(questoesData) ? questoesData : [],
+            parseInt(resolvedParams.id),
           );
+          exercicioProcessado.questoes = questoesProcessadas;
+        } catch (questoesError) {
+          console.warn('Erro ao buscar questões:', questoesError);
 
-          // Buscar questões do exercício separadamente
+          // Última tentativa: buscar todas as questões e filtrar
           try {
-            const questoesData = await apiClient.get(`/exercicios/${resolvedParams.id}/questoes`);
-            const questoesProcessadas = processarQuestoesDoEndpoint(
-              Array.isArray(questoesData) ? questoesData : [],
-              parseInt(resolvedParams.id),
-            );
-            exercicioProcessado.questoes = questoesProcessadas;
-          } catch (questoesError) {
-            console.warn('Erro ao buscar questões:', questoesError);
+            const todasQuestoes = await apiClient.get('/questoes');
 
-            // Última tentativa: buscar todas as questões e filtrar
-            try {
-              const todasQuestoes = await apiClient.get('/questoes');
-              console.log('Todas as questões:', todasQuestoes);
-
-              if (Array.isArray(todasQuestoes)) {
-                const questoesFiltradas = todasQuestoes.filter(
-                  (q: any) =>
-                    q.conteudo_id === parseInt(resolvedParams.id) ||
-                    q.exercicio_id === parseInt(resolvedParams.id),
-                );
-                exercicioProcessado.questoes = processarQuestoesDoEndpoint(
-                  questoesFiltradas,
-                  parseInt(resolvedParams.id),
-                );
-              }
-            } catch (error) {
-              console.error('Erro ao buscar todas as questões:', error);
+            if (Array.isArray(todasQuestoes)) {
+              const questoesFiltradas = todasQuestoes.filter(
+                (q: any) =>
+                  q.conteudo_id === parseInt(resolvedParams.id) ||
+                  q.exercicio_id === parseInt(resolvedParams.id),
+              );
+              exercicioProcessado.questoes = processarQuestoesDoEndpoint(
+                questoesFiltradas,
+                parseInt(resolvedParams.id),
+              );
             }
+          } catch (error) {
+            console.error('Erro ao buscar todas as questões:', error);
           }
         }
 
@@ -125,7 +121,6 @@ export default function ExercicioDetalhes({
         }
 
         setExercicio(exercicioProcessado);
-        console.log('Exercício final configurado:', exercicioProcessado);
       } catch (error: unknown) {
         console.error('Erro ao carregar exercício:', error);
         setError(

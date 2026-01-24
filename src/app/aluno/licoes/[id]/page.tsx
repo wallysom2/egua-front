@@ -273,7 +273,6 @@ export default function ExercicioAlunoDetalhes({
         // Se temos um userExercicioId, finalizar o exercício
         if (userExercicioId) {
           await apiClient.patch(`/user-exercicio/${userExercicioId}/finalizar`);
-          console.log('Exercício finalizado com sucesso no banco de dados');
           setExercicioConcluido(true);
         }
       }

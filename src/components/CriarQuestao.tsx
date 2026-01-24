@@ -29,34 +29,34 @@ interface QuestaoFormData {
 
 // Schema alinhado com o backend - baseado no questaoSchema fornecido
 const questaoApiSchema = z.object({
-  conteudo_id: z.number({ 
-    message: 'Conteúdo de referência é obrigatório' 
-  }).int({ 
-    message: 'ID do conteúdo deve ser um número inteiro' 
-  }).positive({ 
-    message: 'ID do conteúdo deve ser um número positivo' 
+  conteudo_id: z.number({
+    message: 'Conteúdo de referência é obrigatório'
+  }).int({
+    message: 'ID do conteúdo deve ser um número inteiro'
+  }).positive({
+    message: 'ID do conteúdo deve ser um número positivo'
   }).optional().nullable(),
-  enunciado: z.string({ 
-    message: 'Enunciado é obrigatório' 
-  }).min(10, { 
-    message: 'Enunciado da questão deve ter pelo menos 10 caracteres' 
-  }).max(10000, { 
-    message: 'Enunciado da questão é muito longo (máximo 10.000 caracteres)' 
+  enunciado: z.string({
+    message: 'Enunciado é obrigatório'
+  }).min(10, {
+    message: 'Enunciado da questão deve ter pelo menos 10 caracteres'
+  }).max(10000, {
+    message: 'Enunciado da questão é muito longo (máximo 10.000 caracteres)'
   }),
-  nivel: z.enum(['facil', 'medio', 'dificil'], { 
-    message: 'Nível da questão deve ser: facil, medio ou dificil' 
+  nivel: z.enum(['facil', 'medio', 'dificil'], {
+    message: 'Nível da questão deve ser: facil, medio ou dificil'
   }),
   tipo: z.enum(['quiz', 'programacao'], {
     message: 'Tipo da questão deve ser: quiz ou programacao'
   }),
-  
+
   // Campos para questões de quiz - backend espera array de strings
   opcoes: z.array(z.string()).optional().nullable(),
   resposta_correta: z.string().optional().nullable(),
-  
+
   // Campo para questões de programação
   exemplo_resposta: z.string().optional().nullable()
-  
+
 }).refine((data) => {
   // Validação condicional para questões de quiz
   if (data.tipo === 'quiz') {
@@ -71,7 +71,7 @@ const questaoApiSchema = z.object({
       return false;
     }
   }
-  
+
   // Validação condicional para questões de programação
   if (data.tipo === 'programacao') {
     if (!data.exemplo_resposta || data.exemplo_resposta.trim().length === 0) {
@@ -85,7 +85,7 @@ const questaoApiSchema = z.object({
       return false;
     }
   }
-  
+
   return true;
 }, {
   message: "QUIZ: 'opcoes' (mín. 2) e 'resposta_correta' obrigatórios. A resposta deve estar nas opções. PROGRAMAÇÃO: 'exemplo_resposta' obrigatório, 'opcoes' e 'resposta_correta' devem ser null.",
@@ -113,11 +113,11 @@ export function CriarQuestao({
     opcoes:
       tipo === 'quiz'
         ? [
-            { id: uuidv4(), texto: '', correta: false },
-            { id: uuidv4(), texto: '', correta: false },
-            { id: uuidv4(), texto: '', correta: false },
-            { id: uuidv4(), texto: '', correta: false },
-          ]
+          { id: uuidv4(), texto: '', correta: false },
+          { id: uuidv4(), texto: '', correta: false },
+          { id: uuidv4(), texto: '', correta: false },
+          { id: uuidv4(), texto: '', correta: false },
+        ]
         : undefined,
     exemplo_resposta: tipo === 'pratico' ? '' : undefined,
   });
@@ -130,11 +130,11 @@ export function CriarQuestao({
       opcoes:
         tipo === 'quiz'
           ? [
-              { id: uuidv4(), texto: '', correta: false },
-              { id: uuidv4(), texto: '', correta: false },
-              { id: uuidv4(), texto: '', correta: false },
-              { id: uuidv4(), texto: '', correta: false },
-            ]
+            { id: uuidv4(), texto: '', correta: false },
+            { id: uuidv4(), texto: '', correta: false },
+            { id: uuidv4(), texto: '', correta: false },
+            { id: uuidv4(), texto: '', correta: false },
+          ]
           : undefined,
       exemplo_resposta: tipo === 'pratico' ? '' : undefined,
     }));
@@ -219,31 +219,30 @@ export function CriarQuestao({
       const dadosParaEnvio =
         questaoForm.tipo === 'quiz'
           ? {
-              conteudo_id: questaoForm.conteudo_id || null,
-              enunciado: questaoForm.enunciado.trim(),
-              nivel: questaoForm.nivel,
-              tipo: 'quiz' as const,
-              // Backend espera array de strings, não objetos
-              opcoes: questaoForm.opcoes?.map((op: Alternativa) => op.texto.trim()) || null,
-              resposta_correta:
-                questaoForm.opcoes?.find((op: Alternativa) => op.correta)?.texto.trim() || null,
-              exemplo_resposta: null,
-            }
+            conteudo_id: questaoForm.conteudo_id || null,
+            enunciado: questaoForm.enunciado.trim(),
+            nivel: questaoForm.nivel,
+            tipo: 'quiz' as const,
+            // Backend espera array de strings, não objetos
+            opcoes: questaoForm.opcoes?.map((op: Alternativa) => op.texto.trim()) || null,
+            resposta_correta:
+              questaoForm.opcoes?.find((op: Alternativa) => op.correta)?.texto.trim() || null,
+            exemplo_resposta: null,
+          }
           : {
-              conteudo_id: questaoForm.conteudo_id || null,
-              enunciado: questaoForm.enunciado.trim(),
-              nivel: questaoForm.nivel,
-              tipo: 'programacao' as const,
-              exemplo_resposta: questaoForm.exemplo_resposta?.trim() || null,
-              opcoes: null,
-              resposta_correta: null,
-            };
+            conteudo_id: questaoForm.conteudo_id || null,
+            enunciado: questaoForm.enunciado.trim(),
+            nivel: questaoForm.nivel,
+            tipo: 'programacao' as const,
+            exemplo_resposta: questaoForm.exemplo_resposta?.trim() || null,
+            opcoes: null,
+            resposta_correta: null,
+          };
 
       // Validação com o schema alinhado ao backend
       const validatedData = questaoApiSchema.parse(dadosParaEnvio);
 
-      console.log('🔍 DEBUG: Dados para envio:', dadosParaEnvio);
-      console.log('🔍 DEBUG: Dados validados:', validatedData);
+
 
       const novaQuestao = await apiClient.post<{ id: number }>('/questoes', validatedData);
       onQuestaoCriada(novaQuestao.id);
@@ -255,11 +254,11 @@ export function CriarQuestao({
         opcoes:
           tipo === 'quiz'
             ? [
-                { id: uuidv4(), texto: '', correta: false },
-                { id: uuidv4(), texto: '', correta: false },
-                { id: uuidv4(), texto: '', correta: false },
-                { id: uuidv4(), texto: '', correta: false },
-              ]
+              { id: uuidv4(), texto: '', correta: false },
+              { id: uuidv4(), texto: '', correta: false },
+              { id: uuidv4(), texto: '', correta: false },
+              { id: uuidv4(), texto: '', correta: false },
+            ]
             : undefined,
         exemplo_resposta: tipo === 'pratico' ? '' : undefined,
       });
@@ -323,11 +322,10 @@ export function CriarQuestao({
               conteudo_id: Number(e.target.value),
             }))
           }
-          className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 dark:text-white transition-colors ${
-            validationErrors.conteudo_id
+          className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 dark:text-white transition-colors ${validationErrors.conteudo_id
               ? 'border-red-500'
               : 'border-slate-300 dark:border-slate-700'
-          }`}
+            }`}
           disabled={!selectedLinguagem}
         >
           <option value="">
@@ -369,11 +367,10 @@ export function CriarQuestao({
           onChange={(e) =>
             setQuestaoForm((prev) => ({ ...prev, enunciado: e.target.value }))
           }
-          className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-colors ${
-            validationErrors.enunciado
+          className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-colors ${validationErrors.enunciado
               ? 'border-red-500'
               : 'border-slate-300 dark:border-slate-700'
-          }`}
+            }`}
           rows={4}
           placeholder="Descreva sua questão de forma clara e objetiva"
         />
@@ -396,11 +393,10 @@ export function CriarQuestao({
               nivel: e.target.value as 'facil' | 'medio' | 'dificil',
             }))
           }
-          className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 dark:text-white transition-colors ${
-            validationErrors.nivel
+          className={`w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-slate-900 dark:text-white transition-colors ${validationErrors.nivel
               ? 'border-red-500'
               : 'border-slate-300 dark:border-slate-700'
-          }`}
+            }`}
         >
           <option value="facil">🟢 Simples</option>
           <option value="medio">🟡 Médio</option>
@@ -462,11 +458,10 @@ export function CriarQuestao({
                 exemplo_resposta: e.target.value,
               }))
             }
-            className={`w-full h-32 px-4 py-3 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-colors ${
-              validationErrors.exemplo_resposta
+            className={`w-full h-32 px-4 py-3 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-colors ${validationErrors.exemplo_resposta
                 ? 'border-red-500'
                 : 'border-slate-300 dark:border-slate-700'
-            }`}
+              }`}
             placeholder="// Digite aqui um exemplo de resposta em Senior Code AI"
           />
           {validationErrors.exemplo_resposta && (
@@ -499,8 +494,8 @@ export function CriarQuestao({
         {!selectedLinguagem
           ? 'Selecione uma linguagem primeiro'
           : questaoForm.conteudo_id === 0
-          ? 'Selecione um conteúdo para adicionar questão'
-          : 'Adicionar Questão'}
+            ? 'Selecione um conteúdo para adicionar questão'
+            : 'Adicionar Questão'}
       </button>
     </div>
   );
