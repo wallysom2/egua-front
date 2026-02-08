@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, TrendingUp, BookOpen, BarChart2, Star, FileText, Pencil, Trash2, X, ChevronRight, Layout, AlertTriangle, Loader, ChevronDown } from 'lucide-react';
+import { Plus, TrendingUp, BookOpen, BarChart2, Star, FileText, Pencil, Trash2, X, ChevronRight, Layout, AlertTriangle, Loader, ChevronDown, Settings } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { BackButton } from '@/components/BackButton';
 import { Loading } from '@/components/Loading';
@@ -17,6 +17,11 @@ interface Exercicio {
         id: number;
         nome: string;
     };
+}
+
+interface Linguagem {
+    id: number;
+    nome: string;
 }
 
 interface Licao {
@@ -53,7 +58,7 @@ export default function TrilhaConfigPage() {
     const { user, signOut, isAuthenticated, isLoading: authLoading } = useAuth();
 
     const [modulos, setModulos] = useState<Modulo[]>([]);
-    const [exercicios, setExercicios] = useState<Exercicio[]>([]);
+    const [linguagens, setLinguagens] = useState<Linguagem[]>([]);
     const [loading, setLoading] = useState(true);
     const [toasts, setToasts] = useState<ToastNotification[]>([]);
 
@@ -70,9 +75,15 @@ export default function TrilhaConfigPage() {
         xp_recompensa: 50,
     });
     const [licaoForm, setLicaoForm] = useState({
-        exercicio_id: 0,
         ordem: 1,
         xp_recompensa: 10,
+    });
+    const [exercicioForm, setExercicioForm] = useState({
+        titulo: '',
+        descricao: '',
+        tipo: 'quiz',
+        dificuldade: 'medio',
+        linguagem_id: 0,
     });
     const [saving, setSaving] = useState(false);
 
@@ -95,14 +106,19 @@ export default function TrilhaConfigPage() {
         }
     };
 
-    const fetchExercicios = async () => {
+    const fetchLinguagens = async () => {
         try {
-            const data = await apiClient.get<Exercicio[]>('/exercicios');
-            setExercicios(data);
+            const data = await apiClient.get<Linguagem[]>('/linguagens');
+            setLinguagens(data);
+            if (data.length > 0) {
+                setExercicioForm(prev => ({ ...prev, linguagem_id: data[0].id }));
+            }
         } catch (error) {
-            console.error('Erro ao carregar exercícios:', error);
+            console.error('Erro ao carregar linguagens:', error);
         }
     };
+
+
 
     useEffect(() => {
         if (!authLoading && !isAuthenticated) {
@@ -118,7 +134,7 @@ export default function TrilhaConfigPage() {
         if (authLoading || !isAuthenticated) return;
 
         const loadData = async () => {
-            await Promise.all([fetchTrilha(), fetchExercicios()]);
+            await Promise.all([fetchTrilha(), fetchLinguagens()]);
             setLoading(false);
         };
 
@@ -208,15 +224,25 @@ export default function TrilhaConfigPage() {
     };
 
     const handleCreateLicao = async (moduloId: string) => {
-        if (!licaoForm.exercicio_id) {
-            addToast({ type: 'error', message: 'Selecione um exercício' });
+        if (!exercicioForm.titulo.trim()) {
+            addToast({ type: 'error', message: 'Título do exercício é obrigatório' });
             return;
         }
 
         setSaving(true);
         try {
+            // 1. Criar o exercício primeiro
+            const novoExercicio = await apiClient.post<{ id: number }>('/exercicios', {
+                titulo: exercicioForm.titulo,
+                descricao: exercicioForm.descricao || undefined,
+                tipo: exercicioForm.tipo,
+                dificuldade: exercicioForm.dificuldade,
+                linguagem_id: exercicioForm.linguagem_id,
+            });
+
+            // 2. Criar a lição vinculada ao exercício
             const novaLicao = await apiClient.post<Licao>(`/turmas/${turmaId}/trilha/modulos/${moduloId}/licoes`, {
-                exercicio_id: licaoForm.exercicio_id,
+                exercicio_id: novoExercicio.id,
                 ordem: licaoForm.ordem,
                 xp_recompensa: licaoForm.xp_recompensa,
             });
@@ -227,10 +253,11 @@ export default function TrilhaConfigPage() {
                     : m
             ));
             setShowLicaoModal(null);
-            setLicaoForm({ exercicio_id: 0, ordem: 1, xp_recompensa: 10 });
-            addToast({ type: 'success', message: 'Lição adicionada!' });
+            setLicaoForm({ ordem: 1, xp_recompensa: 10 });
+            setExercicioForm(prev => ({ titulo: '', descricao: '', tipo: 'quiz', dificuldade: 'medio', linguagem_id: prev.linguagem_id }));
+            addToast({ type: 'success', message: 'Exercício e lição criados!' });
         } catch (error: any) {
-            addToast({ type: 'error', message: error.message || 'Erro ao adicionar lição' });
+            addToast({ type: 'error', message: error.message || 'Erro ao criar exercício' });
         } finally {
             setSaving(false);
         }
@@ -263,10 +290,10 @@ export default function TrilhaConfigPage() {
     const openNewLicao = (moduloId: string) => {
         const modulo = modulos.find((m) => m.id === moduloId);
         setLicaoForm({
-            exercicio_id: 0,
             ordem: (modulo?.trilha_licao.length || 0) + 1,
             xp_recompensa: 10,
         });
+        setExercicioForm(prev => ({ titulo: '', descricao: '', tipo: 'quiz', dificuldade: 'medio', linguagem_id: prev.linguagem_id }));
         setShowLicaoModal(moduloId);
     };
 
@@ -407,13 +434,22 @@ export default function TrilhaConfigPage() {
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <button
-                                                        onClick={() => setShowDeleteModal({ type: 'licao', id: licao.id, parentId: modulo.id })}
-                                                        className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
-                                                        title="Remover lições"
-                                                    >
-                                                        <X className="w-4 h-4" />
-                                                    </button>
+                                                    <div className="flex items-center gap-1">
+                                                        <button
+                                                            onClick={() => router.push(`/dashboard/exercicios/${licao.exercicio.id}/questoes?turmaId=${turmaId}`)}
+                                                            className="p-2 text-slate-300 hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-all"
+                                                            title="Gerenciar questões"
+                                                        >
+                                                            <Settings className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setShowDeleteModal({ type: 'licao', id: licao.id, parentId: modulo.id })}
+                                                            className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                                                            title="Remover lição"
+                                                        >
+                                                            <X className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
                                                 </motion.div>
                                             ))}
                                         </AnimatePresence>
@@ -563,25 +599,78 @@ export default function TrilhaConfigPage() {
                                 <Plus className="w-6 h-6 text-emerald-500" /> Adicionar Lição
                             </h3>
 
-                            <div className="space-y-6">
+                            <div className="space-y-5">
                                 <div>
                                     <label className="block text-sm font-bold text-slate-700 dark:text-text-secondary uppercase tracking-wider mb-2">
-                                        Escolha o Exercício
+                                        Título do Exercício *
                                     </label>
-                                    <div className="relative">
+                                    <input
+                                        type="text"
+                                        value={exercicioForm.titulo}
+                                        onChange={(e) => setExercicioForm({ ...exercicioForm, titulo: e.target.value })}
+                                        placeholder="Ex: Introdução a Variáveis"
+                                        className="w-full px-4 py-3.5 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl text-slate-900 dark:text-text-primary outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 dark:text-text-secondary uppercase tracking-wider mb-2">
+                                        Descrição
+                                    </label>
+                                    <textarea
+                                        value={exercicioForm.descricao}
+                                        onChange={(e) => setExercicioForm({ ...exercicioForm, descricao: e.target.value })}
+                                        placeholder="O que os alunos aprenderão?"
+                                        rows={2}
+                                        className="w-full px-4 py-3.5 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl text-slate-900 dark:text-text-primary outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-700 dark:text-text-secondary uppercase tracking-wider mb-2">
+                                        Linguagem *
+                                    </label>
+                                    <select
+                                        value={exercicioForm.linguagem_id}
+                                        onChange={(e) => setExercicioForm({ ...exercicioForm, linguagem_id: parseInt(e.target.value) })}
+                                        className="w-full px-4 py-3.5 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl text-slate-900 dark:text-text-primary outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+                                    >
+                                        {linguagens.map((lang) => (
+                                            <option key={lang.id} value={lang.id}>
+                                                {lang.nome}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-bold text-slate-700 dark:text-text-secondary uppercase tracking-wider mb-2">
+                                            Tipo
+                                        </label>
                                         <select
-                                            value={licaoForm.exercicio_id}
-                                            onChange={(e) => setLicaoForm({ ...licaoForm, exercicio_id: parseInt(e.target.value) })}
-                                            className="w-full px-4 py-3.5 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl text-slate-900 dark:text-text-primary outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all appearance-none cursor-pointer"
+                                            value={exercicioForm.tipo}
+                                            onChange={(e) => setExercicioForm({ ...exercicioForm, tipo: e.target.value })}
+                                            className="w-full px-4 py-3.5 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl text-slate-900 dark:text-text-primary outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
                                         >
-                                            <option value={0}>Selecione...</option>
-                                            {exercicios.map((ex) => (
-                                                <option key={ex.id} value={ex.id}>
-                                                    {ex.titulo}
-                                                </option>
-                                            ))}
+                                            <option value="quiz">Quiz</option>
+                                            <option value="pratico">Prático</option>
+                                            <option value="texto_livre">Texto Livre</option>
                                         </select>
-                                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-slate-700 dark:text-text-secondary uppercase tracking-wider mb-2">
+                                            Dificuldade
+                                        </label>
+                                        <select
+                                            value={exercicioForm.dificuldade}
+                                            onChange={(e) => setExercicioForm({ ...exercicioForm, dificuldade: e.target.value })}
+                                            className="w-full px-4 py-3.5 bg-slate-50 dark:bg-bg-tertiary border border-slate-200 dark:border-border-custom rounded-xl text-slate-900 dark:text-text-primary outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all"
+                                        >
+                                            <option value="facil">Fácil</option>
+                                            <option value="medio">Médio</option>
+                                            <option value="dificil">Difícil</option>
+                                        </select>
                                     </div>
                                 </div>
 

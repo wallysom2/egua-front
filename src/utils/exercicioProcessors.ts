@@ -165,10 +165,10 @@ export function processarExercicio(data: any): Exercicio {
 // Função para processar questões que vêm de endpoint separado
 export function processarQuestoesDoEndpoint(
   questoesData: any[],
-  exercicioId: number,
+  _exercicioId: number,
 ): Questao[] {
+  // Não filtrar por exercicio_id - as questões já vêm filtradas do backend
   return questoesData
-    .filter((questao) => questao.exercicio_id === exercicioId)
     .map((questao) => {
       const opcoes = normalizarOpcoes(questao.opcoes);
       return {

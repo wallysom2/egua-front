@@ -59,7 +59,7 @@ export default function ExercicioDetalhes({
       return;
     }
 
-    if (authLoading || !isAuthenticated) {
+    if (authLoading || !isAuthenticated || !loading) {
       return;
     }
 
@@ -132,7 +132,8 @@ export default function ExercicioDetalhes({
     };
 
     fetchExercicio();
-  }, [resolvedParams.id, router, isAuthenticated, authLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolvedParams.id, isAuthenticated, authLoading]);
 
   const questaoAtualData = exercicio?.questoes[questaoAtual];
   const totalQuestoes = exercicio?.questoes.length || 0;
